@@ -2,34 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventory — Torque Motorsports Exclusive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>The Garage — Torque Motorsports Exclusive</title>
+  <meta name="description" content="A gallery of premium superbikes we've imported and delivered to clients across Pakistan. Ducati, BMW, Yamaha, Kawasaki, Harley and more.">
+  <meta name="keywords" content="superbike imports Pakistan, Ducati import Pakistan, BMW S1000RR Pakistan, Yamaha R1 Pakistan, bike importer Lahore">
+  <link rel="canonical" href="https://torquemotorsexclusive.com/inventory.html">
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://torquemotorsexclusive.com/inventory.html">
+  <meta property="og:title" content="The Garage — Torque Motorsports Exclusive">
+  <meta property="og:description" content="Premium superbikes we've imported and delivered across Pakistan.">
+  <meta property="og:image" content="https://torquemotorsexclusive.com/hero.jpg">
+
+  <meta name="geo.region" content="PK-PB">
+  <meta name="geo.placename" content="Lahore">
+
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <nav class="nav">
   <a href="index.html" class="nav__logo">
-    <img src="assets/logo.png" alt="Torque Motorsports">
+    <img src="logo.png" alt="Torque Motorsports">
   </a>
-  <ul class="nav__links">
-    <li><a href="index.html" data-nav="home">Home</a></li>
-    <li><a href="inventory.html" data-nav="inventory">Inventory</a></li>
-    <li><a href="index.html#story" data-nav="about">About</a></li>
-    <li><a href="index.html#contact" data-nav="contact">Contact</a></li>
-  </ul>
-  <a href="dashboard.html" class="nav__cta">Dashboard</a>
+  <button class="nav__toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__menu">
+    <ul>
+      <li><a href="index.html" data-nav="home">Home</a></li>
+      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="contact.html" data-nav="contact">Story</a></li>
+    </ul>
+    <div class="nav__menu-foot">
+      <span>Lahore / Pakistan</span>
+      <a href="#" data-email data-email-text>hello@torquemotorsexclusive.com</a>
+    </div>
+  </div>
+  <a href="#" class="nav__cta" data-wa="Hi, I'd like to request a bike import.">Request a Bike</a>
 </nav>
 
 <header class="page-header">
   <div class="page-header__eyebrow">№ 01 — The Collection</div>
-  <h1 class="page-header__title">All <em>Inventory.</em></h1>
+  <h1 class="page-header__title">The <em>Garage.</em></h1>
+  <p class="page-header__lead">Every bike below was sourced, imported, and delivered by Torque Motorsports. A proof-of-work archive — some still available for new clients.</p>
 </header>
 
 <div class="filters">
   <button class="filter-btn active" data-filter="all">All Bikes</button>
   <button class="filter-btn" data-filter="available">Available</button>
-  <button class="filter-btn" data-filter="sold">Sold</button>
+  <button class="filter-btn" data-filter="sold">Delivered</button>
+  <button class="filter-btn" data-filter="featured">Featured</button>
 </div>
 
 <section class="inventory-grid">
@@ -37,62 +63,60 @@
 </section>
 
 <footer class="footer">
-  <div class="footer__grid">
-    <div>
-      <img src="assets/logo.png" alt="Torque Motorsports" class="footer__logo">
-      <p class="footer__tagline">Premium superbikes for riders who demand more. Curated. Inspected. Delivered.</p>
+  <div class="footer__main">
+    <div class="footer__brand">
+      <img src="logo.png" alt="Torque Motorsports" class="footer__logo">
+      <p class="footer__tagline">Specialist superbike imports to Pakistan. Curated. Sourced. Delivered.</p>
     </div>
-    <div class="footer__col">
-      <h4>Navigate</h4>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="inventory.html">Inventory</a></li>
-        <li><a href="index.html#story">About</a></li>
-        <li><a href="dashboard.html">Dashboard</a></li>
-      </ul>
-    </div>
-    <div class="footer__col">
-      <h4>Contact</h4>
-      <ul>
-        <li><a href="mailto:hello@torquemotorsexclusive.com">hello@torquemotorsexclusive.com</a></li>
-        <li><a href="tel:+92">+92 — — — — —</a></li>
-        <li><a href="#">Lahore, Pakistan</a></li>
-      </ul>
-    </div>
-    <div class="footer__col">
-      <h4>Follow</h4>
-      <ul>
-        <li><a href="#">Instagram</a></li>
-        <li><a href="#">YouTube</a></li>
-        <li><a href="#">WhatsApp</a></li>
-      </ul>
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="inventory.html">The Garage</a></li>
+          <li><a href="contact.html">Story</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#" data-wa>WhatsApp</a></li>
+          <li><a href="#" data-email>Email</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#" data-instagram target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="#" data-tiktok target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
     </div>
   </div>
   <div class="footer__bottom">
     <span>© 2026 Torque Motorsports Exclusive</span>
-    <span>Lahore / Pakistan / Worldwide</span>
+    <span>Lahore / Pakistan</span>
   </div>
 </footer>
 
 <script src="data.js"></script>
 <script>
-  setActiveNav('inventory');
+  setActiveNav('garage');
+  initNav();
+  applySiteSettings();
 
   let currentFilter = 'all';
   const grid = document.getElementById('inv-grid');
 
   function render() {
     const all = loadBikes();
-    const filtered = currentFilter === 'all'
-      ? all
-      : all.filter(b => b.status === currentFilter);
+    let filtered;
+    if (currentFilter === 'all') filtered = all;
+    else if (currentFilter === 'featured') filtered = all.filter(b => b.featured);
+    else filtered = all.filter(b => b.status === currentFilter);
 
     if (filtered.length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          <h3>No bikes here yet</h3>
-          <p>Try a different filter, or check back soon.</p>
-        </div>`;
+      grid.innerHTML = `<div class="empty-state"><h3>No bikes here yet</h3><p>Try another filter.</p></div>`;
       return;
     }
     grid.innerHTML = filtered.map((b, i) => bikeCardHTML(b, i)).join('');

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Admin Login — Torque Motorsports Exclusive</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { padding-top: var(--nav-h); }
+    .login-wrap {
+      min-height: calc(100vh - var(--nav-h));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem var(--gutter);
+      position: relative;
+      overflow: hidden;
+    }
+    .login-wrap::before {
+      content: 'T.';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(18rem, 60vw, 36rem);
+      color: rgba(255,255,255,0.025);
+      line-height: 0.8;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .login {
+      width: 100%; max-width: 400px;
+      background: var(--black-2);
+      border: 1px solid var(--grey-2);
+      padding: 2.5rem 2rem;
+      position: relative; z-index: 1;
+    }
+    .login__logo { display: flex; justify-content: center; margin-bottom: 2rem; }
+    .login__logo img { height: 44px; }
+    .login__eyebrow {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      letter-spacing: 0.2em; color: var(--red);
+      text-transform: uppercase; text-align: center;
+      margin-bottom: 0.6rem;
+    }
+    .login__title {
+      font-family: var(--font-display); font-style: italic;
+      font-size: 2.2rem; text-transform: uppercase;
+      text-align: center; margin-bottom: 1.75rem; line-height: 1;
+    }
+    .login__error {
+      background: rgba(225, 6, 0, 0.1);
+      border: 1px solid var(--red);
+      color: var(--red);
+      padding: 0.7rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .login__error.show { display: block; animation: shake 0.4s ease; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    .login__hint {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.15em; color: var(--grey);
+      text-align: center; margin-top: 1.5rem;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav__logo">
+    <img src="logo.png" alt="Torque Motorsports">
+  </a>
+  <button class="nav__toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__menu">
+    <ul>
+      <li><a href="index.html" data-nav="home">Home</a></li>
+      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+    </ul>
+  </div>
+  <a href="index.html" class="nav__cta">← Site</a>
+</nav>
+
+<main class="login-wrap">
+  <div class="login">
+    <div class="login__logo"><img src="logo.png" alt="Torque"></div>
+    <div class="login__eyebrow">№ 00 — Admin Access</div>
+    <h1 class="login__title">Restricted.</h1>
+    <div class="login__error" id="loginError">Wrong password. Try again.</div>
+    <form id="loginForm">
+      <div class="form__group">
+        <label class="form__label" for="pw">Password</label>
+        <input type="password" class="form__input" id="pw" placeholder="••••••••" autocomplete="current-password" autofocus>
+      </div>
+      <button type="submit" class="btn btn--primary btn--block">Enter Dashboard</button>
+    </form>
+    <p class="login__hint">Authorized personnel only</p>
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script src="auth.js"></script>
+<script>
+  initNav();
+  if (isLoggedIn()) window.location.href = 'dashboard.html';
+
+  const form = document.getElementById('loginForm');
+  const pwInput = document.getElementById('pw');
+  const errorBox = document.getElementById('loginError');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (login(pwInput.value)) {
+      window.location.href = 'dashboard.html';
+    } else {
+      errorBox.classList.remove('show');
+      void errorBox.offsetWidth;
+      errorBox.classList.add('show');
+      pwInput.value = '';
+      pwInput.focus();
+    }
+  });
+</script>
+
+</body>
+</html>

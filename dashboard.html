@@ -2,234 +2,403 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
   <title>Dashboard — Torque Motorsports Exclusive</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/png" href="logo.png">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    if (localStorage.getItem('torque_auth_v1') !== 'true') {
+      window.location.href = 'login.html';
+    }
+  </script>
 </head>
 <body>
 
 <nav class="nav">
   <a href="index.html" class="nav__logo">
-    <img src="assets/logo.png" alt="Torque Motorsports">
+    <img src="logo.png" alt="Torque Motorsports">
   </a>
-  <ul class="nav__links">
-    <li><a href="index.html" data-nav="home">Home</a></li>
-    <li><a href="inventory.html" data-nav="inventory">Inventory</a></li>
-    <li><a href="dashboard.html" data-nav="dashboard">Dashboard</a></li>
-  </ul>
-  <a href="inventory.html" class="nav__cta">View Site</a>
+  <button class="nav__toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__menu">
+    <ul>
+      <li><a href="index.html" data-nav="home">Home</a></li>
+      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="contact.html" data-nav="contact">Story</a></li>
+      <li><a href="#" onclick="logout();return false;" style="color:var(--red);">Logout</a></li>
+    </ul>
+  </div>
+  <button onclick="logout()" class="nav__cta" style="background:transparent;border:1px solid var(--red);color:var(--red);">Logout</button>
 </nav>
 
 <main class="dash">
 
   <div class="dash__head">
-    <div>
-      <div class="dash__subtitle">№ 00 — Admin / Inventory Manager</div>
-      <h1 class="dash__title">Manage <em style="color:var(--red);font-style:italic;">Bikes.</em></h1>
+    <div class="dash__subtitle">№ 00 — Admin Panel</div>
+    <h1 class="dash__title">Manage <em>Site.</em></h1>
+  </div>
+
+  <!-- TABS -->
+  <div class="dash__tabs" id="dashTabs">
+    <button class="dash__tab active" data-tab="bikes">Bikes</button>
+    <button class="dash__tab" data-tab="settings">Site Settings</button>
+    <button class="dash__tab" data-tab="team">Team</button>
+    <button class="dash__tab" data-tab="showroom">Showroom</button>
+    <button class="dash__tab" data-tab="garage">Garage</button>
+    <button class="dash__tab" data-tab="seo">SEO / Sitemap</button>
+  </div>
+
+  <!-- ============ TAB: BIKES ============ -->
+  <div class="dash__panel-container" id="tab-bikes">
+    <div class="dash__stats" id="dashStats"></div>
+    <div class="dash__layout dash__layout--bikes">
+      <aside class="form" id="formCard">
+        <h2 class="form__title" id="formTitle">Add New Bike</h2>
+        <input type="hidden" id="editingId" value="">
+
+        <div class="form__group">
+          <label class="form__label">Bike Name</label>
+          <input type="text" class="form__input" id="f_name" placeholder="e.g. Yamaha YZF-R1">
+        </div>
+
+        <div class="form__group">
+          <label class="form__label">Brand</label>
+          <select class="form__select" id="f_brand">
+            <option value="">-- Select --</option>
+            <option>Ducati</option><option>BMW</option><option>Yamaha</option>
+            <option>Kawasaki</option><option>Suzuki</option><option>Harley-Davidson</option>
+            <option>Honda</option><option>Aprilia</option><option>Triumph</option><option>KTM</option><option>Other</option>
+          </select>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label">Subtitle</label>
+          <input type="text" class="form__input" id="f_sub" placeholder="e.g. 2023 · Track-prepped Import">
+        </div>
+
+        <div class="form__row">
+          <div class="form__group">
+            <label class="form__label">Year</label>
+            <input type="number" class="form__input" id="f_year" placeholder="2023">
+          </div>
+          <div class="form__group">
+            <label class="form__label">Price (PKR)</label>
+            <input type="number" class="form__input" id="f_price" placeholder="6500000">
+          </div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__group"><label class="form__label">Engine</label><input type="text" class="form__input" id="f_engine" placeholder="998cc"></div>
+          <div class="form__group"><label class="form__label">Power</label><input type="text" class="form__input" id="f_power" placeholder="200 HP"></div>
+        </div>
+
+        <div class="form__row">
+          <div class="form__group"><label class="form__label">Mileage</label><input type="text" class="form__input" id="f_mileage" placeholder="4,200 km"></div>
+          <div class="form__group"><label class="form__label">Weight</label><input type="text" class="form__input" id="f_weight" placeholder="201 kg"></div>
+        </div>
+
+        <div class="form__group"><label class="form__label">Transmission</label><input type="text" class="form__input" id="f_transmission" placeholder="6-speed"></div>
+
+        <div class="form__group">
+          <label class="form__label">Status</label>
+          <select class="form__select" id="f_status">
+            <option value="available">Available</option>
+            <option value="sold">Delivered (Sold)</option>
+          </select>
+        </div>
+
+        <div class="form__group">
+          <div class="form__check">
+            <input type="checkbox" id="f_featured">
+            <label for="f_featured">Show in Homepage Featured Section</label>
+          </div>
+          <div class="form__hint">★ Up to 6 featured bikes display on homepage</div>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label">Description</label>
+          <textarea class="form__textarea" id="f_description" placeholder="Short description..."></textarea>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label">Photos</label>
+          <label class="form__file-zone">
+            <input type="file" id="f_photos" accept="image/*" multiple style="display:none;">
+            <span>📷 Tap to upload photos</span>
+          </label>
+          <div class="form__hint">Recommended: 1600 × 1200 px (4:3) · under 500 KB each</div>
+          <div class="form__preview" id="photoPreview"></div>
+        </div>
+
+        <div class="form__actions">
+          <button class="btn btn--primary" id="saveBtn">Save Bike</button>
+          <button class="btn btn--ghost" id="cancelBtn" style="display:none;">Cancel</button>
+        </div>
+      </aside>
+
+      <section>
+        <div class="dash__list" id="dashList"></div>
+      </section>
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="dash__stats" id="dashStats"></div>
-
-  <div class="dash__layout">
-
-    <!-- LEFT: form -->
-    <aside class="form" id="formCard">
-      <h2 class="form__title" id="formTitle">Add New Bike</h2>
-
-      <input type="hidden" id="editingId" value="">
+  <!-- ============ TAB: SITE SETTINGS ============ -->
+  <div class="dash__panel-container" id="tab-settings" style="display:none;">
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Contact & Social Settings<small>Edit once — applied site-wide automatically</small></h2>
 
       <div class="form__group">
-        <label class="form__label">Bike Name</label>
-        <input type="text" class="form__input" id="f_name" placeholder="e.g. Yamaha YZF-R1">
+        <label class="form__label">WhatsApp Number (international format, no + or spaces)</label>
+        <input type="text" class="form__input" id="s_whatsapp" placeholder="923001234567">
+        <div class="form__hint">Example: for +92 300 1234567 enter 923001234567</div>
       </div>
 
       <div class="form__group">
-        <label class="form__label">Subtitle</label>
-        <input type="text" class="form__input" id="f_sub" placeholder="e.g. 2023 · Track-prepped Superbike">
+        <label class="form__label">Display Phone Number</label>
+        <input type="text" class="form__input" id="s_phone" placeholder="+92 300 1234567">
+      </div>
+
+      <div class="form__group">
+        <label class="form__label">Email Address</label>
+        <input type="email" class="form__input" id="s_email" placeholder="hello@torquemotorsexclusive.com">
+      </div>
+
+      <div class="form__group">
+        <label class="form__label">Address</label>
+        <input type="text" class="form__input" id="s_address" placeholder="Lahore, Pakistan">
       </div>
 
       <div class="form__row">
-        <div class="form__group">
-          <label class="form__label">Year</label>
-          <input type="number" class="form__input" id="f_year" placeholder="2023">
-        </div>
-        <div class="form__group">
-          <label class="form__label">Price (PKR)</label>
-          <input type="number" class="form__input" id="f_price" placeholder="6500000">
-        </div>
+        <div class="form__group"><label class="form__label">Instagram URL</label><input type="url" class="form__input" id="s_instagram"></div>
+        <div class="form__group"><label class="form__label">TikTok URL</label><input type="url" class="form__input" id="s_tiktok"></div>
       </div>
-
       <div class="form__row">
-        <div class="form__group">
-          <label class="form__label">Engine</label>
-          <input type="text" class="form__input" id="f_engine" placeholder="998cc">
-        </div>
-        <div class="form__group">
-          <label class="form__label">Power</label>
-          <input type="text" class="form__input" id="f_power" placeholder="200 HP">
-        </div>
-      </div>
-
-      <div class="form__row">
-        <div class="form__group">
-          <label class="form__label">Mileage</label>
-          <input type="text" class="form__input" id="f_mileage" placeholder="4,200 km">
-        </div>
-        <div class="form__group">
-          <label class="form__label">Weight</label>
-          <input type="text" class="form__input" id="f_weight" placeholder="201 kg">
-        </div>
-      </div>
-
-      <div class="form__group">
-        <label class="form__label">Transmission</label>
-        <input type="text" class="form__input" id="f_transmission" placeholder="6-speed">
-      </div>
-
-      <div class="form__group">
-        <label class="form__label">Status</label>
-        <select class="form__select" id="f_status">
-          <option value="available">Available</option>
-          <option value="sold">Sold</option>
-        </select>
-      </div>
-
-      <div class="form__group">
-        <label class="form__label">Description</label>
-        <textarea class="form__textarea" id="f_description" placeholder="A short description of the bike..."></textarea>
-      </div>
-
-      <div class="form__group">
-        <label class="form__label">Photos</label>
-        <label class="form__file-zone">
-          <input type="file" id="f_photos" accept="image/*" multiple style="display:none;">
-          <span>📷 Click to upload photos</span>
-        </label>
-        <div class="form__preview" id="photoPreview"></div>
+        <div class="form__group"><label class="form__label">Facebook URL</label><input type="url" class="form__input" id="s_facebook"></div>
+        <div class="form__group"><label class="form__label">YouTube URL</label><input type="url" class="form__input" id="s_youtube"></div>
       </div>
 
       <div class="form__actions">
-        <button class="btn btn--primary" id="saveBtn">Save Bike</button>
-        <button class="btn btn--ghost" id="cancelBtn" style="display:none;">Cancel</button>
+        <button class="btn btn--primary" onclick="saveContactSettings()">Save Contact Info</button>
       </div>
+    </div>
+  </div>
 
-    </aside>
+  <!-- ============ TAB: TEAM ============ -->
+  <div class="dash__panel-container" id="tab-team" style="display:none;">
 
-    <!-- RIGHT: table -->
-    <section>
-      <div class="dash__table" id="dashTable"></div>
-    </section>
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Sunny Chaudary<small>Founder profile</small></h2>
+      <div class="form__group"><label class="form__label">Name</label><input type="text" class="form__input" id="sn_name"></div>
+      <div class="form__group"><label class="form__label">Role</label><input type="text" class="form__input" id="sn_role"></div>
+      <div class="form__group"><label class="form__label">Phone</label><input type="text" class="form__input" id="sn_phone"></div>
+      <div class="form__group"><label class="form__label">Bio</label><textarea class="form__textarea" id="sn_bio" style="min-height:120px;"></textarea></div>
+      <div class="form__group">
+        <label class="form__label">Photo</label>
+        <label class="form__file-zone">
+          <input type="file" id="sn_photo" accept="image/*" style="display:none;">
+          <span>📷 Upload photo</span>
+        </label>
+        <div class="form__hint">Recommended: 800 × 1000 px (portrait, 4:5) · under 500 KB</div>
+        <div class="form__preview" id="snPhotoPreview"></div>
+      </div>
+      <div class="form__actions"><button class="btn btn--primary" onclick="saveFounder('sunny')">Save Sunny</button></div>
+    </div>
 
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Saeed Munwar<small>Co-founder profile</small></h2>
+      <div class="form__group"><label class="form__label">Name</label><input type="text" class="form__input" id="sa_name"></div>
+      <div class="form__group"><label class="form__label">Role</label><input type="text" class="form__input" id="sa_role"></div>
+      <div class="form__group"><label class="form__label">Phone</label><input type="text" class="form__input" id="sa_phone"></div>
+      <div class="form__group"><label class="form__label">Bio</label><textarea class="form__textarea" id="sa_bio" style="min-height:120px;"></textarea></div>
+      <div class="form__group">
+        <label class="form__label">Photo</label>
+        <label class="form__file-zone">
+          <input type="file" id="sa_photo" accept="image/*" style="display:none;">
+          <span>📷 Upload photo</span>
+        </label>
+        <div class="form__hint">Recommended: 800 × 1000 px (portrait, 4:5) · under 500 KB</div>
+        <div class="form__preview" id="saPhotoPreview"></div>
+      </div>
+      <div class="form__actions"><button class="btn btn--primary" onclick="saveFounder('saeed')">Save Saeed</button></div>
+    </div>
+
+  </div>
+
+  <!-- ============ TAB: SHOWROOM ============ -->
+  <div class="dash__panel-container" id="tab-showroom" style="display:none;">
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Showroom Gallery<small>Photos that appear on the homepage</small></h2>
+      <div class="form__group">
+        <label class="form__file-zone">
+          <input type="file" id="showroom_upload" accept="image/*" multiple style="display:none;">
+          <span>📷 Upload showroom photos</span>
+        </label>
+        <div class="form__hint">Recommended: 1600 × 1200 px (4:3) · under 500 KB each · up to 6 photos</div>
+      </div>
+      <div class="form__preview" id="showroomPreview" style="grid-template-columns: repeat(3, 1fr);"></div>
+      <div class="form__actions" style="margin-top: 1.5rem;">
+        <button class="btn btn--primary" onclick="saveShowroom()">Save Showroom Photos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: GARAGE ============ -->
+  <div class="dash__panel-container" id="tab-garage" style="display:none;">
+
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Garage Photos<small>Workshop visuals on the homepage</small></h2>
+      <div class="form__group">
+        <label class="form__file-zone">
+          <input type="file" id="garage_upload" accept="image/*" multiple style="display:none;">
+          <span>📷 Upload garage photos</span>
+        </label>
+        <div class="form__hint">Recommended: 1600 × 1200 px (4:3) · under 500 KB each</div>
+      </div>
+      <div class="form__preview" id="garagePreview" style="grid-template-columns: repeat(3, 1fr);"></div>
+      <div class="form__actions" style="margin-top: 1.5rem;">
+        <button class="btn btn--primary" onclick="saveGaragePhotos()">Save Garage Photos</button>
+      </div>
+    </div>
+
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Garage Services<small>Listed as service tiles on homepage</small></h2>
+      <div class="form__group">
+        <label class="form__label">Services (one per line)</label>
+        <textarea class="form__textarea" id="g_services" style="min-height:160px;"></textarea>
+        <div class="form__hint">Each line becomes a service tile. Keep them short.</div>
+      </div>
+      <div class="form__actions">
+        <button class="btn btn--primary" onclick="saveGarageServices()">Save Services</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ TAB: SEO / SITEMAP ============ -->
+  <div class="dash__panel-container" id="tab-seo" style="display:none;">
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Sitemap Generator<small>Auto-updated every time you add/edit/delete a bike</small></h2>
+      <p class="story-block__body" style="margin-bottom: 1.25rem;">
+        Every change to your bike list automatically refreshes this sitemap with all bike URLs included. When you're ready to push your bikes live, click <strong style="color:var(--white);">Download Sitemap</strong> — it saves a file called <code>sitemap.xml</code> to your computer. Drop it in your website folder (replacing the existing one), then push to GitHub with the rest. Submit the URL to <a href="https://search.google.com/search-console" target="_blank" style="color:var(--red);">Google Search Console</a> once.
+      </p>
+      <div class="form__actions">
+        <button class="btn btn--primary" onclick="downloadSitemap()">⬇ Download Sitemap.xml</button>
+        <button class="btn btn--ghost" onclick="copySitemap()">Copy to Clipboard</button>
+      </div>
+      <div class="form__group" style="margin-top: 1.5rem;">
+        <label class="form__label">Current sitemap.xml (auto-updates)</label>
+        <textarea class="form__textarea" id="sitemapOutput" style="min-height:260px; font-family: var(--font-mono); font-size: 0.75rem;" readonly></textarea>
+      </div>
+    </div>
+
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">SEO Status<small>Automatic on every page</small></h2>
+      <p class="story-block__body">
+        ✓ Every page has unique title + meta description<br>
+        ✓ Open Graph + Twitter Card tags on all pages<br>
+        ✓ Every bike auto-generates its own SEO when added<br>
+        ✓ Schema.org structured data (LocalBusiness + Vehicle)<br>
+        ✓ Geo-targeting: Lahore physical, all-Pakistan service area<br>
+        ✓ Image alt text auto-generated from bike details<br>
+        ✓ Mobile-first, fast-loading, lighthouse-optimized<br>
+        ✓ Dashboard + Login marked noindex (won't appear in Google)
+      </p>
+    </div>
   </div>
 
 </main>
 
 <footer class="footer">
   <div class="footer__bottom" style="border-top:none;">
-    <span>© 2026 Torque Motorsports Exclusive — Admin Panel</span>
-    <span>Data stored locally in this browser</span>
+    <span>© 2026 Torque Motorsports — Admin</span>
+    <span>Data stored locally in browser</span>
   </div>
 </footer>
 
 <script src="data.js"></script>
+<script src="auth.js"></script>
 <script>
-  setActiveNav('dashboard');
+  setActiveNav('');
+  initNav();
 
+  // ============ TAB SWITCHING ============
+  document.querySelectorAll('.dash__tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.dash__tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.dash__panel-container').forEach(p => p.style.display = 'none');
+      document.getElementById('tab-' + tab.dataset.tab).style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // ============ BIKES TAB ============
   let currentPhotos = [];
   let editingId = null;
 
-  // ---------- Render stats ----------
   function renderStats() {
     const all = loadBikes();
     const available = all.filter(b => b.status === 'available');
     const sold = all.filter(b => b.status === 'sold');
-    const totalValue = available.reduce((s, b) => s + (Number(b.price) || 0), 0);
+    const featured = all.filter(b => b.featured);
 
     document.getElementById('dashStats').innerHTML = `
-      <div class="dash__stat">
-        <div class="dash__stat-label">Total Bikes</div>
-        <div class="dash__stat-value">${all.length}</div>
-      </div>
-      <div class="dash__stat">
-        <div class="dash__stat-label">Available</div>
-        <div class="dash__stat-value dash__stat-value--accent">${available.length}</div>
-      </div>
-      <div class="dash__stat">
-        <div class="dash__stat-label">Sold</div>
-        <div class="dash__stat-value">${sold.length}</div>
-      </div>
-      <div class="dash__stat">
-        <div class="dash__stat-label">Inventory Value</div>
-        <div class="dash__stat-value" style="font-size:1.5rem;">${formatPrice(totalValue)}</div>
-      </div>
+      <div class="dash__stat"><div class="dash__stat-label">Total Bikes</div><div class="dash__stat-value">${all.length}</div></div>
+      <div class="dash__stat"><div class="dash__stat-label">Available</div><div class="dash__stat-value dash__stat-value--accent">${available.length}</div></div>
+      <div class="dash__stat"><div class="dash__stat-label">Delivered</div><div class="dash__stat-value">${sold.length}</div></div>
+      <div class="dash__stat"><div class="dash__stat-label">Featured</div><div class="dash__stat-value dash__stat-value--accent">${featured.length}/6</div></div>
     `;
   }
 
-  // ---------- Render table ----------
-  function renderTable() {
+  function renderList() {
     const all = loadBikes();
-    const table = document.getElementById('dashTable');
-
+    const list = document.getElementById('dashList');
     if (all.length === 0) {
-      table.innerHTML = `
-        <div class="empty-state" style="padding:3rem;">
-          <h3>No bikes in inventory</h3>
-          <p>Add your first bike using the form on the left.</p>
-        </div>`;
+      list.innerHTML = `<div class="empty-state"><h3>No bikes yet</h3><p>Add your first bike using the form.</p></div>`;
       return;
     }
-
-    let html = `
-      <div class="dash__row dash__row--head">
-        <div>Image</div>
-        <div>Bike</div>
-        <div>Price</div>
-        <div>Status</div>
-        <div>Year</div>
-        <div>Actions</div>
-      </div>
-    `;
-
-    all.forEach(b => {
+    list.innerHTML = all.map(b => {
       const thumb = b.images && b.images.length
-        ? `<img src="${b.images[0]}" alt="${b.name}">`
-        : bikePlaceholderSVG();
-
-      const statusClass = b.status === 'available' ? 'dash__status--available' : 'dash__status--sold';
-
-      html += `
-        <div class="dash__row">
-          <div class="dash__thumb">${thumb}</div>
-          <div>
-            <div class="dash__name">${b.name}<span class="dash__name-sub">${b.sub || ''}</span></div>
+        ? `<img src="${b.images[0]}" alt="${b.name}">` : bikePlaceholderSVG();
+      const statusClass = b.status === 'available' ? 'dash-item__status--available' : 'dash-item__status--sold';
+      const featuredBadge = b.featured ? `<span class="dash-item__status dash-item__status--featured">★ Featured</span>` : '';
+      return `
+        <div class="dash-item">
+          <div class="dash-item__thumb">${thumb}</div>
+          <div class="dash-item__body">
+            <div class="dash-item__name">${b.name}</div>
+            <div class="dash-item__meta">
+              <span>${b.year || '—'}</span>
+              <span class="dash-item__status ${statusClass}">${b.status === 'sold' ? 'Delivered' : b.status}</span>
+              ${featuredBadge}
+            </div>
+            <div class="dash-item__price">${formatPrice(b.price)}</div>
           </div>
-          <div class="dash__price">${formatPrice(b.price)}</div>
-          <div><span class="dash__status ${statusClass}">${b.status}</span></div>
-          <div style="font-family:var(--font-mono);font-size:0.85rem;">${b.year || '—'}</div>
-          <div class="dash__actions">
-            <button class="dash__action" onclick="editBike('${b.id}')" title="Edit">✎</button>
-            <button class="dash__action" onclick="toggleStatus('${b.id}')" title="Toggle status">↻</button>
-            <button class="dash__action" onclick="confirmDelete('${b.id}')" title="Delete">🗑</button>
+          <div class="dash-item__actions">
+            <button class="dash-item__action" onclick="editBike('${b.id}')">Edit</button>
+            <button class="dash-item__action" onclick="toggleFeatured('${b.id}')">${b.featured ? 'Unfeature' : 'Feature'}</button>
+            <button class="dash-item__action" onclick="toggleStatus('${b.id}')">${b.status === 'available' ? 'Mark Delivered' : 'Mark Available'}</button>
+            <button class="dash-item__action" onclick="confirmDelete('${b.id}')">Delete</button>
           </div>
         </div>
       `;
-    });
-
-    table.innerHTML = html;
+    }).join('');
   }
 
-  // ---------- Form helpers ----------
   function resetForm() {
     editingId = null;
     currentPhotos = [];
     document.getElementById('formTitle').textContent = 'Add New Bike';
     document.getElementById('editingId').value = '';
-    ['f_name','f_sub','f_year','f_price','f_engine','f_power','f_mileage','f_weight','f_transmission','f_description'].forEach(id => {
-      document.getElementById(id).value = '';
+    ['f_name','f_brand','f_sub','f_year','f_price','f_engine','f_power','f_mileage','f_weight','f_transmission','f_description'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
     });
     document.getElementById('f_status').value = 'available';
+    document.getElementById('f_featured').checked = false;
     document.getElementById('photoPreview').innerHTML = '';
     document.getElementById('cancelBtn').style.display = 'none';
     document.getElementById('saveBtn').textContent = 'Save Bike';
@@ -237,36 +406,41 @@
 
   function renderPhotoPreview() {
     document.getElementById('photoPreview').innerHTML = currentPhotos.map((src, i) => `
-      <div class="form__preview-img">
-        <img src="${src}" alt="">
-        <span class="form__preview-rm" onclick="removePhoto(${i})">×</span>
-      </div>
+      <div class="form__preview-img"><img src="${src}" alt="">
+        <span class="form__preview-rm" onclick="removePhoto(${i})">×</span></div>
     `).join('');
   }
 
-  function removePhoto(i) {
-    currentPhotos.splice(i, 1);
-    renderPhotoPreview();
-  }
+  function removePhoto(i) { currentPhotos.splice(i, 1); renderPhotoPreview(); }
+  window.removePhoto = removePhoto;
 
-  // ---------- Photo upload (convert to base64) ----------
-  document.getElementById('f_photos').addEventListener('change', (e) => {
-    const files = Array.from(e.target.files);
+  function readFiles(files, cb) {
+    const out = [];
+    let done = 0;
+    if (files.length === 0) { cb([]); return; }
     files.forEach(file => {
       const reader = new FileReader();
       reader.onload = (ev) => {
-        currentPhotos.push(ev.target.result);
-        renderPhotoPreview();
+        out.push(ev.target.result);
+        done++;
+        if (done === files.length) cb(out);
       };
       reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('f_photos').addEventListener('change', (e) => {
+    readFiles(Array.from(e.target.files), (results) => {
+      currentPhotos = currentPhotos.concat(results);
+      renderPhotoPreview();
     });
     e.target.value = '';
   });
 
-  // ---------- Save ----------
   document.getElementById('saveBtn').addEventListener('click', () => {
     const data = {
       name: document.getElementById('f_name').value.trim(),
+      brand: document.getElementById('f_brand').value.trim(),
       sub: document.getElementById('f_sub').value.trim(),
       year: parseInt(document.getElementById('f_year').value) || null,
       price: parseInt(document.getElementById('f_price').value) || null,
@@ -276,39 +450,39 @@
       weight: document.getElementById('f_weight').value.trim(),
       transmission: document.getElementById('f_transmission').value.trim(),
       status: document.getElementById('f_status').value,
+      featured: document.getElementById('f_featured').checked,
       description: document.getElementById('f_description').value.trim(),
       images: currentPhotos
     };
 
-    if (!data.name) {
-      alert('Please enter a bike name.');
-      return;
+    if (!data.name) { alert('Please enter a bike name.'); return; }
+
+    // Enforce 6 featured max
+    if (data.featured) {
+      const otherFeatured = loadBikes().filter(b => b.featured && b.id !== editingId);
+      if (otherFeatured.length >= 6) {
+        if (!confirm('Already 6 bikes are featured. Adding this will exceed the homepage limit (only first 6 will show). Continue anyway?')) return;
+      }
     }
 
-    if (editingId) {
-      updateBike(editingId, data);
-    } else {
-      addBike(data);
-    }
-
+    if (editingId) updateBike(editingId, data); else addBike(data);
     resetForm();
     renderStats();
-    renderTable();
+    renderList();
+    autoRefreshSitemap();
   });
 
   document.getElementById('cancelBtn').addEventListener('click', resetForm);
 
-  // ---------- Edit ----------
   function editBike(id) {
     const b = getBike(id);
     if (!b) return;
-
     editingId = id;
     currentPhotos = [...(b.images || [])];
-
     document.getElementById('formTitle').textContent = 'Edit Bike';
     document.getElementById('editingId').value = id;
     document.getElementById('f_name').value = b.name || '';
+    document.getElementById('f_brand').value = b.brand || '';
     document.getElementById('f_sub').value = b.sub || '';
     document.getElementById('f_year').value = b.year || '';
     document.getElementById('f_price').value = b.price || '';
@@ -318,44 +492,291 @@
     document.getElementById('f_weight').value = b.weight || '';
     document.getElementById('f_transmission').value = b.transmission || '';
     document.getElementById('f_status').value = b.status || 'available';
+    document.getElementById('f_featured').checked = !!b.featured;
     document.getElementById('f_description').value = b.description || '';
     renderPhotoPreview();
     document.getElementById('cancelBtn').style.display = 'inline-block';
     document.getElementById('saveBtn').textContent = 'Update Bike';
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
+  window.editBike = editBike;
 
-  // ---------- Toggle status ----------
   function toggleStatus(id) {
     const b = getBike(id);
     if (!b) return;
     updateBike(id, { status: b.status === 'available' ? 'sold' : 'available' });
-    renderStats();
-    renderTable();
+    renderStats(); renderList(); autoRefreshSitemap();
   }
+  window.toggleStatus = toggleStatus;
 
-  // ---------- Delete ----------
+  function toggleFeatured(id) {
+    const b = getBike(id);
+    if (!b) return;
+    if (!b.featured) {
+      const featuredCount = loadBikes().filter(x => x.featured).length;
+      if (featuredCount >= 6) {
+        if (!confirm('Already 6 bikes are featured. Adding this will exceed the homepage limit. Continue?')) return;
+      }
+    }
+    updateBike(id, { featured: !b.featured });
+    renderStats(); renderList(); autoRefreshSitemap();
+  }
+  window.toggleFeatured = toggleFeatured;
+
   function confirmDelete(id) {
     const b = getBike(id);
     if (!b) return;
-    if (confirm(`Delete "${b.name}"? This cannot be undone.`)) {
+    if (confirm(`Delete "${b.name}"? Cannot be undone.`)) {
       deleteBike(id);
       if (editingId === id) resetForm();
-      renderStats();
-      renderTable();
+      renderStats(); renderList(); autoRefreshSitemap();
     }
   }
-
-  // expose
-  window.editBike = editBike;
-  window.toggleStatus = toggleStatus;
   window.confirmDelete = confirmDelete;
-  window.removePhoto = removePhoto;
 
-  // initial
+  // ============ SITE SETTINGS TAB ============
+  function loadSettingsForm() {
+    const s = loadSettings();
+    document.getElementById('s_whatsapp').value = s.whatsapp;
+    document.getElementById('s_phone').value = s.phone;
+    document.getElementById('s_email').value = s.email;
+    document.getElementById('s_address').value = s.address;
+    document.getElementById('s_instagram').value = s.instagram;
+    document.getElementById('s_tiktok').value = s.tiktok;
+    document.getElementById('s_facebook').value = s.facebook;
+    document.getElementById('s_youtube').value = s.youtube;
+  }
+
+  function saveContactSettings() {
+    const s = loadSettings();
+    s.whatsapp = document.getElementById('s_whatsapp').value.trim();
+    s.phone = document.getElementById('s_phone').value.trim();
+    s.email = document.getElementById('s_email').value.trim();
+    s.address = document.getElementById('s_address').value.trim();
+    s.instagram = document.getElementById('s_instagram').value.trim();
+    s.tiktok = document.getElementById('s_tiktok').value.trim();
+    s.facebook = document.getElementById('s_facebook').value.trim();
+    s.youtube = document.getElementById('s_youtube').value.trim();
+    saveSettings(s);
+    alert('Contact info saved. Will reflect across the site immediately.');
+  }
+  window.saveContactSettings = saveContactSettings;
+
+  // ============ TEAM TAB ============
+  let sunnyTempPhoto = '';
+  let saeedTempPhoto = '';
+
+  function loadTeamForm() {
+    const s = loadSettings();
+    document.getElementById('sn_name').value = s.founders.sunny.name;
+    document.getElementById('sn_role').value = s.founders.sunny.role;
+    document.getElementById('sn_phone').value = s.founders.sunny.phone;
+    document.getElementById('sn_bio').value = s.founders.sunny.bio;
+    sunnyTempPhoto = s.founders.sunny.photo || '';
+    renderFounderPhoto('sunny');
+
+    document.getElementById('sa_name').value = s.founders.saeed.name;
+    document.getElementById('sa_role').value = s.founders.saeed.role;
+    document.getElementById('sa_phone').value = s.founders.saeed.phone;
+    document.getElementById('sa_bio').value = s.founders.saeed.bio;
+    saeedTempPhoto = s.founders.saeed.photo || '';
+    renderFounderPhoto('saeed');
+  }
+
+  function renderFounderPhoto(who) {
+    const el = document.getElementById(who === 'sunny' ? 'snPhotoPreview' : 'saPhotoPreview');
+    const src = who === 'sunny' ? sunnyTempPhoto : saeedTempPhoto;
+    if (src) {
+      el.innerHTML = `<div class="form__preview-img"><img src="${src}" alt="">
+        <span class="form__preview-rm" onclick="clearFounderPhoto('${who}')">×</span></div>`;
+    } else el.innerHTML = '';
+  }
+
+  function clearFounderPhoto(who) {
+    if (who === 'sunny') sunnyTempPhoto = ''; else saeedTempPhoto = '';
+    renderFounderPhoto(who);
+  }
+  window.clearFounderPhoto = clearFounderPhoto;
+
+  document.getElementById('sn_photo').addEventListener('change', (e) => {
+    readFiles(Array.from(e.target.files).slice(0,1), (results) => {
+      sunnyTempPhoto = results[0]; renderFounderPhoto('sunny');
+    });
+    e.target.value = '';
+  });
+  document.getElementById('sa_photo').addEventListener('change', (e) => {
+    readFiles(Array.from(e.target.files).slice(0,1), (results) => {
+      saeedTempPhoto = results[0]; renderFounderPhoto('saeed');
+    });
+    e.target.value = '';
+  });
+
+  function saveFounder(who) {
+    const s = loadSettings();
+    if (who === 'sunny') {
+      s.founders.sunny = {
+        name: document.getElementById('sn_name').value.trim(),
+        role: document.getElementById('sn_role').value.trim(),
+        phone: document.getElementById('sn_phone').value.trim(),
+        bio: document.getElementById('sn_bio').value.trim(),
+        photo: sunnyTempPhoto
+      };
+    } else {
+      s.founders.saeed = {
+        name: document.getElementById('sa_name').value.trim(),
+        role: document.getElementById('sa_role').value.trim(),
+        phone: document.getElementById('sa_phone').value.trim(),
+        bio: document.getElementById('sa_bio').value.trim(),
+        photo: saeedTempPhoto
+      };
+    }
+    saveSettings(s);
+    alert('Founder profile saved.');
+  }
+  window.saveFounder = saveFounder;
+
+  // ============ SHOWROOM TAB ============
+  let showroomTempPhotos = [];
+
+  function loadShowroom() {
+    showroomTempPhotos = [...(loadSettings().showroomPhotos || [])];
+    renderShowroom();
+  }
+
+  function renderShowroom() {
+    document.getElementById('showroomPreview').innerHTML = showroomTempPhotos.map((src, i) => `
+      <div class="form__preview-img"><img src="${src}" alt="">
+        <span class="form__preview-rm" onclick="removeShowroomPhoto(${i})">×</span></div>
+    `).join('');
+  }
+
+  function removeShowroomPhoto(i) { showroomTempPhotos.splice(i,1); renderShowroom(); }
+  window.removeShowroomPhoto = removeShowroomPhoto;
+
+  document.getElementById('showroom_upload').addEventListener('change', (e) => {
+    readFiles(Array.from(e.target.files), (results) => {
+      showroomTempPhotos = showroomTempPhotos.concat(results);
+      renderShowroom();
+    });
+    e.target.value = '';
+  });
+
+  function saveShowroom() {
+    const s = loadSettings();
+    s.showroomPhotos = showroomTempPhotos;
+    saveSettings(s);
+    alert('Showroom photos saved.');
+  }
+  window.saveShowroom = saveShowroom;
+
+  // ============ GARAGE TAB ============
+  let garageTempPhotos = [];
+
+  function loadGarage() {
+    const s = loadSettings();
+    garageTempPhotos = [...(s.garagePhotos || [])];
+    renderGarage();
+    document.getElementById('g_services').value = (s.garageServices || []).join('\n');
+  }
+
+  function renderGarage() {
+    document.getElementById('garagePreview').innerHTML = garageTempPhotos.map((src, i) => `
+      <div class="form__preview-img"><img src="${src}" alt="">
+        <span class="form__preview-rm" onclick="removeGaragePhoto(${i})">×</span></div>
+    `).join('');
+  }
+
+  function removeGaragePhoto(i) { garageTempPhotos.splice(i,1); renderGarage(); }
+  window.removeGaragePhoto = removeGaragePhoto;
+
+  document.getElementById('garage_upload').addEventListener('change', (e) => {
+    readFiles(Array.from(e.target.files), (results) => {
+      garageTempPhotos = garageTempPhotos.concat(results);
+      renderGarage();
+    });
+    e.target.value = '';
+  });
+
+  function saveGaragePhotos() {
+    const s = loadSettings();
+    s.garagePhotos = garageTempPhotos;
+    saveSettings(s);
+    alert('Garage photos saved.');
+  }
+  window.saveGaragePhotos = saveGaragePhotos;
+
+  function saveGarageServices() {
+    const s = loadSettings();
+    s.garageServices = document.getElementById('g_services').value.split('\n').map(x => x.trim()).filter(Boolean);
+    saveSettings(s);
+    alert('Garage services saved.');
+  }
+  window.saveGarageServices = saveGarageServices;
+
+  // ============ SITEMAP GENERATOR ============
+  function buildSitemapXML() {
+    const base = 'https://torquemotorsexclusive.com';
+    const today = new Date().toISOString().split('T')[0];
+    const bikes = loadBikes();
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    const staticPages = [
+      { url: '/', priority: '1.0', freq: 'weekly' },
+      { url: '/inventory.html', priority: '0.9', freq: 'weekly' },
+      { url: '/contact.html', priority: '0.8', freq: 'monthly' }
+    ];
+    staticPages.forEach(p => {
+      xml += `  <url>\n    <loc>${base}${p.url}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${p.freq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>\n`;
+    });
+    bikes.forEach(b => {
+      xml += `  <url>\n    <loc>${base}/bike.html?id=${b.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+    });
+    xml += '</urlset>';
+    return xml;
+  }
+
+  function generateSitemap() {
+    document.getElementById('sitemapOutput').value = buildSitemapXML();
+  }
+  window.generateSitemap = generateSitemap;
+
+  function downloadSitemap() {
+    const xml = buildSitemapXML();
+    document.getElementById('sitemapOutput').value = xml;
+    const blob = new Blob([xml], { type: 'application/xml' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sitemap.xml';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  window.downloadSitemap = downloadSitemap;
+
+  function copySitemap() {
+    const ta = document.getElementById('sitemapOutput');
+    if (!ta.value) ta.value = buildSitemapXML();
+    ta.select();
+    document.execCommand('copy');
+    alert('Sitemap copied to clipboard.');
+  }
+  window.copySitemap = copySitemap;
+
+  // Auto-regenerate sitemap preview whenever bikes change
+  function autoRefreshSitemap() {
+    const ta = document.getElementById('sitemapOutput');
+    if (ta) ta.value = buildSitemapXML();
+  }
+
+  // ============ INITIAL LOAD ============
   renderStats();
-  renderTable();
+  renderList();
+  loadSettingsForm();
+  loadTeamForm();
+  loadShowroom();
+  loadGarage();
+  autoRefreshSitemap();
 </script>
 
 </body>
