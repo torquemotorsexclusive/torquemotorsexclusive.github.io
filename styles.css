@@ -84,7 +84,7 @@ input, select, textarea { font: inherit; }
   }
 }
 
-.nav__logo img { height: 30px; width: auto; }
+.nav__logo img { height: 42px; width: auto; }
 
 .nav__toggle {
   width: 44px; height: 44px;
@@ -218,7 +218,7 @@ input, select, textarea { font: inherit; }
 
 @media (min-width: 900px) {
   :root { --gutter: 3rem; --nav-h: 76px; }
-  .nav__logo img { height: 38px; }
+  .nav__logo img { height: 50px; }
   .nav__cta { display: inline-block; }
   .nav__toggle { display: none; }
   .nav__menu {
