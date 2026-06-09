@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0a0a0a">
   <title>Bike Details — Torque Motorsports Exclusive</title>
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,6 +24,7 @@
     <ul>
       <li><a href="index.html" data-nav="home">Home</a></li>
       <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="blog.html" data-nav="journal">Journal</a></li>
       <li><a href="contact.html" data-nav="contact">Story</a></li>
     </ul>
     <div class="nav__menu-foot">
@@ -40,151 +44,153 @@
   </div>
 </footer>
 
+<script src="supabase.js"></script>
 <script src="data.js"></script>
 <script>
-  setActiveNav('garage');
-  initNav();
-  applySiteSettings();
+  (async () => {
+    setActiveNav('garage');
+    initNav();
+    applySiteSettings();
 
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-  const root = document.getElementById('detail-root');
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const root = document.getElementById('detail-root');
 
-  if (!id) {
-    root.innerHTML = `<div class="empty-state"><h3>No bike selected</h3><p><a href="inventory.html" style="color:var(--red);">← Return to The Garage</a></p></div>`;
-  } else {
-    const bike = getBike(id);
-    if (!bike) {
-      root.innerHTML = `<div class="empty-state"><h3>Bike not found</h3><p><a href="inventory.html" style="color:var(--red);">← Return to The Garage</a></p></div>`;
+    if (!id) {
+      root.innerHTML = `<div class="empty-state"><h3>No bike selected</h3><p><a href="inventory.html" style="color:var(--red);">← Return to The Garage</a></p></div>`;
     } else {
-      // ============ AUTO-GENERATED SEO FOR THIS BIKE ============
-      const seoTitle = `${bike.year || ''} ${bike.name} — ${bike.status === 'sold' ? 'Delivered Import' : 'Available Import'} | Torque Motorsports Pakistan`;
-      const seoDesc = `${bike.year || ''} ${bike.name} imported by Torque Motorsports to Pakistan. ${bike.engine || ''} ${bike.power ? '· ' + bike.power : ''}. ${bike.sub || ''}. Specialist superbike imports from Lahore.`;
-      const heroImg = (bike.images && bike.images[0]) ? bike.images[0] : 'https://torquemotorsexclusive.com/hero.jpg';
-      const pageUrl = `https://torquemotorsexclusive.com/bike.html?id=${bike.id}`;
+      const bike = await getBike(id);
+      if (!bike) {
+        root.innerHTML = `<div class="empty-state"><h3>Bike not found</h3><p><a href="inventory.html" style="color:var(--red);">← Return to The Garage</a></p></div>`;
+      } else {
+        // ============ AUTO-GENERATED SEO FOR THIS BIKE ============
+        const seoTitle = `${bike.year || ''} ${bike.name} — ${bike.status === 'sold' ? 'Delivered Import' : 'Available Import'} | Torque Motorsports Pakistan`;
+        const seoDesc = `${bike.year || ''} ${bike.name} imported by Torque Motorsports to Pakistan. ${bike.engine || ''} ${bike.power ? '· ' + bike.power : ''}. ${bike.sub || ''}. Specialist superbike imports from Lahore.`;
+        const heroImg = (bike.images && bike.images[0]) ? bike.images[0] : 'https://torquemotorsexclusive.com/hero.jpg';
+        const pageUrl = `https://torquemotorsexclusive.com/bike.html?id=${bike.id}`;
 
-      document.title = seoTitle;
+        document.title = seoTitle;
 
-      // Inject meta tags dynamically
-      function setMeta(name, content, isProperty = false) {
-        const attr = isProperty ? 'property' : 'name';
-        let el = document.querySelector(`meta[${attr}="${name}"]`);
-        if (!el) {
-          el = document.createElement('meta');
-          el.setAttribute(attr, name);
-          document.head.appendChild(el);
+        function setMeta(name, content, isProperty = false) {
+          const attr = isProperty ? 'property' : 'name';
+          let el = document.querySelector(`meta[${attr}="${name}"]`);
+          if (!el) {
+            el = document.createElement('meta');
+            el.setAttribute(attr, name);
+            document.head.appendChild(el);
+          }
+          el.setAttribute('content', content);
         }
-        el.setAttribute('content', content);
-      }
-      setMeta('description', seoDesc);
-      setMeta('keywords', `${bike.brand || ''} Pakistan, ${bike.name} Pakistan, ${bike.year || ''} ${bike.name}, superbike import Pakistan, ${bike.brand || ''} Lahore`);
-      setMeta('og:type', 'product', true);
-      setMeta('og:title', seoTitle, true);
-      setMeta('og:description', seoDesc, true);
-      setMeta('og:image', heroImg, true);
-      setMeta('og:url', pageUrl, true);
-      setMeta('twitter:card', 'summary_large_image');
-      setMeta('twitter:title', seoTitle);
-      setMeta('twitter:description', seoDesc);
-      setMeta('twitter:image', heroImg);
+        setMeta('description', seoDesc);
+        setMeta('keywords', `${bike.brand || ''} Pakistan, ${bike.name} Pakistan, ${bike.year || ''} ${bike.name}, superbike import Pakistan, ${bike.brand || ''} Lahore`);
+        setMeta('og:type', 'product', true);
+        setMeta('og:title', seoTitle, true);
+        setMeta('og:description', seoDesc, true);
+        setMeta('og:image', heroImg, true);
+        setMeta('og:url', pageUrl, true);
+        setMeta('twitter:card', 'summary_large_image');
+        setMeta('twitter:title', seoTitle);
+        setMeta('twitter:description', seoDesc);
+        setMeta('twitter:image', heroImg);
 
-      // Canonical
-      let canonical = document.querySelector('link[rel="canonical"]');
-      if (!canonical) {
-        canonical = document.createElement('link');
-        canonical.rel = 'canonical';
-        document.head.appendChild(canonical);
-      }
-      canonical.href = pageUrl;
-
-      // Schema.org Vehicle structured data
-      const schema = {
-        "@context": "https://schema.org",
-        "@type": "Vehicle",
-        "name": `${bike.year || ''} ${bike.name}`,
-        "brand": { "@type": "Brand", "name": bike.brand || '' },
-        "model": bike.name,
-        "vehicleModelDate": String(bike.year || ''),
-        "vehicleEngine": {
-          "@type": "EngineSpecification",
-          "engineDisplacement": bike.engine || '',
-          "enginePower": bike.power || ''
-        },
-        "mileageFromOdometer": { "@type": "QuantitativeValue", "value": bike.mileage || '', "unitCode": "KMT" },
-        "image": heroImg,
-        "description": bike.description || seoDesc,
-        "offers": {
-          "@type": "Offer",
-          "price": bike.price || 0,
-          "priceCurrency": "PKR",
-          "availability": bike.status === 'sold' ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
-          "url": pageUrl,
-          "seller": { "@type": "Organization", "name": "Torque Motorsports Exclusive" }
+        // Canonical
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+          canonical = document.createElement('link');
+          canonical.rel = 'canonical';
+          document.head.appendChild(canonical);
         }
-      };
-      const schemaScript = document.createElement('script');
-      schemaScript.type = 'application/ld+json';
-      schemaScript.textContent = JSON.stringify(schema);
-      document.head.appendChild(schemaScript);
-      // ===========================================================
+        canonical.href = pageUrl;
 
-      const altText = `${bike.year || ''} ${bike.name} — Torque Motorsports Pakistan import`;
-      const mainImg = bike.images && bike.images.length
-        ? `<img src="${bike.images[0]}" alt="${altText}" id="mainImg">`
-        : bikePlaceholderSVG();
+        // Schema.org Vehicle structured data
+        const schema = {
+          "@context": "https://schema.org",
+          "@type": "Vehicle",
+          "name": `${bike.year || ''} ${bike.name}`,
+          "brand": { "@type": "Brand", "name": bike.brand || '' },
+          "model": bike.name,
+          "vehicleModelDate": String(bike.year || ''),
+          "vehicleEngine": {
+            "@type": "EngineSpecification",
+            "engineDisplacement": bike.engine || '',
+            "enginePower": bike.power || ''
+          },
+          "mileageFromOdometer": { "@type": "QuantitativeValue", "value": bike.mileage || '', "unitCode": "KMT" },
+          "image": heroImg,
+          "description": bike.description || seoDesc,
+          "offers": {
+            "@type": "Offer",
+            "price": bike.price || 0,
+            "priceCurrency": "PKR",
+            "availability": bike.status === 'sold' ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
+            "url": pageUrl,
+            "seller": { "@type": "Organization", "name": "Torque Motorsports Exclusive" }
+          }
+        };
+        const schemaScript = document.createElement('script');
+        schemaScript.type = 'application/ld+json';
+        schemaScript.textContent = JSON.stringify(schema);
+        document.head.appendChild(schemaScript);
+        // ===========================================================
 
-      const thumbs = (bike.images || []).map((src, i) => `
-        <div class="detail__thumb ${i === 0 ? 'active' : ''}" data-src="${src}">
-          <img src="${src}" alt="${altText} photo ${i+1}">
-        </div>
-      `).join('');
+        const altText = `${bike.year || ''} ${bike.name} — Torque Motorsports Pakistan import`;
+        const mainImg = bike.images && bike.images.length
+          ? `<img src="${bike.images[0]}" alt="${altText}" id="mainImg">`
+          : bikePlaceholderSVG();
 
-      const statusClass = bike.status === 'available' ? 'detail__status--available' : 'detail__status--sold';
-      const statusLabel = bike.status === 'available' ? 'Available — Inquire' : 'Delivered to Client';
-
-      const waText = `Hi, I'm interested in the ${bike.year || ''} ${bike.name} I saw in your Garage. Could we discuss?`;
-
-      root.innerHTML = `
-        <div class="detail__images">
-          <div class="detail__main-img">${mainImg}</div>
-          ${bike.images && bike.images.length > 1 ? `<div class="detail__thumbs">${thumbs}</div>` : ''}
-        </div>
-        <div class="detail__info">
-          <div class="detail__num">№ ${bike.id.slice(-3)} / ${bike.year || ''}</div>
-          <h1 class="detail__title">${bike.name}</h1>
-          <p class="detail__sub">${bike.sub || ''}</p>
-          <span class="detail__status ${statusClass}">${statusLabel}</span>
-          <span class="detail__price-label">Import Reference Price</span>
-          <div class="detail__price">${formatPrice(bike.price)}</div>
-          <p class="detail__desc">${bike.description || ''}</p>
-          <div class="detail__specs">
-            <div class="detail__spec"><div class="detail__spec-label">Year</div><div class="detail__spec-value">${bike.year || '—'}</div></div>
-            <div class="detail__spec"><div class="detail__spec-label">Brand</div><div class="detail__spec-value">${bike.brand || '—'}</div></div>
-            <div class="detail__spec"><div class="detail__spec-label">Engine</div><div class="detail__spec-value">${bike.engine || '—'}</div></div>
-            <div class="detail__spec"><div class="detail__spec-label">Power</div><div class="detail__spec-value">${bike.power || '—'}</div></div>
-            <div class="detail__spec"><div class="detail__spec-label">Mileage</div><div class="detail__spec-value">${bike.mileage || '—'}</div></div>
-            <div class="detail__spec"><div class="detail__spec-label">Gearbox</div><div class="detail__spec-value">${bike.transmission || '—'}</div></div>
+        const thumbs = (bike.images || []).map((src, i) => `
+          <div class="detail__thumb ${i === 0 ? 'active' : ''}" data-src="${src}">
+            <img src="${src}" alt="${altText} photo ${i+1}">
           </div>
-        </div>
-        <div class="detail__sticky-cta">
-          <a href="#" target="_blank" class="btn btn--primary" data-wa="${waText.replace(/"/g,'&quot;')}">WhatsApp Inquiry</a>
-          <a href="inventory.html" class="btn btn--ghost">The Garage</a>
-        </div>
-      `;
+        `).join('');
 
-      // Re-apply WhatsApp links on the newly-rendered content
-      applySiteSettings();
+        const statusClass = bike.status === 'available' ? 'detail__status--available' : 'detail__status--sold';
+        const statusLabel = bike.status === 'available' ? 'Available — Inquire' : 'Delivered to Client';
 
-      document.querySelectorAll('.detail__thumb').forEach(t => {
-        t.addEventListener('click', () => {
-          document.querySelectorAll('.detail__thumb').forEach(x => x.classList.remove('active'));
-          t.classList.add('active');
-          const img = document.getElementById('mainImg');
-          if (img) img.src = t.dataset.src;
+        const waText = `Hi, I'm interested in the ${bike.year || ''} ${bike.name} I saw in your Garage. Could we discuss?`;
+
+        root.innerHTML = `
+          <div class="detail__images">
+            <div class="detail__main-img">${mainImg}</div>
+            ${bike.images && bike.images.length > 1 ? `<div class="detail__thumbs">${thumbs}</div>` : ''}
+          </div>
+          <div class="detail__info">
+            <div class="detail__num">№ ${bike.id.slice(-3)} / ${bike.year || ''}</div>
+            <h1 class="detail__title">${bike.name}</h1>
+            <p class="detail__sub">${bike.sub || ''}</p>
+            <span class="detail__status ${statusClass}">${statusLabel}</span>
+            <span class="detail__price-label">Import Reference Price</span>
+            <div class="detail__price">${formatPrice(bike.price)}</div>
+            <p class="detail__desc">${bike.description || ''}</p>
+            <div class="detail__specs">
+              <div class="detail__spec"><div class="detail__spec-label">Year</div><div class="detail__spec-value">${bike.year || '—'}</div></div>
+              <div class="detail__spec"><div class="detail__spec-label">Brand</div><div class="detail__spec-value">${bike.brand || '—'}</div></div>
+              <div class="detail__spec"><div class="detail__spec-label">Engine</div><div class="detail__spec-value">${bike.engine || '—'}</div></div>
+              <div class="detail__spec"><div class="detail__spec-label">Power</div><div class="detail__spec-value">${bike.power || '—'}</div></div>
+              <div class="detail__spec"><div class="detail__spec-label">Mileage</div><div class="detail__spec-value">${bike.mileage || '—'}</div></div>
+              <div class="detail__spec"><div class="detail__spec-label">Gearbox</div><div class="detail__spec-value">${bike.transmission || '—'}</div></div>
+            </div>
+          </div>
+          <div class="detail__sticky-cta">
+            <a href="#" target="_blank" class="btn btn--primary" data-wa="${waText.replace(/"/g,'&quot;')}">WhatsApp Inquiry</a>
+            <a href="inventory.html" class="btn btn--ghost">The Garage</a>
+          </div>
+        `;
+
+        // Re-apply WhatsApp links on the newly-rendered content
+        await applySiteSettings();
+
+        document.querySelectorAll('.detail__thumb').forEach(t => {
+          t.addEventListener('click', () => {
+            document.querySelectorAll('.detail__thumb').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            const img = document.getElementById('mainImg');
+            if (img) img.src = t.dataset.src;
+          });
         });
-      });
+      }
     }
-  }
+  })();
 </script>
 
 </body>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Journal — Torque Motorsports Exclusive</title>
+  <meta name="description" content="Stories, reviews, and guides from Pakistan's specialist superbike import service. Ducati, BMW, Yamaha, Kawasaki imports and motorsport culture.">
+  <meta name="keywords" content="superbike blog Pakistan, motorcycle reviews Pakistan, Ducati Pakistan blog, bike import stories, motorsport Pakistan">
+  <link rel="canonical" href="https://torquemotorsexclusive.com/blog.html">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://torquemotorsexclusive.com/blog.html">
+  <meta property="og:title" content="Journal — Torque Motorsports Exclusive">
+  <meta property="og:description" content="Stories, reviews, and guides from Pakistan's specialist superbike import service.">
+  <meta property="og:image" content="https://torquemotorsexclusive.com/hero.jpg">
+
+  <meta name="geo.region" content="PK-PB">
+  <meta name="geo.placename" content="Lahore">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav__logo">
+    <img src="logo.png" alt="Torque Motorsports">
+  </a>
+  <button class="nav__toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__menu">
+    <ul>
+      <li><a href="index.html" data-nav="home">Home</a></li>
+      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="blog.html" data-nav="journal">Journal</a></li>
+      <li><a href="contact.html" data-nav="contact">Story</a></li>
+    </ul>
+    <div class="nav__menu-foot">
+      <span>Lahore / Pakistan</span>
+      <a href="#" data-email data-email-text>hello@torquemotorsexclusive.com</a>
+    </div>
+  </div>
+  <a href="#" class="nav__cta" data-wa="Hi, I'd like to request a bike import.">Request a Bike</a>
+</nav>
+
+<header class="page-header">
+  <div class="page-header__eyebrow">№ 01 — The Journal</div>
+  <h1 class="page-header__title">Stories <em>&amp; Reviews.</em></h1>
+  <p class="page-header__lead">Import stories, bike reviews, setup guides, and motorsport culture — written by Sunny, Saeed, and the Torque workshop team.</p>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="Reviews">Reviews</button>
+  <button class="filter-btn" data-filter="Stories">Stories</button>
+  <button class="filter-btn" data-filter="Guides">Guides</button>
+  <button class="filter-btn" data-filter="News">News</button>
+  <button class="filter-btn" data-filter="Culture">Culture</button>
+</div>
+
+<section class="inventory-grid">
+  <div id="featuredArea"></div>
+  <div class="posts" id="postsGrid"></div>
+</section>
+
+<footer class="footer">
+  <div class="footer__main">
+    <div class="footer__brand">
+      <img src="logo.png" alt="Torque Motorsports" class="footer__logo">
+      <p class="footer__tagline">Specialist superbike imports to Pakistan. Curated. Sourced. Delivered.</p>
+    </div>
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="inventory.html">The Garage</a></li>
+          <li><a href="blog.html">Journal</a></li>
+          <li><a href="contact.html">Story</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#" data-wa>WhatsApp</a></li>
+          <li><a href="#" data-email>Email</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#" data-instagram target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="#" data-tiktok target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <span>© 2026 Torque Motorsports Exclusive</span>
+    <span>Lahore / Pakistan</span>
+  </div>
+</footer>
+
+<script src="supabase.js"></script>
+<script src="data.js"></script>
+<script>
+  (async () => {
+    setActiveNav('journal');
+    initNav();
+    applySiteSettings();
+
+    let currentFilter = 'all';
+
+    async function render() {
+      const all = await loadPosts();
+      const filtered = currentFilter === 'all' ? all : all.filter(p => p.category === currentFilter);
+
+      const featuredArea = document.getElementById('featuredArea');
+      const grid = document.getElementById('postsGrid');
+
+      if (filtered.length === 0) {
+        featuredArea.innerHTML = '';
+        grid.innerHTML = `<div class="empty-state"><h3>No posts in this category yet</h3><p>Try another filter or check back soon.</p></div>`;
+        return;
+      }
+
+      // Featured post on top (only when "All" filter and first post is featured)
+      let postsForGrid = [...filtered];
+      if (currentFilter === 'all') {
+        const featured = filtered.find(p => p.featured);
+        if (featured) {
+          const date = new Date(featured.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+          const coverHTML = featured.cover
+            ? `<img src="${featured.cover}" alt="${featured.title}">`
+            : `<div class="post-card__cover-ph"><span>${featured.category}</span></div>`;
+          featuredArea.innerHTML = `
+            <a href="post.html?id=${featured.id}" class="post-featured">
+              <div class="post-featured__cover">${coverHTML}</div>
+              <div class="post-featured__body">
+                <div class="post-featured__meta">
+                  <span class="post-card__cat">${featured.category}</span>
+                  <span>·</span>
+                  <span>${date}</span>
+                  <span>·</span>
+                  <span>Featured</span>
+                </div>
+                <h2 class="post-featured__title">${featured.title}</h2>
+                <p class="post-featured__excerpt">${featured.excerpt}</p>
+                <span class="post-card__author">By ${featured.author}</span>
+              </div>
+            </a>
+          `;
+          postsForGrid = filtered.filter(p => p.id !== featured.id);
+        } else {
+          featuredArea.innerHTML = '';
+        }
+      } else {
+        featuredArea.innerHTML = '';
+      }
+
+      grid.innerHTML = postsForGrid.map(p => postCardHTML(p)).join('');
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        render();
+      });
+    });
+
+    await render();
+  })();
+</script>
+
+</body>
+</html>

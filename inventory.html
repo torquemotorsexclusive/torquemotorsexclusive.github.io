@@ -9,7 +9,10 @@
   <meta name="description" content="A gallery of premium superbikes we've imported and delivered to clients across Pakistan. Ducati, BMW, Yamaha, Kawasaki, Harley and more.">
   <meta name="keywords" content="superbike imports Pakistan, Ducati import Pakistan, BMW S1000RR Pakistan, Yamaha R1 Pakistan, bike importer Lahore">
   <link rel="canonical" href="https://torquemotorsexclusive.com/inventory.html">
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://torquemotorsexclusive.com/inventory.html">
@@ -35,6 +38,7 @@
     <ul>
       <li><a href="index.html" data-nav="home">Home</a></li>
       <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="blog.html" data-nav="journal">Journal</a></li>
       <li><a href="contact.html" data-nav="contact">Story</a></li>
     </ul>
     <div class="nav__menu-foot">
@@ -74,6 +78,7 @@
         <ul>
           <li><a href="index.html">Home</a></li>
           <li><a href="inventory.html">The Garage</a></li>
+          <li><a href="blog.html">Journal</a></li>
           <li><a href="contact.html">Story</a></li>
         </ul>
       </div>
@@ -99,39 +104,42 @@
   </div>
 </footer>
 
+<script src="supabase.js"></script>
 <script src="data.js"></script>
 <script>
-  setActiveNav('garage');
-  initNav();
-  applySiteSettings();
+  (async () => {
+    setActiveNav('garage');
+    initNav();
+    applySiteSettings();
 
-  let currentFilter = 'all';
-  const grid = document.getElementById('inv-grid');
+    let currentFilter = 'all';
+    const grid = document.getElementById('inv-grid');
 
-  function render() {
-    const all = loadBikes();
-    let filtered;
-    if (currentFilter === 'all') filtered = all;
-    else if (currentFilter === 'featured') filtered = all.filter(b => b.featured);
-    else filtered = all.filter(b => b.status === currentFilter);
+    async function render() {
+      const all = await loadBikes();
+      let filtered;
+      if (currentFilter === 'all') filtered = all;
+      else if (currentFilter === 'featured') filtered = all.filter(b => b.featured);
+      else filtered = all.filter(b => b.status === currentFilter);
 
-    if (filtered.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><h3>No bikes here yet</h3><p>Try another filter.</p></div>`;
-      return;
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><h3>No bikes here yet</h3><p>Try another filter.</p></div>`;
+        return;
+      }
+      grid.innerHTML = filtered.map((b, i) => bikeCardHTML(b, i)).join('');
     }
-    grid.innerHTML = filtered.map((b, i) => bikeCardHTML(b, i)).join('');
-  }
 
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentFilter = btn.dataset.filter;
-      render();
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        render();
+      });
     });
-  });
 
-  render();
+    await render();
+  })();
 </script>
 
 </body>

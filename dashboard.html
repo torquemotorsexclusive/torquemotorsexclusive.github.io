@@ -6,7 +6,10 @@
   <meta name="theme-color" content="#0a0a0a">
   <title>Dashboard — Torque Motorsports Exclusive</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
   <link rel="stylesheet" href="styles.css">
   <script>
     if (localStorage.getItem('torque_auth_v1') !== 'true') {
@@ -27,6 +30,7 @@
     <ul>
       <li><a href="index.html" data-nav="home">Home</a></li>
       <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="blog.html" data-nav="journal">Journal</a></li>
       <li><a href="contact.html" data-nav="contact">Story</a></li>
       <li><a href="#" onclick="logout();return false;" style="color:var(--red);">Logout</a></li>
     </ul>
@@ -44,6 +48,7 @@
   <!-- TABS -->
   <div class="dash__tabs" id="dashTabs">
     <button class="dash__tab active" data-tab="bikes">Bikes</button>
+    <button class="dash__tab" data-tab="posts">Journal</button>
     <button class="dash__tab" data-tab="settings">Site Settings</button>
     <button class="dash__tab" data-tab="team">Team</button>
     <button class="dash__tab" data-tab="showroom">Showroom</button>
@@ -141,6 +146,80 @@
 
       <section>
         <div class="dash__list" id="dashList"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ TAB: POSTS / JOURNAL ============ -->
+  <div class="dash__panel-container" id="tab-posts" style="display:none;">
+    <div class="dash__layout dash__layout--bikes">
+      <aside class="form" id="postFormCard">
+        <h2 class="form__title" id="postFormTitle">Write New Post</h2>
+        <input type="hidden" id="editingPostId" value="">
+
+        <div class="form__group">
+          <label class="form__label">Title</label>
+          <input type="text" class="form__input" id="p_title" placeholder="e.g. How We Brought the First Ducati to Pakistan">
+        </div>
+
+        <div class="form__group">
+          <label class="form__label">Category</label>
+          <select class="form__select" id="p_category">
+            <option value="Reviews">Reviews</option>
+            <option value="Stories">Stories</option>
+            <option value="Guides">Guides</option>
+            <option value="News">News</option>
+            <option value="Culture">Culture</option>
+          </select>
+        </div>
+
+        <div class="form__row">
+          <div class="form__group">
+            <label class="form__label">Author</label>
+            <input type="text" class="form__input" id="p_author" placeholder="Sunny Chaudary">
+          </div>
+          <div class="form__group">
+            <label class="form__label">Date</label>
+            <input type="date" class="form__input" id="p_date">
+          </div>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label">Excerpt (1-2 sentence summary)</label>
+          <textarea class="form__textarea" id="p_excerpt" style="min-height:70px;" placeholder="A short hook that appears in the post card and on social shares."></textarea>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label">Body</label>
+          <textarea class="form__textarea" id="p_body" style="min-height:280px; line-height:1.6;" placeholder="Write your post here. Separate paragraphs with a blank line. Use **double asterisks** for bold."></textarea>
+          <div class="form__hint">Blank line = new paragraph. **wrap text** for bold.</div>
+        </div>
+
+        <div class="form__group">
+          <div class="form__check">
+            <input type="checkbox" id="p_featured">
+            <label for="p_featured">Feature on Journal homepage (large card)</label>
+          </div>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label">Cover Photo (optional)</label>
+          <label class="form__file-zone">
+            <input type="file" id="p_cover" accept="image/*" style="display:none;">
+            <span>📷 Upload cover image</span>
+          </label>
+          <div class="form__hint">Recommended: 1600 × 900 px (16:9) · under 500 KB</div>
+          <div class="form__preview" id="postCoverPreview"></div>
+        </div>
+
+        <div class="form__actions">
+          <button class="btn btn--primary" id="savePostBtn">Publish Post</button>
+          <button class="btn btn--ghost" id="cancelPostBtn" style="display:none;">Cancel</button>
+        </div>
+      </aside>
+
+      <section>
+        <div class="dash__list" id="postsList"></div>
       </section>
     </div>
   </div>
@@ -318,466 +397,609 @@
   </div>
 </footer>
 
+<script src="supabase.js"></script>
 <script src="data.js"></script>
 <script src="auth.js"></script>
 <script>
-  setActiveNav('');
-  initNav();
+  (async () => {
+    setActiveNav('');
+    initNav();
 
-  // ============ TAB SWITCHING ============
-  document.querySelectorAll('.dash__tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.dash__tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      document.querySelectorAll('.dash__panel-container').forEach(p => p.style.display = 'none');
-      document.getElementById('tab-' + tab.dataset.tab).style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    // ============ AUTH CHECK ============
+    const loggedIn = await isLoggedIn();
+    if (!loggedIn) { window.location.href = 'login.html'; return; }
+
+    // ============ TAB SWITCHING ============
+    document.querySelectorAll('.dash__tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.dash__tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.dash__panel-container').forEach(p => p.style.display = 'none');
+        document.getElementById('tab-' + tab.dataset.tab).style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     });
-  });
 
-  // ============ BIKES TAB ============
-  let currentPhotos = [];
-  let editingId = null;
+    // ============ BIKES TAB ============
+    let currentPhotos = [];
+    let editingId = null;
 
-  function renderStats() {
-    const all = loadBikes();
-    const available = all.filter(b => b.status === 'available');
-    const sold = all.filter(b => b.status === 'sold');
-    const featured = all.filter(b => b.featured);
+    async function renderStats() {
+      const all = await loadBikes();
+      const available = all.filter(b => b.status === 'available');
+      const sold = all.filter(b => b.status === 'sold');
+      const featured = all.filter(b => b.featured);
 
-    document.getElementById('dashStats').innerHTML = `
-      <div class="dash__stat"><div class="dash__stat-label">Total Bikes</div><div class="dash__stat-value">${all.length}</div></div>
-      <div class="dash__stat"><div class="dash__stat-label">Available</div><div class="dash__stat-value dash__stat-value--accent">${available.length}</div></div>
-      <div class="dash__stat"><div class="dash__stat-label">Delivered</div><div class="dash__stat-value">${sold.length}</div></div>
-      <div class="dash__stat"><div class="dash__stat-label">Featured</div><div class="dash__stat-value dash__stat-value--accent">${featured.length}/6</div></div>
-    `;
-  }
-
-  function renderList() {
-    const all = loadBikes();
-    const list = document.getElementById('dashList');
-    if (all.length === 0) {
-      list.innerHTML = `<div class="empty-state"><h3>No bikes yet</h3><p>Add your first bike using the form.</p></div>`;
-      return;
-    }
-    list.innerHTML = all.map(b => {
-      const thumb = b.images && b.images.length
-        ? `<img src="${b.images[0]}" alt="${b.name}">` : bikePlaceholderSVG();
-      const statusClass = b.status === 'available' ? 'dash-item__status--available' : 'dash-item__status--sold';
-      const featuredBadge = b.featured ? `<span class="dash-item__status dash-item__status--featured">★ Featured</span>` : '';
-      return `
-        <div class="dash-item">
-          <div class="dash-item__thumb">${thumb}</div>
-          <div class="dash-item__body">
-            <div class="dash-item__name">${b.name}</div>
-            <div class="dash-item__meta">
-              <span>${b.year || '—'}</span>
-              <span class="dash-item__status ${statusClass}">${b.status === 'sold' ? 'Delivered' : b.status}</span>
-              ${featuredBadge}
-            </div>
-            <div class="dash-item__price">${formatPrice(b.price)}</div>
-          </div>
-          <div class="dash-item__actions">
-            <button class="dash-item__action" onclick="editBike('${b.id}')">Edit</button>
-            <button class="dash-item__action" onclick="toggleFeatured('${b.id}')">${b.featured ? 'Unfeature' : 'Feature'}</button>
-            <button class="dash-item__action" onclick="toggleStatus('${b.id}')">${b.status === 'available' ? 'Mark Delivered' : 'Mark Available'}</button>
-            <button class="dash-item__action" onclick="confirmDelete('${b.id}')">Delete</button>
-          </div>
-        </div>
+      document.getElementById('dashStats').innerHTML = `
+        <div class="dash__stat"><div class="dash__stat-label">Total Bikes</div><div class="dash__stat-value">${all.length}</div></div>
+        <div class="dash__stat"><div class="dash__stat-label">Available</div><div class="dash__stat-value dash__stat-value--accent">${available.length}</div></div>
+        <div class="dash__stat"><div class="dash__stat-label">Delivered</div><div class="dash__stat-value">${sold.length}</div></div>
+        <div class="dash__stat"><div class="dash__stat-label">Featured</div><div class="dash__stat-value dash__stat-value--accent">${featured.length}/6</div></div>
       `;
-    }).join('');
-  }
+    }
 
-  function resetForm() {
-    editingId = null;
-    currentPhotos = [];
-    document.getElementById('formTitle').textContent = 'Add New Bike';
-    document.getElementById('editingId').value = '';
-    ['f_name','f_brand','f_sub','f_year','f_price','f_engine','f_power','f_mileage','f_weight','f_transmission','f_description'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
+    async function renderList() {
+      const all = await loadBikes();
+      const list = document.getElementById('dashList');
+      if (all.length === 0) {
+        list.innerHTML = `<div class="empty-state"><h3>No bikes yet</h3><p>Add your first bike using the form.</p></div>`;
+        return;
+      }
+      list.innerHTML = all.map(b => {
+        const thumb = b.images && b.images.length
+          ? `<img src="${b.images[0]}" alt="${b.name}">` : bikePlaceholderSVG();
+        const statusClass = b.status === 'available' ? 'dash-item__status--available' : 'dash-item__status--sold';
+        const featuredBadge = b.featured ? `<span class="dash-item__status dash-item__status--featured">★ Featured</span>` : '';
+        return `
+          <div class="dash-item">
+            <div class="dash-item__thumb">${thumb}</div>
+            <div class="dash-item__body">
+              <div class="dash-item__name">${b.name}</div>
+              <div class="dash-item__meta">
+                <span>${b.year || '—'}</span>
+                <span class="dash-item__status ${statusClass}">${b.status === 'sold' ? 'Delivered' : b.status}</span>
+                ${featuredBadge}
+              </div>
+              <div class="dash-item__price">${formatPrice(b.price)}</div>
+            </div>
+            <div class="dash-item__actions">
+              <button class="dash-item__action" onclick="editBike('${b.id}')">Edit</button>
+              <button class="dash-item__action" onclick="toggleFeatured('${b.id}')">${b.featured ? 'Unfeature' : 'Feature'}</button>
+              <button class="dash-item__action" onclick="toggleStatus('${b.id}')">${b.status === 'available' ? 'Mark Delivered' : 'Mark Available'}</button>
+              <button class="dash-item__action" onclick="confirmDelete('${b.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function resetForm() {
+      editingId = null;
+      currentPhotos = [];
+      document.getElementById('formTitle').textContent = 'Add New Bike';
+      document.getElementById('editingId').value = '';
+      ['f_name','f_brand','f_sub','f_year','f_price','f_engine','f_power','f_mileage','f_weight','f_transmission','f_description'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('f_status').value = 'available';
+      document.getElementById('f_featured').checked = false;
+      document.getElementById('photoPreview').innerHTML = '';
+      document.getElementById('cancelBtn').style.display = 'none';
+      document.getElementById('saveBtn').textContent = 'Save Bike';
+    }
+
+    function renderPhotoPreview() {
+      document.getElementById('photoPreview').innerHTML = currentPhotos.map((src, i) => `
+        <div class="form__preview-img"><img src="${src}" alt="">
+          <span class="form__preview-rm" onclick="removePhoto(${i})">×</span></div>
+      `).join('');
+    }
+
+    function removePhoto(i) { currentPhotos.splice(i, 1); renderPhotoPreview(); }
+    window.removePhoto = removePhoto;
+
+    function readFiles(files, cb) {
+      const out = [];
+      let done = 0;
+      if (files.length === 0) { cb([]); return; }
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          out.push(ev.target.result);
+          done++;
+          if (done === files.length) cb(out);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById('f_photos').addEventListener('change', (e) => {
+      readFiles(Array.from(e.target.files), (results) => {
+        currentPhotos = currentPhotos.concat(results);
+        renderPhotoPreview();
+      });
+      e.target.value = '';
     });
-    document.getElementById('f_status').value = 'available';
-    document.getElementById('f_featured').checked = false;
-    document.getElementById('photoPreview').innerHTML = '';
-    document.getElementById('cancelBtn').style.display = 'none';
-    document.getElementById('saveBtn').textContent = 'Save Bike';
-  }
 
-  function renderPhotoPreview() {
-    document.getElementById('photoPreview').innerHTML = currentPhotos.map((src, i) => `
-      <div class="form__preview-img"><img src="${src}" alt="">
-        <span class="form__preview-rm" onclick="removePhoto(${i})">×</span></div>
-    `).join('');
-  }
-
-  function removePhoto(i) { currentPhotos.splice(i, 1); renderPhotoPreview(); }
-  window.removePhoto = removePhoto;
-
-  function readFiles(files, cb) {
-    const out = [];
-    let done = 0;
-    if (files.length === 0) { cb([]); return; }
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        out.push(ev.target.result);
-        done++;
-        if (done === files.length) cb(out);
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const data = {
+        name: document.getElementById('f_name').value.trim(),
+        brand: document.getElementById('f_brand').value.trim(),
+        sub: document.getElementById('f_sub').value.trim(),
+        year: parseInt(document.getElementById('f_year').value) || null,
+        price: parseInt(document.getElementById('f_price').value) || null,
+        engine: document.getElementById('f_engine').value.trim(),
+        power: document.getElementById('f_power').value.trim(),
+        mileage: document.getElementById('f_mileage').value.trim(),
+        weight: document.getElementById('f_weight').value.trim(),
+        transmission: document.getElementById('f_transmission').value.trim(),
+        status: document.getElementById('f_status').value,
+        featured: document.getElementById('f_featured').checked,
+        description: document.getElementById('f_description').value.trim(),
+        images: currentPhotos
       };
-      reader.readAsDataURL(file);
-    });
-  }
 
-  document.getElementById('f_photos').addEventListener('change', (e) => {
-    readFiles(Array.from(e.target.files), (results) => {
-      currentPhotos = currentPhotos.concat(results);
+      if (!data.name) { alert('Please enter a bike name.'); return; }
+
+      // Enforce 6 featured max
+      if (data.featured) {
+        const allBikes = await loadBikes();
+        const otherFeatured = allBikes.filter(b => b.featured && b.id !== editingId);
+        if (otherFeatured.length >= 6) {
+          if (!confirm('Already 6 bikes are featured. Adding this will exceed the homepage limit (only first 6 will show). Continue anyway?')) return;
+        }
+      }
+
+      try {
+        if (editingId) await updateBike(editingId, data); else await addBike(data);
+        resetForm();
+        await renderStats();
+        await renderList();
+        await autoRefreshSitemap();
+      } catch (err) {
+        alert('Error saving bike: ' + err.message);
+      }
+    });
+
+    document.getElementById('cancelBtn').addEventListener('click', resetForm);
+
+    window.editBike = async function(id) {
+      const b = await getBike(id);
+      if (!b) return;
+      editingId = id;
+      currentPhotos = [...(b.images || [])];
+      document.getElementById('formTitle').textContent = 'Edit Bike';
+      document.getElementById('editingId').value = id;
+      document.getElementById('f_name').value = b.name || '';
+      document.getElementById('f_brand').value = b.brand || '';
+      document.getElementById('f_sub').value = b.sub || '';
+      document.getElementById('f_year').value = b.year || '';
+      document.getElementById('f_price').value = b.price || '';
+      document.getElementById('f_engine').value = b.engine || '';
+      document.getElementById('f_power').value = b.power || '';
+      document.getElementById('f_mileage').value = b.mileage || '';
+      document.getElementById('f_weight').value = b.weight || '';
+      document.getElementById('f_transmission').value = b.transmission || '';
+      document.getElementById('f_status').value = b.status || 'available';
+      document.getElementById('f_featured').checked = !!b.featured;
+      document.getElementById('f_description').value = b.description || '';
       renderPhotoPreview();
-    });
-    e.target.value = '';
-  });
-
-  document.getElementById('saveBtn').addEventListener('click', () => {
-    const data = {
-      name: document.getElementById('f_name').value.trim(),
-      brand: document.getElementById('f_brand').value.trim(),
-      sub: document.getElementById('f_sub').value.trim(),
-      year: parseInt(document.getElementById('f_year').value) || null,
-      price: parseInt(document.getElementById('f_price').value) || null,
-      engine: document.getElementById('f_engine').value.trim(),
-      power: document.getElementById('f_power').value.trim(),
-      mileage: document.getElementById('f_mileage').value.trim(),
-      weight: document.getElementById('f_weight').value.trim(),
-      transmission: document.getElementById('f_transmission').value.trim(),
-      status: document.getElementById('f_status').value,
-      featured: document.getElementById('f_featured').checked,
-      description: document.getElementById('f_description').value.trim(),
-      images: currentPhotos
+      document.getElementById('cancelBtn').style.display = 'inline-block';
+      document.getElementById('saveBtn').textContent = 'Update Bike';
+      document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    if (!data.name) { alert('Please enter a bike name.'); return; }
+    window.toggleStatus = async function(id) {
+      const b = await getBike(id);
+      if (!b) return;
+      await updateBike(id, { status: b.status === 'available' ? 'sold' : 'available' });
+      await renderStats(); await renderList(); await autoRefreshSitemap();
+    };
 
-    // Enforce 6 featured max
-    if (data.featured) {
-      const otherFeatured = loadBikes().filter(b => b.featured && b.id !== editingId);
-      if (otherFeatured.length >= 6) {
-        if (!confirm('Already 6 bikes are featured. Adding this will exceed the homepage limit (only first 6 will show). Continue anyway?')) return;
+    window.toggleFeatured = async function(id) {
+      const b = await getBike(id);
+      if (!b) return;
+      if (!b.featured) {
+        const allBikes = await loadBikes();
+        const featuredCount = allBikes.filter(x => x.featured).length;
+        if (featuredCount >= 6) {
+          if (!confirm('Already 6 bikes are featured. Adding this will exceed the homepage limit. Continue?')) return;
+        }
       }
-    }
+      await updateBike(id, { featured: !b.featured });
+      await renderStats(); await renderList(); await autoRefreshSitemap();
+    };
 
-    if (editingId) updateBike(editingId, data); else addBike(data);
-    resetForm();
-    renderStats();
-    renderList();
-    autoRefreshSitemap();
-  });
-
-  document.getElementById('cancelBtn').addEventListener('click', resetForm);
-
-  function editBike(id) {
-    const b = getBike(id);
-    if (!b) return;
-    editingId = id;
-    currentPhotos = [...(b.images || [])];
-    document.getElementById('formTitle').textContent = 'Edit Bike';
-    document.getElementById('editingId').value = id;
-    document.getElementById('f_name').value = b.name || '';
-    document.getElementById('f_brand').value = b.brand || '';
-    document.getElementById('f_sub').value = b.sub || '';
-    document.getElementById('f_year').value = b.year || '';
-    document.getElementById('f_price').value = b.price || '';
-    document.getElementById('f_engine').value = b.engine || '';
-    document.getElementById('f_power').value = b.power || '';
-    document.getElementById('f_mileage').value = b.mileage || '';
-    document.getElementById('f_weight').value = b.weight || '';
-    document.getElementById('f_transmission').value = b.transmission || '';
-    document.getElementById('f_status').value = b.status || 'available';
-    document.getElementById('f_featured').checked = !!b.featured;
-    document.getElementById('f_description').value = b.description || '';
-    renderPhotoPreview();
-    document.getElementById('cancelBtn').style.display = 'inline-block';
-    document.getElementById('saveBtn').textContent = 'Update Bike';
-    document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  window.editBike = editBike;
-
-  function toggleStatus(id) {
-    const b = getBike(id);
-    if (!b) return;
-    updateBike(id, { status: b.status === 'available' ? 'sold' : 'available' });
-    renderStats(); renderList(); autoRefreshSitemap();
-  }
-  window.toggleStatus = toggleStatus;
-
-  function toggleFeatured(id) {
-    const b = getBike(id);
-    if (!b) return;
-    if (!b.featured) {
-      const featuredCount = loadBikes().filter(x => x.featured).length;
-      if (featuredCount >= 6) {
-        if (!confirm('Already 6 bikes are featured. Adding this will exceed the homepage limit. Continue?')) return;
+    window.confirmDelete = async function(id) {
+      const b = await getBike(id);
+      if (!b) return;
+      if (confirm(`Delete "${b.name}"? Cannot be undone.`)) {
+        await deleteBike(id);
+        if (editingId === id) resetForm();
+        await renderStats(); await renderList(); await autoRefreshSitemap();
       }
+    };
+
+    // ============ SITE SETTINGS TAB ============
+    async function loadSettingsForm() {
+      const s = await loadSettings();
+      document.getElementById('s_whatsapp').value = s.whatsapp;
+      document.getElementById('s_phone').value = s.phone;
+      document.getElementById('s_email').value = s.email;
+      document.getElementById('s_address').value = s.address;
+      document.getElementById('s_instagram').value = s.instagram;
+      document.getElementById('s_tiktok').value = s.tiktok;
+      document.getElementById('s_facebook').value = s.facebook;
+      document.getElementById('s_youtube').value = s.youtube;
     }
-    updateBike(id, { featured: !b.featured });
-    renderStats(); renderList(); autoRefreshSitemap();
-  }
-  window.toggleFeatured = toggleFeatured;
 
-  function confirmDelete(id) {
-    const b = getBike(id);
-    if (!b) return;
-    if (confirm(`Delete "${b.name}"? Cannot be undone.`)) {
-      deleteBike(id);
-      if (editingId === id) resetForm();
-      renderStats(); renderList(); autoRefreshSitemap();
+    window.saveContactSettings = async function() {
+      const s = await loadSettings();
+      s.whatsapp = document.getElementById('s_whatsapp').value.trim();
+      s.phone = document.getElementById('s_phone').value.trim();
+      s.email = document.getElementById('s_email').value.trim();
+      s.address = document.getElementById('s_address').value.trim();
+      s.instagram = document.getElementById('s_instagram').value.trim();
+      s.tiktok = document.getElementById('s_tiktok').value.trim();
+      s.facebook = document.getElementById('s_facebook').value.trim();
+      s.youtube = document.getElementById('s_youtube').value.trim();
+      await saveSettings(s);
+      alert('Contact info saved. Will reflect across the site immediately.');
+    };
+
+    // ============ TEAM TAB ============
+    let sunnyTempPhoto = '';
+    let saeedTempPhoto = '';
+
+    async function loadTeamForm() {
+      const s = await loadSettings();
+      document.getElementById('sn_name').value = s.founders.sunny.name;
+      document.getElementById('sn_role').value = s.founders.sunny.role;
+      document.getElementById('sn_phone').value = s.founders.sunny.phone;
+      document.getElementById('sn_bio').value = s.founders.sunny.bio;
+      sunnyTempPhoto = s.founders.sunny.photo || '';
+      renderFounderPhoto('sunny');
+
+      document.getElementById('sa_name').value = s.founders.saeed.name;
+      document.getElementById('sa_role').value = s.founders.saeed.role;
+      document.getElementById('sa_phone').value = s.founders.saeed.phone;
+      document.getElementById('sa_bio').value = s.founders.saeed.bio;
+      saeedTempPhoto = s.founders.saeed.photo || '';
+      renderFounderPhoto('saeed');
     }
-  }
-  window.confirmDelete = confirmDelete;
 
-  // ============ SITE SETTINGS TAB ============
-  function loadSettingsForm() {
-    const s = loadSettings();
-    document.getElementById('s_whatsapp').value = s.whatsapp;
-    document.getElementById('s_phone').value = s.phone;
-    document.getElementById('s_email').value = s.email;
-    document.getElementById('s_address').value = s.address;
-    document.getElementById('s_instagram').value = s.instagram;
-    document.getElementById('s_tiktok').value = s.tiktok;
-    document.getElementById('s_facebook').value = s.facebook;
-    document.getElementById('s_youtube').value = s.youtube;
-  }
+    function renderFounderPhoto(who) {
+      const el = document.getElementById(who === 'sunny' ? 'snPhotoPreview' : 'saPhotoPreview');
+      const src = who === 'sunny' ? sunnyTempPhoto : saeedTempPhoto;
+      if (src) {
+        el.innerHTML = `<div class="form__preview-img"><img src="${src}" alt="">
+          <span class="form__preview-rm" onclick="clearFounderPhoto('${who}')">×</span></div>`;
+      } else el.innerHTML = '';
+    }
 
-  function saveContactSettings() {
-    const s = loadSettings();
-    s.whatsapp = document.getElementById('s_whatsapp').value.trim();
-    s.phone = document.getElementById('s_phone').value.trim();
-    s.email = document.getElementById('s_email').value.trim();
-    s.address = document.getElementById('s_address').value.trim();
-    s.instagram = document.getElementById('s_instagram').value.trim();
-    s.tiktok = document.getElementById('s_tiktok').value.trim();
-    s.facebook = document.getElementById('s_facebook').value.trim();
-    s.youtube = document.getElementById('s_youtube').value.trim();
-    saveSettings(s);
-    alert('Contact info saved. Will reflect across the site immediately.');
-  }
-  window.saveContactSettings = saveContactSettings;
+    window.clearFounderPhoto = function(who) {
+      if (who === 'sunny') sunnyTempPhoto = ''; else saeedTempPhoto = '';
+      renderFounderPhoto(who);
+    };
 
-  // ============ TEAM TAB ============
-  let sunnyTempPhoto = '';
-  let saeedTempPhoto = '';
-
-  function loadTeamForm() {
-    const s = loadSettings();
-    document.getElementById('sn_name').value = s.founders.sunny.name;
-    document.getElementById('sn_role').value = s.founders.sunny.role;
-    document.getElementById('sn_phone').value = s.founders.sunny.phone;
-    document.getElementById('sn_bio').value = s.founders.sunny.bio;
-    sunnyTempPhoto = s.founders.sunny.photo || '';
-    renderFounderPhoto('sunny');
-
-    document.getElementById('sa_name').value = s.founders.saeed.name;
-    document.getElementById('sa_role').value = s.founders.saeed.role;
-    document.getElementById('sa_phone').value = s.founders.saeed.phone;
-    document.getElementById('sa_bio').value = s.founders.saeed.bio;
-    saeedTempPhoto = s.founders.saeed.photo || '';
-    renderFounderPhoto('saeed');
-  }
-
-  function renderFounderPhoto(who) {
-    const el = document.getElementById(who === 'sunny' ? 'snPhotoPreview' : 'saPhotoPreview');
-    const src = who === 'sunny' ? sunnyTempPhoto : saeedTempPhoto;
-    if (src) {
-      el.innerHTML = `<div class="form__preview-img"><img src="${src}" alt="">
-        <span class="form__preview-rm" onclick="clearFounderPhoto('${who}')">×</span></div>`;
-    } else el.innerHTML = '';
-  }
-
-  function clearFounderPhoto(who) {
-    if (who === 'sunny') sunnyTempPhoto = ''; else saeedTempPhoto = '';
-    renderFounderPhoto(who);
-  }
-  window.clearFounderPhoto = clearFounderPhoto;
-
-  document.getElementById('sn_photo').addEventListener('change', (e) => {
-    readFiles(Array.from(e.target.files).slice(0,1), (results) => {
-      sunnyTempPhoto = results[0]; renderFounderPhoto('sunny');
+    document.getElementById('sn_photo').addEventListener('change', (e) => {
+      readFiles(Array.from(e.target.files).slice(0,1), (results) => {
+        sunnyTempPhoto = results[0]; renderFounderPhoto('sunny');
+      });
+      e.target.value = '';
     });
-    e.target.value = '';
-  });
-  document.getElementById('sa_photo').addEventListener('change', (e) => {
-    readFiles(Array.from(e.target.files).slice(0,1), (results) => {
-      saeedTempPhoto = results[0]; renderFounderPhoto('saeed');
+    document.getElementById('sa_photo').addEventListener('change', (e) => {
+      readFiles(Array.from(e.target.files).slice(0,1), (results) => {
+        saeedTempPhoto = results[0]; renderFounderPhoto('saeed');
+      });
+      e.target.value = '';
     });
-    e.target.value = '';
-  });
 
-  function saveFounder(who) {
-    const s = loadSettings();
-    if (who === 'sunny') {
-      s.founders.sunny = {
-        name: document.getElementById('sn_name').value.trim(),
-        role: document.getElementById('sn_role').value.trim(),
-        phone: document.getElementById('sn_phone').value.trim(),
-        bio: document.getElementById('sn_bio').value.trim(),
-        photo: sunnyTempPhoto
-      };
-    } else {
-      s.founders.saeed = {
-        name: document.getElementById('sa_name').value.trim(),
-        role: document.getElementById('sa_role').value.trim(),
-        phone: document.getElementById('sa_phone').value.trim(),
-        bio: document.getElementById('sa_bio').value.trim(),
-        photo: saeedTempPhoto
-      };
-    }
-    saveSettings(s);
-    alert('Founder profile saved.');
-  }
-  window.saveFounder = saveFounder;
+    window.saveFounder = async function(who) {
+      const s = await loadSettings();
+      if (who === 'sunny') {
+        s.founders.sunny = {
+          name: document.getElementById('sn_name').value.trim(),
+          role: document.getElementById('sn_role').value.trim(),
+          phone: document.getElementById('sn_phone').value.trim(),
+          bio: document.getElementById('sn_bio').value.trim(),
+          photo: sunnyTempPhoto
+        };
+      } else {
+        s.founders.saeed = {
+          name: document.getElementById('sa_name').value.trim(),
+          role: document.getElementById('sa_role').value.trim(),
+          phone: document.getElementById('sa_phone').value.trim(),
+          bio: document.getElementById('sa_bio').value.trim(),
+          photo: saeedTempPhoto
+        };
+      }
+      await saveSettings(s);
+      alert('Founder profile saved.');
+    };
 
-  // ============ SHOWROOM TAB ============
-  let showroomTempPhotos = [];
+    // ============ SHOWROOM TAB ============
+    let showroomTempPhotos = [];
 
-  function loadShowroom() {
-    showroomTempPhotos = [...(loadSettings().showroomPhotos || [])];
-    renderShowroom();
-  }
-
-  function renderShowroom() {
-    document.getElementById('showroomPreview').innerHTML = showroomTempPhotos.map((src, i) => `
-      <div class="form__preview-img"><img src="${src}" alt="">
-        <span class="form__preview-rm" onclick="removeShowroomPhoto(${i})">×</span></div>
-    `).join('');
-  }
-
-  function removeShowroomPhoto(i) { showroomTempPhotos.splice(i,1); renderShowroom(); }
-  window.removeShowroomPhoto = removeShowroomPhoto;
-
-  document.getElementById('showroom_upload').addEventListener('change', (e) => {
-    readFiles(Array.from(e.target.files), (results) => {
-      showroomTempPhotos = showroomTempPhotos.concat(results);
+    async function loadShowroom() {
+      const s = await loadSettings();
+      showroomTempPhotos = [...(s.showroomPhotos || [])];
       renderShowroom();
+    }
+
+    function renderShowroom() {
+      document.getElementById('showroomPreview').innerHTML = showroomTempPhotos.map((src, i) => `
+        <div class="form__preview-img"><img src="${src}" alt="">
+          <span class="form__preview-rm" onclick="removeShowroomPhoto(${i})">×</span></div>
+      `).join('');
+    }
+
+    window.removeShowroomPhoto = function(i) { showroomTempPhotos.splice(i,1); renderShowroom(); };
+
+    document.getElementById('showroom_upload').addEventListener('change', (e) => {
+      readFiles(Array.from(e.target.files), (results) => {
+        showroomTempPhotos = showroomTempPhotos.concat(results);
+        renderShowroom();
+      });
+      e.target.value = '';
     });
-    e.target.value = '';
-  });
 
-  function saveShowroom() {
-    const s = loadSettings();
-    s.showroomPhotos = showroomTempPhotos;
-    saveSettings(s);
-    alert('Showroom photos saved.');
-  }
-  window.saveShowroom = saveShowroom;
+    window.saveShowroom = async function() {
+      const s = await loadSettings();
+      s.showroomPhotos = showroomTempPhotos;
+      await saveSettings(s);
+      alert('Showroom photos saved.');
+    };
 
-  // ============ GARAGE TAB ============
-  let garageTempPhotos = [];
+    // ============ GARAGE TAB ============
+    let garageTempPhotos = [];
 
-  function loadGarage() {
-    const s = loadSettings();
-    garageTempPhotos = [...(s.garagePhotos || [])];
-    renderGarage();
-    document.getElementById('g_services').value = (s.garageServices || []).join('\n');
-  }
-
-  function renderGarage() {
-    document.getElementById('garagePreview').innerHTML = garageTempPhotos.map((src, i) => `
-      <div class="form__preview-img"><img src="${src}" alt="">
-        <span class="form__preview-rm" onclick="removeGaragePhoto(${i})">×</span></div>
-    `).join('');
-  }
-
-  function removeGaragePhoto(i) { garageTempPhotos.splice(i,1); renderGarage(); }
-  window.removeGaragePhoto = removeGaragePhoto;
-
-  document.getElementById('garage_upload').addEventListener('change', (e) => {
-    readFiles(Array.from(e.target.files), (results) => {
-      garageTempPhotos = garageTempPhotos.concat(results);
+    async function loadGarage() {
+      const s = await loadSettings();
+      garageTempPhotos = [...(s.garagePhotos || [])];
       renderGarage();
+      document.getElementById('g_services').value = (s.garageServices || []).join('\n');
+    }
+
+    function renderGarage() {
+      document.getElementById('garagePreview').innerHTML = garageTempPhotos.map((src, i) => `
+        <div class="form__preview-img"><img src="${src}" alt="">
+          <span class="form__preview-rm" onclick="removeGaragePhoto(${i})">×</span></div>
+      `).join('');
+    }
+
+    window.removeGaragePhoto = function(i) { garageTempPhotos.splice(i,1); renderGarage(); };
+
+    document.getElementById('garage_upload').addEventListener('change', (e) => {
+      readFiles(Array.from(e.target.files), (results) => {
+        garageTempPhotos = garageTempPhotos.concat(results);
+        renderGarage();
+      });
+      e.target.value = '';
     });
-    e.target.value = '';
-  });
 
-  function saveGaragePhotos() {
-    const s = loadSettings();
-    s.garagePhotos = garageTempPhotos;
-    saveSettings(s);
-    alert('Garage photos saved.');
-  }
-  window.saveGaragePhotos = saveGaragePhotos;
+    window.saveGaragePhotos = async function() {
+      const s = await loadSettings();
+      s.garagePhotos = garageTempPhotos;
+      await saveSettings(s);
+      alert('Garage photos saved.');
+    };
 
-  function saveGarageServices() {
-    const s = loadSettings();
-    s.garageServices = document.getElementById('g_services').value.split('\n').map(x => x.trim()).filter(Boolean);
-    saveSettings(s);
-    alert('Garage services saved.');
-  }
-  window.saveGarageServices = saveGarageServices;
+    window.saveGarageServices = async function() {
+      const s = await loadSettings();
+      s.garageServices = document.getElementById('g_services').value.split('\n').map(x => x.trim()).filter(Boolean);
+      await saveSettings(s);
+      alert('Garage services saved.');
+    };
 
-  // ============ SITEMAP GENERATOR ============
-  function buildSitemapXML() {
-    const base = 'https://torquemotorsexclusive.com';
-    const today = new Date().toISOString().split('T')[0];
-    const bikes = loadBikes();
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-    const staticPages = [
-      { url: '/', priority: '1.0', freq: 'weekly' },
-      { url: '/inventory.html', priority: '0.9', freq: 'weekly' },
-      { url: '/contact.html', priority: '0.8', freq: 'monthly' }
-    ];
-    staticPages.forEach(p => {
-      xml += `  <url>\n    <loc>${base}${p.url}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${p.freq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>\n`;
+    // ============ SITEMAP GENERATOR ============
+    async function buildSitemapXML() {
+      const base = 'https://torquemotorsexclusive.com';
+      const today = new Date().toISOString().split('T')[0];
+      const bikes = await loadBikes();
+      const posts = await loadPosts();
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+      const staticPages = [
+        { url: '/', priority: '1.0', freq: 'weekly' },
+        { url: '/inventory.html', priority: '0.9', freq: 'weekly' },
+        { url: '/blog.html', priority: '0.9', freq: 'weekly' },
+        { url: '/contact.html', priority: '0.8', freq: 'monthly' }
+      ];
+      staticPages.forEach(p => {
+        xml += `  <url>\n    <loc>${base}${p.url}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${p.freq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>\n`;
+      });
+      bikes.forEach(b => {
+        xml += `  <url>\n    <loc>${base}/bike.html?id=${b.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+      });
+      posts.forEach(p => {
+        const lastmod = p.date || today;
+        xml += `  <url>\n    <loc>${base}/post.html?id=${p.id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+      });
+      xml += '</urlset>';
+      return xml;
+    }
+
+    window.generateSitemap = async function() {
+      document.getElementById('sitemapOutput').value = await buildSitemapXML();
+    };
+
+    window.downloadSitemap = async function() {
+      const xml = await buildSitemapXML();
+      document.getElementById('sitemapOutput').value = xml;
+      const blob = new Blob([xml], { type: 'application/xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sitemap.xml';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    window.copySitemap = async function() {
+      const ta = document.getElementById('sitemapOutput');
+      if (!ta.value) ta.value = await buildSitemapXML();
+      ta.select();
+      document.execCommand('copy');
+      alert('Sitemap copied to clipboard.');
+    };
+
+    async function autoRefreshSitemap() {
+      const ta = document.getElementById('sitemapOutput');
+      if (ta) ta.value = await buildSitemapXML();
+    }
+
+    // ============ POSTS TAB ============
+    let postCoverTemp = '';
+    let editingPostId = null;
+
+    async function renderPostsList() {
+      const all = await loadPosts();
+      const list = document.getElementById('postsList');
+      if (all.length === 0) {
+        list.innerHTML = `<div class="empty-state"><h3>No posts yet</h3><p>Write your first journal entry.</p></div>`;
+        return;
+      }
+      list.innerHTML = all.map(p => {
+        const thumb = p.cover
+          ? `<img src="${p.cover}" alt="${p.title}">`
+          : `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-family:var(--font-mono);font-size:0.55rem;letter-spacing:0.15em;color:var(--grey);">${p.category}</div>`;
+        const date = new Date(p.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const featuredBadge = p.featured ? `<span class="dash-item__status dash-item__status--featured">★ Featured</span>` : '';
+        return `
+          <div class="dash-item">
+            <div class="dash-item__thumb">${thumb}</div>
+            <div class="dash-item__body">
+              <div class="dash-item__name">${p.title}</div>
+              <div class="dash-item__meta">
+                <span style="color:var(--red);">${p.category}</span>
+                <span>·</span>
+                <span>${date}</span>
+                <span>·</span>
+                <span>${p.author}</span>
+                ${featuredBadge}
+              </div>
+            </div>
+            <div class="dash-item__actions">
+              <button class="dash-item__action" onclick="editPost('${p.id}')">Edit</button>
+              <button class="dash-item__action" onclick="togglePostFeatured('${p.id}')">${p.featured ? 'Unfeature' : 'Feature'}</button>
+              <button class="dash-item__action" onclick="confirmDeletePost('${p.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function resetPostForm() {
+      editingPostId = null;
+      postCoverTemp = '';
+      document.getElementById('postFormTitle').textContent = 'Write New Post';
+      document.getElementById('editingPostId').value = '';
+      ['p_title','p_excerpt','p_body','p_author'].forEach(id => { document.getElementById(id).value = ''; });
+      document.getElementById('p_category').value = 'Reviews';
+      document.getElementById('p_date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('p_featured').checked = false;
+      document.getElementById('postCoverPreview').innerHTML = '';
+      document.getElementById('cancelPostBtn').style.display = 'none';
+      document.getElementById('savePostBtn').textContent = 'Publish Post';
+    }
+
+    function renderPostCoverPreview() {
+      const el = document.getElementById('postCoverPreview');
+      if (postCoverTemp) {
+        el.innerHTML = `<div class="form__preview-img"><img src="${postCoverTemp}" alt="">
+          <span class="form__preview-rm" onclick="clearPostCover()">×</span></div>`;
+      } else el.innerHTML = '';
+    }
+
+    window.clearPostCover = function() { postCoverTemp = ''; renderPostCoverPreview(); };
+
+    document.getElementById('p_cover').addEventListener('change', (e) => {
+      readFiles(Array.from(e.target.files).slice(0,1), (results) => {
+        postCoverTemp = results[0]; renderPostCoverPreview();
+      });
+      e.target.value = '';
     });
-    bikes.forEach(b => {
-      xml += `  <url>\n    <loc>${base}/bike.html?id=${b.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+
+    document.getElementById('savePostBtn').addEventListener('click', async () => {
+      const title = document.getElementById('p_title').value.trim();
+      if (!title) { alert('Please enter a title.'); return; }
+      const data = {
+        title,
+        category: document.getElementById('p_category').value,
+        author: document.getElementById('p_author').value.trim() || 'Torque Motorsports',
+        date: document.getElementById('p_date').value || new Date().toISOString().split('T')[0],
+        excerpt: document.getElementById('p_excerpt').value.trim(),
+        body: document.getElementById('p_body').value.trim(),
+        featured: document.getElementById('p_featured').checked,
+        cover: postCoverTemp,
+        slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      };
+
+      try {
+        if (editingPostId) await updatePost(editingPostId, data); else await addPost(data);
+        resetPostForm();
+        await renderPostsList();
+        await autoRefreshSitemap();
+      } catch (err) {
+        alert('Error saving post: ' + err.message);
+      }
     });
-    xml += '</urlset>';
-    return xml;
-  }
 
-  function generateSitemap() {
-    document.getElementById('sitemapOutput').value = buildSitemapXML();
-  }
-  window.generateSitemap = generateSitemap;
+    document.getElementById('cancelPostBtn').addEventListener('click', resetPostForm);
 
-  function downloadSitemap() {
-    const xml = buildSitemapXML();
-    document.getElementById('sitemapOutput').value = xml;
-    const blob = new Blob([xml], { type: 'application/xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'sitemap.xml';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-  window.downloadSitemap = downloadSitemap;
+    window.editPost = async function(id) {
+      const p = await getPost(id);
+      if (!p) return;
+      editingPostId = id;
+      postCoverTemp = p.cover || '';
+      document.getElementById('postFormTitle').textContent = 'Edit Post';
+      document.getElementById('editingPostId').value = id;
+      document.getElementById('p_title').value = p.title || '';
+      document.getElementById('p_category').value = p.category || 'Reviews';
+      document.getElementById('p_author').value = p.author || '';
+      document.getElementById('p_date').value = p.date || '';
+      document.getElementById('p_excerpt').value = p.excerpt || '';
+      document.getElementById('p_body').value = p.body || '';
+      document.getElementById('p_featured').checked = !!p.featured;
+      renderPostCoverPreview();
+      document.getElementById('cancelPostBtn').style.display = 'inline-block';
+      document.getElementById('savePostBtn').textContent = 'Update Post';
+      document.getElementById('postFormCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
-  function copySitemap() {
-    const ta = document.getElementById('sitemapOutput');
-    if (!ta.value) ta.value = buildSitemapXML();
-    ta.select();
-    document.execCommand('copy');
-    alert('Sitemap copied to clipboard.');
-  }
-  window.copySitemap = copySitemap;
+    window.togglePostFeatured = async function(id) {
+      const p = await getPost(id);
+      if (!p) return;
+      await updatePost(id, { featured: !p.featured });
+      await renderPostsList(); await autoRefreshSitemap();
+    };
 
-  // Auto-regenerate sitemap preview whenever bikes change
-  function autoRefreshSitemap() {
-    const ta = document.getElementById('sitemapOutput');
-    if (ta) ta.value = buildSitemapXML();
-  }
+    window.confirmDeletePost = async function(id) {
+      const p = await getPost(id);
+      if (!p) return;
+      if (confirm(`Delete "${p.title}"? Cannot be undone.`)) {
+        await deletePost(id);
+        if (editingPostId === id) resetPostForm();
+        await renderPostsList(); await autoRefreshSitemap();
+      }
+    };
 
-  // ============ INITIAL LOAD ============
-  renderStats();
-  renderList();
-  loadSettingsForm();
-  loadTeamForm();
-  loadShowroom();
-  loadGarage();
-  autoRefreshSitemap();
+    // ============ INITIAL LOAD ============
+    await renderStats();
+    await renderList();
+    await renderPostsList();
+    resetPostForm();
+    await loadSettingsForm();
+    await loadTeamForm();
+    await loadShowroom();
+    await loadGarage();
+    await autoRefreshSitemap();
+  })();
 </script>
 
 </body>
+
 </html>

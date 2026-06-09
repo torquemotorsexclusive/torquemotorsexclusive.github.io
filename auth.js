@@ -1,5 +1,5 @@
-/* Auth - change ADMIN_PASSWORD below to update */
-const ADMIN_PASSWORD = 'torque2026';
+/* Auth - shared password for admin dashboard */
+const ADMIN_PASSWORD = 'Heythisisme123.';
 const AUTH_KEY = 'torque_auth_v1';
 
 function isLoggedIn() { return localStorage.getItem(AUTH_KEY) === 'true'; }

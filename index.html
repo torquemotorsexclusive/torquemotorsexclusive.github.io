@@ -10,7 +10,10 @@
   <meta name="description" content="Pakistan's specialist superbike import service. We source any Ducati, BMW, Yamaha, Kawasaki, Suzuki, Harley or Honda — new, used, or vintage. Based in Lahore, serving all of Pakistan.">
   <meta name="keywords" content="superbike importer Pakistan, bike import Lahore, Ducati Pakistan, BMW motorcycle Pakistan, Yamaha R1 Pakistan, import motorcycle Pakistan, Kawasaki Pakistan, Harley Davidson Pakistan, motorcycle workshop Lahore">
   <link rel="canonical" href="https://torquemotorsexclusive.com/">
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -83,6 +86,7 @@
     <ul>
       <li><a href="index.html" data-nav="home">Home</a></li>
       <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="blog.html" data-nav="journal">Journal</a></li>
       <li><a href="contact.html" data-nav="contact">Story</a></li>
     </ul>
     <div class="nav__menu-foot">
@@ -191,11 +195,23 @@
   <div class="gallery" id="showroomGallery"></div>
 </section>
 
-<!-- GARAGE -->
-<section class="section" id="garage">
+<!-- LATEST FROM JOURNAL -->
+<section class="section" id="journal-preview">
   <div class="section__head">
     <div>
-      <div class="section__eyebrow">№ 06 — In-House Workshop</div>
+      <div class="section__eyebrow">№ 06 — From The Journal</div>
+      <h2 class="section__title">Stories <em>&amp; Reviews.</em></h2>
+    </div>
+    <a href="blog.html" class="section__link">Read All →</a>
+  </div>
+  <div class="posts" id="journalPreview"></div>
+</section>
+
+<!-- GARAGE -->
+<section class="section section--alt" id="garage">
+  <div class="section__head">
+    <div>
+      <div class="section__eyebrow">№ 07 — In-House Workshop</div>
       <h2 class="section__title">Our <em>garage.</em></h2>
     </div>
   </div>
@@ -224,6 +240,7 @@
         <ul>
           <li><a href="index.html">Home</a></li>
           <li><a href="inventory.html">The Garage</a></li>
+          <li><a href="blog.html">Journal</a></li>
           <li><a href="contact.html">Story</a></li>
         </ul>
       </div>
@@ -252,14 +269,17 @@
   </div>
 </footer>
 
+<script src="supabase.js"></script>
 <script src="data.js"></script>
 <script>
+(async function() {
   setActiveNav('home');
   initNav();
-  applySiteSettings();
+  await applySiteSettings();
 
   // Featured bikes (up to 6 marked featured)
-  const featured = loadBikes().filter(b => b.featured).slice(0, 6);
+  const allBikes = await loadBikes();
+  const featured = allBikes.filter(b => b.featured).slice(0, 6);
   const container = document.getElementById('featured-bikes');
   if (featured.length === 0) {
     container.innerHTML = '<div class="empty-state"><h3>No featured imports yet</h3><p>Mark bikes as featured in the dashboard.</p></div>';
@@ -268,7 +288,7 @@
   }
 
   // Showroom gallery
-  const settings = loadSettings();
+  const settings = await loadSettings();
   const showroomGrid = document.getElementById('showroomGallery');
   if (settings.showroomPhotos && settings.showroomPhotos.length > 0) {
     showroomGrid.innerHTML = settings.showroomPhotos.slice(0, 6).map(src => `
@@ -293,6 +313,17 @@
   }
   document.getElementById('garageServices').innerHTML =
     (settings.garageServices || []).map(s => `<div class="garage__service">${s}</div>`).join('');
+
+  // Journal preview — show 3 most recent posts
+  const allPosts = await loadPosts();
+  const recentPosts = allPosts.slice(0, 3);
+  const journalPreview = document.getElementById('journalPreview');
+  if (recentPosts.length === 0) {
+    journalPreview.innerHTML = '<div class="empty-state"><h3>No posts yet</h3><p>The journal will start filling up soon.</p></div>';
+  } else {
+    journalPreview.innerHTML = recentPosts.map(p => postCardHTML(p)).join('');
+  }
+})();
 </script>
 
 </body>

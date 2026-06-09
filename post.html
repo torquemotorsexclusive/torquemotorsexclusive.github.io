@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Post — Torque Motorsports Exclusive</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav__logo">
+    <img src="logo.png" alt="Torque Motorsports">
+  </a>
+  <button class="nav__toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__menu">
+    <ul>
+      <li><a href="index.html" data-nav="home">Home</a></li>
+      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="blog.html" data-nav="journal">Journal</a></li>
+      <li><a href="contact.html" data-nav="contact">Story</a></li>
+    </ul>
+    <div class="nav__menu-foot">
+      <span>Lahore / Pakistan</span>
+      <a href="#" data-email data-email-text>hello@torquemotorsexclusive.com</a>
+    </div>
+  </div>
+  <a href="blog.html" class="nav__cta">← Journal</a>
+</nav>
+
+<main class="post" id="postRoot"></main>
+
+<footer class="footer">
+  <div class="footer__main">
+    <div class="footer__brand">
+      <img src="logo.png" alt="Torque Motorsports" class="footer__logo">
+      <p class="footer__tagline">Specialist superbike imports to Pakistan.</p>
+    </div>
+  </div>
+  <div class="footer__bottom" style="border-top:none;">
+    <span>© 2026 Torque Motorsports Exclusive</span>
+    <span>Lahore / Pakistan</span>
+  </div>
+</footer>
+
+<script src="supabase.js"></script>
+<script src="data.js"></script>
+<script>
+  (async () => {
+    setActiveNav('journal');
+    initNav();
+    applySiteSettings();
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const root = document.getElementById('postRoot');
+
+    if (!id) {
+      root.innerHTML = `<div class="empty-state"><h3>No post selected</h3><p><a href="blog.html" style="color:var(--red);">← Back to Journal</a></p></div>`;
+    } else {
+      const post = await getPost(id);
+      if (!post) {
+        root.innerHTML = `<div class="empty-state"><h3>Post not found</h3><p><a href="blog.html" style="color:var(--red);">← Back to Journal</a></p></div>`;
+      } else {
+        // ============ AUTO SEO ============
+        const seoTitle = `${post.title} | Torque Motorsports Journal`;
+        const seoDesc = post.excerpt || '';
+        const pageUrl = `https://torquemotorsexclusive.com/post.html?id=${post.id}`;
+        const coverImg = post.cover || 'https://torquemotorsexclusive.com/hero.jpg';
+
+        document.title = seoTitle;
+
+        function setMeta(name, content, isProperty = false) {
+          const attr = isProperty ? 'property' : 'name';
+          let el = document.querySelector(`meta[${attr}="${name}"]`);
+          if (!el) { el = document.createElement('meta'); el.setAttribute(attr, name); document.head.appendChild(el); }
+          el.setAttribute('content', content);
+        }
+        setMeta('description', seoDesc);
+        setMeta('keywords', `${post.category}, ${post.title}, superbike Pakistan, motorcycle blog Pakistan, Torque Motorsports`);
+        setMeta('article:author', post.author, true);
+        setMeta('article:published_time', post.date, true);
+        setMeta('article:section', post.category, true);
+        setMeta('og:type', 'article', true);
+        setMeta('og:title', seoTitle, true);
+        setMeta('og:description', seoDesc, true);
+        setMeta('og:image', coverImg, true);
+        setMeta('og:url', pageUrl, true);
+        setMeta('twitter:card', 'summary_large_image');
+        setMeta('twitter:title', seoTitle);
+        setMeta('twitter:description', seoDesc);
+        setMeta('twitter:image', coverImg);
+
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+        canonical.href = pageUrl;
+
+        // Schema.org Article structured data
+        const schema = {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": post.title,
+          "description": post.excerpt,
+          "image": coverImg,
+          "datePublished": post.date,
+          "dateModified": post.date,
+          "author": { "@type": "Person", "name": post.author },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Torque Motorsports Exclusive",
+            "logo": { "@type": "ImageObject", "url": "https://torquemotorsexclusive.com/logo.png" }
+          },
+          "mainEntityOfPage": pageUrl,
+          "articleSection": post.category
+        };
+        const schemaScript = document.createElement('script');
+        schemaScript.type = 'application/ld+json';
+        schemaScript.textContent = JSON.stringify(schema);
+        document.head.appendChild(schemaScript);
+        // ===================================
+
+        const date = new Date(post.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        // Convert body line breaks to paragraphs, basic bold support
+        const bodyHTML = post.body
+          .split('\n\n')
+          .map(p => `<p>${p.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p>`)
+          .join('');
+
+        const coverHTML = post.cover
+          ? `<div class="post__cover"><img src="${post.cover}" alt="${post.title}"></div>`
+          : '';
+
+        root.innerHTML = `
+          <div class="post__meta">
+            <span class="post-card__cat">${post.category}</span>
+            <span>·</span>
+            <span>${date}</span>
+          </div>
+          <h1 class="post__title">${post.title}</h1>
+          <p class="post__excerpt">${post.excerpt}</p>
+          ${coverHTML}
+          <div class="post__body">${bodyHTML}</div>
+          <div class="post__author-block">
+            <span class="post__author-label">Written by</span>
+            <span class="post__author-name">${post.author}</span>
+          </div>
+        `;
+      }
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -1,119 +1,14 @@
-/* ========================================
-   TORQUE — Data layer
-   ======================================== */
+/* ============================================================
+   TORQUE — Data layer (Supabase backed)
+   ============================================================
+   All bikes, posts, and settings now live in Supabase.
+   Edits in the dashboard are live for every visitor immediately.
+*/
 
-const BIKES_KEY = 'torque_bikes_v2';
-const SETTINGS_KEY = 'torque_settings_v1';
+const CACHE = { bikes: null, posts: null, settings: null };
 
-// ---- Seed bikes (past imports) ----
-const SEED_BIKES = [
-  {
-    id: 'bike-001',
-    name: 'Ducati Panigale V4',
-    sub: '2023 · Imported & Delivered',
-    price: 9200000,
-    status: 'available',
-    featured: true,
-    year: 2023,
-    brand: 'Ducati',
-    engine: '1103cc',
-    power: '215 HP',
-    mileage: '2,100 km',
-    weight: '198 kg',
-    transmission: '6-speed Quickshift',
-    description: 'A flagship import — Desmosedici Stradale V4 power, MotoGP-inspired aerodynamics. Sourced from Italy, delivered to Lahore with full documentation, Akrapovič exhaust, carbon fairings included.',
-    images: []
-  },
-  {
-    id: 'bike-002',
-    name: 'Yamaha YZF-R1',
-    sub: '2023 · Track-prepped Import',
-    price: 6500000,
-    status: 'available',
-    featured: true,
-    year: 2023,
-    brand: 'Yamaha',
-    engine: '998cc',
-    power: '200 HP',
-    mileage: '4,200 km',
-    weight: '201 kg',
-    transmission: '6-speed',
-    description: 'Inline-four crossplane engine, lean-sensitive electronics, Öhlins-inspired suspension setup. A flagship superbike imported and prepped to track-ready specification.',
-    images: []
-  },
-  {
-    id: 'bike-003',
-    name: 'Kawasaki Ninja ZX-10R',
-    sub: '2022 · Race-Ready Import',
-    price: 5800000,
-    status: 'available',
-    featured: true,
-    year: 2022,
-    brand: 'Kawasaki',
-    engine: '998cc',
-    power: '203 HP',
-    mileage: '6,800 km',
-    weight: '207 kg',
-    transmission: '6-speed',
-    description: 'World Superbike-derived geometry, electronic suspension, Bosch IMU. A surgical instrument on the circuit — sourced and imported with full title transfer.',
-    images: []
-  },
-  {
-    id: 'bike-004',
-    name: 'BMW S 1000 RR',
-    sub: '2022 · Premium Import',
-    price: 7200000,
-    status: 'sold',
-    featured: true,
-    year: 2022,
-    brand: 'BMW',
-    engine: '999cc',
-    power: '205 HP',
-    mileage: '9,400 km',
-    weight: '197 kg',
-    transmission: '6-speed',
-    description: 'Race-bred Shift-Cam technology, M package wheels, Dynamic Damping Control. Sourced from Germany and delivered with complete service records.',
-    images: []
-  },
-  {
-    id: 'bike-005',
-    name: 'Honda CBR1000RR-R Fireblade SP',
-    sub: '2023 · Track Weapon',
-    price: 8100000,
-    status: 'available',
-    featured: true,
-    year: 2023,
-    brand: 'Honda',
-    engine: '999.9cc',
-    power: '215 HP',
-    mileage: '3,500 km',
-    weight: '201 kg',
-    transmission: '6-speed',
-    description: 'HRC-developed engine, Öhlins NPX/TTX36 semi-active suspension, Brembo Stylema calipers. A factory-spec import for the rider who chases lap times.',
-    images: []
-  },
-  {
-    id: 'bike-006',
-    name: 'Harley-Davidson Road Glide',
-    sub: '2022 · Touring Import',
-    price: 5400000,
-    status: 'sold',
-    featured: false,
-    year: 2022,
-    brand: 'Harley-Davidson',
-    engine: '1868cc',
-    power: '93 HP',
-    mileage: '12,000 km',
-    weight: '378 kg',
-    transmission: '6-speed Cruise Drive',
-    description: 'Milwaukee-Eight 114, premium audio, full custom paint. Sourced from the US for a long-distance touring enthusiast.',
-    images: []
-  }
-];
-
-// ---- Default site settings ----
 const DEFAULT_SETTINGS = {
-  whatsapp: '923000000000',           // editable from dashboard
+  whatsapp: '923000000000',
   email: 'hello@torquemotorsexclusive.com',
   phone: '+92 300 000 0000',
   instagram: 'https://instagram.com/torquemotorsexclusive',
@@ -125,14 +20,14 @@ const DEFAULT_SETTINGS = {
     sunny: {
       name: 'Sunny Chaudary',
       role: 'Founder · Lifelong Biker',
-      bio: 'A lifelong biker, Sunny grew up obsessed with the sound of superbikes — so much so that as a kid he was convinced the engine roar of passing van convoys WAS a superbike. Later he imported his first bike and went on to become the first person to introduce Ducati to Pakistan. His passion is the engine of this company.',
+      bio: 'A lifelong biker, Sunny grew up obsessed with the sound of superbikes \u2014 so much so that as a kid he was convinced the engine roar of passing van convoys WAS a superbike. Later he imported his first bike and went on to become the first person to introduce Ducati to Pakistan.',
       phone: '+92 300 000 0000',
       photo: ''
     },
     saeed: {
       name: 'Saeed Munwar',
       role: 'Co-Founder · Imports & Restoration',
-      bio: 'Saeed is the reason Torque became a name. His discipline and years of experience in car and bike imports — plus a deep background in restoring and rebuilding both — gave the business the foundation it needed. If Sunny is the heart, Saeed is the precision behind every import we deliver.',
+      bio: 'Saeed is the reason Torque became a name. His discipline and years of experience in car and bike imports gave the business the foundation it needed.',
       phone: '+92 300 000 0000',
       photo: ''
     }
@@ -149,64 +44,107 @@ const DEFAULT_SETTINGS = {
   ]
 };
 
-// ---- Bikes ----
-function loadBikes() {
+// ===== BIKES =====
+async function loadBikes() {
+  if (CACHE.bikes) return CACHE.bikes;
   try {
-    const raw = localStorage.getItem(BIKES_KEY);
-    if (raw) return JSON.parse(raw);
-    localStorage.setItem(BIKES_KEY, JSON.stringify(SEED_BIKES));
-    return SEED_BIKES;
-  } catch (e) { return SEED_BIKES; }
+    CACHE.bikes = await sbGet('bikes', '?order=created_at.desc&select=*');
+    return CACHE.bikes;
+  } catch (e) { console.error(e); return CACHE.bikes || []; }
 }
 
-function saveBikes(bikes) { localStorage.setItem(BIKES_KEY, JSON.stringify(bikes)); }
-function getBike(id) { return loadBikes().find(b => b.id === id); }
+async function getBike(id) {
+  if (CACHE.bikes) {
+    const c = CACHE.bikes.find(b => b.id === id);
+    if (c) return c;
+  }
+  try {
+    const rows = await sbGet('bikes', `?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    return rows[0] || null;
+  } catch (e) { console.error(e); return null; }
+}
 
-function addBike(bike) {
-  const bikes = loadBikes();
+async function addBike(bike) {
   bike.id = 'bike-' + Date.now();
-  bikes.unshift(bike);
-  saveBikes(bikes);
-  return bike;
+  const data = await sbInsert('bikes', bike);
+  CACHE.bikes = null;
+  return data;
 }
 
-function updateBike(id, updates) {
-  const bikes = loadBikes();
-  const idx = bikes.findIndex(b => b.id === id);
-  if (idx === -1) return null;
-  bikes[idx] = { ...bikes[idx], ...updates };
-  saveBikes(bikes);
-  return bikes[idx];
+async function updateBike(id, updates) {
+  const data = await sbUpdate('bikes', `id=eq.${encodeURIComponent(id)}`, updates);
+  CACHE.bikes = null;
+  return data;
 }
 
-function deleteBike(id) {
-  const bikes = loadBikes().filter(b => b.id !== id);
-  saveBikes(bikes);
+async function deleteBike(id) {
+  await sbDelete('bikes', `id=eq.${encodeURIComponent(id)}`);
+  CACHE.bikes = null;
 }
 
-// ---- Settings ----
-function loadSettings() {
+// ===== POSTS =====
+async function loadPosts() {
+  if (CACHE.posts) return CACHE.posts;
   try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      // Merge with defaults to ensure new fields exist
-      return { ...DEFAULT_SETTINGS, ...parsed,
-        founders: { ...DEFAULT_SETTINGS.founders, ...(parsed.founders || {}) }
-      };
-    }
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS));
-    return DEFAULT_SETTINGS;
-  } catch (e) { return DEFAULT_SETTINGS; }
+    CACHE.posts = await sbGet('posts', '?order=date.desc&select=*');
+    return CACHE.posts;
+  } catch (e) { console.error(e); return CACHE.posts || []; }
 }
 
-function saveSettings(settings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+async function getPost(id) {
+  if (CACHE.posts) {
+    const c = CACHE.posts.find(p => p.id === id);
+    if (c) return c;
+  }
+  try {
+    const rows = await sbGet('posts', `?id=eq.${encodeURIComponent(id)}&select=*&limit=1`);
+    return rows[0] || null;
+  } catch (e) { console.error(e); return null; }
 }
 
-// ---- Helpers ----
+async function addPost(post) {
+  post.id = 'post-' + Date.now();
+  if (!post.date) post.date = new Date().toISOString().split('T')[0];
+  if (!post.slug) post.slug = (post.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const data = await sbInsert('posts', post);
+  CACHE.posts = null;
+  return data;
+}
+
+async function updatePost(id, updates) {
+  const data = await sbUpdate('posts', `id=eq.${encodeURIComponent(id)}`, updates);
+  CACHE.posts = null;
+  return data;
+}
+
+async function deletePost(id) {
+  await sbDelete('posts', `id=eq.${encodeURIComponent(id)}`);
+  CACHE.posts = null;
+}
+
+// ===== SETTINGS =====
+async function loadSettings() {
+  if (CACHE.settings) return CACHE.settings;
+  try {
+    const rows = await sbGet('settings', '?id=eq.1&select=data&limit=1');
+    if (!rows || !rows[0]) { CACHE.settings = DEFAULT_SETTINGS; return DEFAULT_SETTINGS; }
+    const stored = rows[0].data || {};
+    const merged = { ...DEFAULT_SETTINGS, ...stored,
+      founders: { ...DEFAULT_SETTINGS.founders, ...(stored.founders || {}) }
+    };
+    CACHE.settings = merged;
+    return merged;
+  } catch (e) { console.error(e); return DEFAULT_SETTINGS; }
+}
+
+async function saveSettings(settings) {
+  await sbUpdate('settings', 'id=eq.1', { data: settings, updated_at: new Date().toISOString() });
+  CACHE.settings = settings;
+}
+
+// ===== FORMATTERS / RENDERERS =====
 function formatPrice(p) {
-  if (!p) return '—';
+  if (!p) return '\u2014';
   return 'PKR ' + Number(p).toLocaleString('en-PK');
 }
 
@@ -223,14 +161,13 @@ function bikePlaceholderSVG() {
 function bikeCardHTML(bike, index) {
   const num = String(index + 1).padStart(2, '0');
   const imgHTML = bike.images && bike.images.length
-    ? `<img src="${bike.images[0]}" alt="${bike.year} ${bike.name} — Torque Motorsports Pakistan import">`
+    ? `<img src="${bike.images[0]}" alt="${bike.year || ''} ${bike.name}">`
     : bikePlaceholderSVG();
   const badge = bike.status === 'sold'
     ? `<span class="bike-card__badge bike-card__badge--sold">Delivered</span>`
     : `<span class="bike-card__badge">Available</span>`;
   const featured = bike.featured ? `<span class="bike-card__featured">Featured</span>` : '';
   const placeholderClass = bike.images && bike.images.length ? '' : 'bike-card__img--placeholder';
-
   return `
     <a href="bike.html?id=${bike.id}" class="bike-card">
       <div class="bike-card__img ${placeholderClass}">
@@ -238,30 +175,41 @@ function bikeCardHTML(bike, index) {
         ${imgHTML}
       </div>
       <div class="bike-card__body">
-        <div class="bike-card__num">№ ${num} / ${bike.year || ''}</div>
+        <div class="bike-card__num">\u2116 ${num} / ${bike.year || ''}</div>
         <h3 class="bike-card__title">${bike.name}</h3>
         <p class="bike-card__sub">${bike.sub || ''}</p>
         <div class="bike-card__specs">
-          <div class="bike-card__spec">
-            <span class="bike-card__spec-label">Engine</span>
-            <span class="bike-card__spec-value">${bike.engine || '—'}</span>
-          </div>
-          <div class="bike-card__spec">
-            <span class="bike-card__spec-label">Power</span>
-            <span class="bike-card__spec-value">${bike.power || '—'}</span>
-          </div>
-          <div class="bike-card__spec">
-            <span class="bike-card__spec-label">KM</span>
-            <span class="bike-card__spec-value">${(bike.mileage || '—').replace(' km','')}</span>
-          </div>
+          <div class="bike-card__spec"><span class="bike-card__spec-label">Engine</span><span class="bike-card__spec-value">${bike.engine || '\u2014'}</span></div>
+          <div class="bike-card__spec"><span class="bike-card__spec-label">Power</span><span class="bike-card__spec-value">${bike.power || '\u2014'}</span></div>
+          <div class="bike-card__spec"><span class="bike-card__spec-label">KM</span><span class="bike-card__spec-value">${(bike.mileage || '\u2014').replace(' km','')}</span></div>
         </div>
         <div class="bike-card__foot">
           <span class="bike-card__price">${formatPrice(bike.price)}</span>
-          <span class="bike-card__arrow">→</span>
+          <span class="bike-card__arrow">\u2192</span>
         </div>
       </div>
-    </a>
-  `;
+    </a>`;
+}
+
+function postCardHTML(post) {
+  const coverHTML = post.cover
+    ? `<img src="${post.cover}" alt="${post.title}" loading="lazy">`
+    : `<div class="post-card__cover-ph"><span>${post.category}</span></div>`;
+  const date = new Date(post.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  return `
+    <a href="post.html?id=${post.id}" class="post-card">
+      <div class="post-card__cover">${coverHTML}</div>
+      <div class="post-card__body">
+        <div class="post-card__meta">
+          <span class="post-card__cat">${post.category}</span>
+          <span>\u00B7</span>
+          <span>${date}</span>
+        </div>
+        <h3 class="post-card__title">${post.title}</h3>
+        <p class="post-card__excerpt">${post.excerpt}</p>
+        <span class="post-card__author">By ${post.author}</span>
+      </div>
+    </a>`;
 }
 
 function setActiveNav(name) {
@@ -285,8 +233,6 @@ function initNav() {
       document.body.classList.remove('nav-open');
     });
   });
-
-  // Hero nav scroll effect
   if (nav && nav.classList.contains('nav--hero')) {
     window.addEventListener('scroll', () => {
       if (window.scrollY > 60) nav.classList.add('scrolled');
@@ -295,28 +241,21 @@ function initNav() {
   }
 }
 
-// ---- Apply settings to the page (WhatsApp/email/social links) ----
-function applySiteSettings() {
-  const s = loadSettings();
-  // WhatsApp links — anything with data-wa or href starting with wa-template
+async function applySiteSettings() {
+  const s = await loadSettings();
   document.querySelectorAll('[data-wa]').forEach(el => {
     const msg = el.dataset.wa || `Hi, I'm interested in starting an import with Torque Motorsports.`;
-    el.href = `https://wa.me/${s.whatsapp.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+    el.href = `https://wa.me/${(s.whatsapp || '').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
   });
-  // Email
   document.querySelectorAll('[data-email]').forEach(el => {
     el.href = `mailto:${s.email}`;
-    if (el.dataset.emailText) el.textContent = s.email;
+    if (el.hasAttribute('data-email-text')) el.textContent = s.email;
   });
-  // Phone
   document.querySelectorAll('[data-phone]').forEach(el => {
-    el.href = `tel:${s.phone.replace(/\s/g,'')}`;
-    if (el.dataset.phoneText) el.textContent = s.phone;
+    el.href = `tel:${(s.phone || '').replace(/\s/g,'')}`;
+    if (el.hasAttribute('data-phone-text')) el.textContent = s.phone;
   });
-  // Socials
   ['instagram','tiktok','facebook','youtube'].forEach(net => {
-    document.querySelectorAll(`[data-${net}]`).forEach(el => {
-      el.href = s[net];
-    });
+    document.querySelectorAll(`[data-${net}]`).forEach(el => { el.href = s[net]; });
   });
 }

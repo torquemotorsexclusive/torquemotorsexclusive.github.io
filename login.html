@@ -6,7 +6,10 @@
   <meta name="theme-color" content="#0a0a0a">
   <title>Admin Login — Torque Motorsports Exclusive</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
   <link rel="stylesheet" href="styles.css">
   <style>
     body { padding-top: var(--nav-h); }
@@ -91,6 +94,7 @@
     <ul>
       <li><a href="index.html" data-nav="home">Home</a></li>
       <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
+      <li><a href="blog.html" data-nav="journal">Journal</a></li>
     </ul>
   </div>
   <a href="index.html" class="nav__cta">← Site</a>
@@ -113,28 +117,33 @@
   </div>
 </main>
 
+<script src="supabase.js"></script>
 <script src="data.js"></script>
 <script src="auth.js"></script>
 <script>
-  initNav();
-  if (isLoggedIn()) window.location.href = 'dashboard.html';
+  (async () => {
+    initNav();
+    const loggedIn = await isLoggedIn();
+    if (loggedIn) { window.location.href = 'dashboard.html'; return; }
 
-  const form = document.getElementById('loginForm');
-  const pwInput = document.getElementById('pw');
-  const errorBox = document.getElementById('loginError');
+    const form = document.getElementById('loginForm');
+    const pwInput = document.getElementById('pw');
+    const errorBox = document.getElementById('loginError');
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (login(pwInput.value)) {
-      window.location.href = 'dashboard.html';
-    } else {
-      errorBox.classList.remove('show');
-      void errorBox.offsetWidth;
-      errorBox.classList.add('show');
-      pwInput.value = '';
-      pwInput.focus();
-    }
-  });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ok = await login(pwInput.value);
+      if (ok) {
+        window.location.href = 'dashboard.html';
+      } else {
+        errorBox.classList.remove('show');
+        void errorBox.offsetWidth;
+        errorBox.classList.add('show');
+        pwInput.value = '';
+        pwInput.focus();
+      }
+    });
+  })();
 </script>
 
 </body>
