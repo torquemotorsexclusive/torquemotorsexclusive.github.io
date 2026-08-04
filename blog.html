@@ -9,10 +9,7 @@
   <meta name="description" content="Stories, reviews, and guides from Pakistan's specialist superbike import service. Ducati, BMW, Yamaha, Kawasaki imports and motorsport culture.">
   <meta name="keywords" content="superbike blog Pakistan, motorcycle reviews Pakistan, Ducati Pakistan blog, bike import stories, motorsport Pakistan">
   <link rel="canonical" href="https://torquemotorsexclusive.com/blog.html">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+  <link rel="icon" type="image/png" href="logo.png">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://torquemotorsexclusive.com/blog.html">
@@ -107,74 +104,74 @@
   </div>
 </footer>
 
-<script src="supabase.js"></script>
+<script src="firebase.js"></script>
 <script src="data.js"></script>
 <script>
   (async () => {
     setActiveNav('journal');
-    initNav();
-    applySiteSettings();
+  initNav();
+  applySiteSettings();
 
-    let currentFilter = 'all';
+  let currentFilter = 'all';
 
     async function render() {
       const all = await loadPosts();
-      const filtered = currentFilter === 'all' ? all : all.filter(p => p.category === currentFilter);
+    const filtered = currentFilter === 'all' ? all : all.filter(p => p.category === currentFilter);
 
-      const featuredArea = document.getElementById('featuredArea');
-      const grid = document.getElementById('postsGrid');
+    const featuredArea = document.getElementById('featuredArea');
+    const grid = document.getElementById('postsGrid');
 
-      if (filtered.length === 0) {
-        featuredArea.innerHTML = '';
-        grid.innerHTML = `<div class="empty-state"><h3>No posts in this category yet</h3><p>Try another filter or check back soon.</p></div>`;
-        return;
-      }
+    if (filtered.length === 0) {
+      featuredArea.innerHTML = '';
+      grid.innerHTML = `<div class="empty-state"><h3>No posts in this category yet</h3><p>Try another filter or check back soon.</p></div>`;
+      return;
+    }
 
-      // Featured post on top (only when "All" filter and first post is featured)
-      let postsForGrid = [...filtered];
-      if (currentFilter === 'all') {
-        const featured = filtered.find(p => p.featured);
-        if (featured) {
-          const date = new Date(featured.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-          const coverHTML = featured.cover
-            ? `<img src="${featured.cover}" alt="${featured.title}">`
-            : `<div class="post-card__cover-ph"><span>${featured.category}</span></div>`;
-          featuredArea.innerHTML = `
-            <a href="post.html?id=${featured.id}" class="post-featured">
-              <div class="post-featured__cover">${coverHTML}</div>
-              <div class="post-featured__body">
-                <div class="post-featured__meta">
-                  <span class="post-card__cat">${featured.category}</span>
-                  <span>·</span>
-                  <span>${date}</span>
-                  <span>·</span>
-                  <span>Featured</span>
-                </div>
-                <h2 class="post-featured__title">${featured.title}</h2>
-                <p class="post-featured__excerpt">${featured.excerpt}</p>
-                <span class="post-card__author">By ${featured.author}</span>
+    // Featured post on top (only when "All" filter and first post is featured)
+    let postsForGrid = [...filtered];
+    if (currentFilter === 'all') {
+      const featured = filtered.find(p => p.featured);
+      if (featured) {
+        const date = new Date(featured.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const coverHTML = featured.cover
+          ? `<img src="${featured.cover}" alt="${featured.title}">`
+          : `<div class="post-card__cover-ph"><span>${featured.category}</span></div>`;
+        featuredArea.innerHTML = `
+          <a href="post.html?id=${featured.id}" class="post-featured">
+            <div class="post-featured__cover">${coverHTML}</div>
+            <div class="post-featured__body">
+              <div class="post-featured__meta">
+                <span class="post-card__cat">${featured.category}</span>
+                <span>·</span>
+                <span>${date}</span>
+                <span>·</span>
+                <span>Featured</span>
               </div>
-            </a>
-          `;
-          postsForGrid = filtered.filter(p => p.id !== featured.id);
-        } else {
-          featuredArea.innerHTML = '';
-        }
+              <h2 class="post-featured__title">${featured.title}</h2>
+              <p class="post-featured__excerpt">${featured.excerpt}</p>
+              <span class="post-card__author">By ${featured.author}</span>
+            </div>
+          </a>
+        `;
+        postsForGrid = filtered.filter(p => p.id !== featured.id);
       } else {
         featuredArea.innerHTML = '';
       }
-
-      grid.innerHTML = postsForGrid.map(p => postCardHTML(p)).join('');
+    } else {
+      featuredArea.innerHTML = '';
     }
 
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        render();
-      });
+    grid.innerHTML = postsForGrid.map(p => postCardHTML(p)).join('');
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      render();
     });
+  });
 
     await render();
   })();

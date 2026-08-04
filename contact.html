@@ -9,10 +9,7 @@
   <meta name="description" content="The story behind Torque Motorsports — founded by Sunny Chaudary and Saeed Munwar in Lahore. Pakistan's specialist superbike import service.">
   <meta name="keywords" content="Torque Motorsports about, Sunny Chaudary Ducati Pakistan, Saeed Munwar bike importer, motorcycle importer Lahore, contact superbike importer Pakistan">
   <link rel="canonical" href="https://torquemotorsexclusive.com/contact.html">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+  <link rel="icon" type="image/png" href="logo.png">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://torquemotorsexclusive.com/contact.html">
@@ -167,47 +164,47 @@
   </div>
 </footer>
 
-<script src="supabase.js"></script>
+<script src="firebase.js">  })();
+</script>
 <script src="data.js"></script>
 <script>
   (async () => {
     setActiveNav('contact');
-    initNav();
-    applySiteSettings();
+  initNav();
+  applySiteSettings();
 
-    // Render founders
+  // Render founders
     const settings = await loadSettings();
-    const sunny = settings.founders.sunny;
-    const saeed = settings.founders.saeed;
+  const sunny = settings.founders.sunny;
+  const saeed = settings.founders.saeed;
 
-    document.getElementById('sunnyName').textContent = sunny.name;
-    document.getElementById('sunnyRole').textContent = sunny.role;
-    document.getElementById('sunnyBio').textContent = sunny.bio;
-    document.getElementById('sunnyPhone').textContent = '📞 ' + sunny.phone;
-    document.getElementById('sunnyPhone').href = 'tel:' + sunny.phone.replace(/\s/g,'');
+  document.getElementById('sunnyName').textContent = sunny.name;
+  document.getElementById('sunnyRole').textContent = sunny.role;
+  document.getElementById('sunnyBio').textContent = sunny.bio;
+  document.getElementById('sunnyPhone').textContent = '📞 ' + sunny.phone;
+  document.getElementById('sunnyPhone').href = 'tel:' + sunny.phone.replace(/\s/g,'');
 
-    document.getElementById('saeedName').textContent = saeed.name;
-    document.getElementById('saeedRole').textContent = saeed.role;
-    document.getElementById('saeedBio').textContent = saeed.bio;
-    document.getElementById('saeedPhone').textContent = '📞 ' + saeed.phone;
-    document.getElementById('saeedPhone').href = 'tel:' + saeed.phone.replace(/\s/g,'');
+  document.getElementById('saeedName').textContent = saeed.name;
+  document.getElementById('saeedRole').textContent = saeed.role;
+  document.getElementById('saeedBio').textContent = saeed.bio;
+  document.getElementById('saeedPhone').textContent = '📞 ' + saeed.phone;
+  document.getElementById('saeedPhone').href = 'tel:' + saeed.phone.replace(/\s/g,'');
 
-    const sunnyPhoto = document.getElementById('sunnyPhoto');
-    if (sunny.photo) {
-      sunnyPhoto.innerHTML = `<img src="${sunny.photo}" alt="${sunny.name} — Founder of Torque Motorsports">`;
-    } else {
-      sunnyPhoto.innerHTML = '<span class="founder__photo-ph">Photo · 800 × 1000 px</span>';
-    }
+  const sunnyPhoto = document.getElementById('sunnyPhoto');
+  if (sunny.photo) {
+    sunnyPhoto.innerHTML = `<img src="${sunny.photo}" alt="${sunny.name} — Founder of Torque Motorsports">`;
+  } else {
+    sunnyPhoto.innerHTML = '<span class="founder__photo-ph">Photo · 800 × 1000 px</span>';
+  }
 
-    const saeedPhoto = document.getElementById('saeedPhoto');
-    if (saeed.photo) {
-      saeedPhoto.innerHTML = `<img src="${saeed.photo}" alt="${saeed.name} — Co-Founder of Torque Motorsports">`;
-    } else {
-      saeedPhoto.innerHTML = '<span class="founder__photo-ph">Photo · 800 × 1000 px</span>';
-    }
+  const saeedPhoto = document.getElementById('saeedPhoto');
+  if (saeed.photo) {
+    saeedPhoto.innerHTML = `<img src="${saeed.photo}" alt="${saeed.name} — Co-Founder of Torque Motorsports">`;
+  } else {
+    saeedPhoto.innerHTML = '<span class="founder__photo-ph">Photo · 800 × 1000 px</span>';
+  }
 
     document.getElementById('addressText').textContent = settings.address;
-  })();
 </script>
 
 </body>

@@ -397,7 +397,7 @@
   </div>
 </footer>
 
-<script src="supabase.js"></script>
+<script src="firebase.js"></script>
 <script src="data.js"></script>
 <script src="auth.js"></script>
 <script>
@@ -499,27 +499,28 @@
     function removePhoto(i) { currentPhotos.splice(i, 1); renderPhotoPreview(); }
     window.removePhoto = removePhoto;
 
-    function readFiles(files, cb) {
-      const out = [];
-      let done = 0;
-      if (files.length === 0) { cb([]); return; }
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          out.push(ev.target.result);
-          done++;
-          if (done === files.length) cb(out);
-        };
-        reader.readAsDataURL(file);
-      });
+    async function uploadFiles(files) {
+      const urls = [];
+      for (const file of files) {
+        try {
+          const url = await uploadToCloudinary(file);
+          urls.push(url);
+        } catch(e) {
+          alert('Image upload failed: ' + e.message);
+        }
+      }
+      return urls;
     }
 
-    document.getElementById('f_photos').addEventListener('change', (e) => {
-      readFiles(Array.from(e.target.files), (results) => {
-        currentPhotos = currentPhotos.concat(results);
-        renderPhotoPreview();
-      });
+    document.getElementById('f_photos').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
       e.target.value = '';
+      if (!files.length) return;
+      document.getElementById('f_photos').closest('.form__group').querySelector('span').textContent = '⏳ Uploading...';
+      const urls = await uploadFiles(files);
+      currentPhotos = currentPhotos.concat(urls);
+      renderPhotoPreview();
+      document.getElementById('f_photos').closest('.form__group').querySelector('span').textContent = '📷 Tap to upload photos';
     });
 
     document.getElementById('saveBtn').addEventListener('click', async () => {
@@ -683,17 +684,19 @@
       renderFounderPhoto(who);
     };
 
-    document.getElementById('sn_photo').addEventListener('change', (e) => {
-      readFiles(Array.from(e.target.files).slice(0,1), (results) => {
-        sunnyTempPhoto = results[0]; renderFounderPhoto('sunny');
-      });
+    document.getElementById('sn_photo').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files).slice(0,1);
       e.target.value = '';
+      if (!files.length) return;
+      const urls = await uploadFiles(files);
+      sunnyTempPhoto = urls[0] || ''; renderFounderPhoto('sunny');
     });
-    document.getElementById('sa_photo').addEventListener('change', (e) => {
-      readFiles(Array.from(e.target.files).slice(0,1), (results) => {
-        saeedTempPhoto = results[0]; renderFounderPhoto('saeed');
-      });
+    document.getElementById('sa_photo').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files).slice(0,1);
       e.target.value = '';
+      if (!files.length) return;
+      const urls = await uploadFiles(files);
+      saeedTempPhoto = urls[0] || ''; renderFounderPhoto('saeed');
     });
 
     window.saveFounder = async function(who) {
@@ -737,12 +740,13 @@
 
     window.removeShowroomPhoto = function(i) { showroomTempPhotos.splice(i,1); renderShowroom(); };
 
-    document.getElementById('showroom_upload').addEventListener('change', (e) => {
-      readFiles(Array.from(e.target.files), (results) => {
-        showroomTempPhotos = showroomTempPhotos.concat(results);
-        renderShowroom();
-      });
+    document.getElementById('showroom_upload').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
       e.target.value = '';
+      if (!files.length) return;
+      const urls = await uploadFiles(files);
+      showroomTempPhotos = showroomTempPhotos.concat(urls);
+      renderShowroom();
     });
 
     window.saveShowroom = async function() {
@@ -771,12 +775,13 @@
 
     window.removeGaragePhoto = function(i) { garageTempPhotos.splice(i,1); renderGarage(); };
 
-    document.getElementById('garage_upload').addEventListener('change', (e) => {
-      readFiles(Array.from(e.target.files), (results) => {
-        garageTempPhotos = garageTempPhotos.concat(results);
-        renderGarage();
-      });
+    document.getElementById('garage_upload').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
       e.target.value = '';
+      if (!files.length) return;
+      const urls = await uploadFiles(files);
+      garageTempPhotos = garageTempPhotos.concat(urls);
+      renderGarage();
     });
 
     window.saveGaragePhotos = async function() {
@@ -916,11 +921,12 @@
 
     window.clearPostCover = function() { postCoverTemp = ''; renderPostCoverPreview(); };
 
-    document.getElementById('p_cover').addEventListener('change', (e) => {
-      readFiles(Array.from(e.target.files).slice(0,1), (results) => {
-        postCoverTemp = results[0]; renderPostCoverPreview();
-      });
+    document.getElementById('p_cover').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files).slice(0,1);
       e.target.value = '';
+      if (!files.length) return;
+      const urls = await uploadFiles(files);
+      postCoverTemp = urls[0] || ''; renderPostCoverPreview();
     });
 
     document.getElementById('savePostBtn').addEventListener('click', async () => {
