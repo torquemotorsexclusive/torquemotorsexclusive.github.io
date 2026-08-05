@@ -131,9 +131,49 @@ async function fsQuery(collection, orderField, direction = 'DESCENDING') {
 
 // ── Cloudinary upload ──────────────────────────────────────
 
+async function compressImage(file, maxSizeMB = 8) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        // Scale down if very large
+        const maxDim = 2400;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) { height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        // Try quality 0.85 first, then reduce if still too large
+        let quality = 0.85;
+        const tryCompress = () => {
+          canvas.toBlob((blob) => {
+            if (blob.size > maxSizeMB * 1024 * 1024 && quality > 0.3) {
+              quality -= 0.15;
+              tryCompress();
+            } else {
+              resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+            }
+          }, 'image/jpeg', quality);
+        };
+        tryCompress();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 async function uploadToCloudinary(file) {
+  // Auto-compress before upload
+  const compressed = await compressImage(file, 8);
+
   const fd = new FormData();
-  fd.append('file', file);
+  fd.append('file', compressed);
   fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
   const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
@@ -145,6 +185,5 @@ async function uploadToCloudinary(file) {
     throw new Error(err.error?.message || 'Image upload failed (' + res.status + ')');
   }
   const data = await res.json();
-  // Return optimized URL with auto quality + format
   return data.secure_url.replace('/upload/', '/upload/q_auto,f_auto,w_1200/');
 }
