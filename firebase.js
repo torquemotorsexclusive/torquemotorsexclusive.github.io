@@ -135,13 +135,15 @@ async function uploadToCloudinary(file) {
   const fd = new FormData();
   fd.append('file', file);
   fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  fd.append('folder', 'torque');
 
   const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
     method: 'POST',
     body: fd
   });
-  if (!res.ok) throw new Error('Image upload failed');
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || 'Image upload failed (' + res.status + ')');
+  }
   const data = await res.json();
   // Return optimized URL with auto quality + format
   return data.secure_url.replace('/upload/', '/upload/q_auto,f_auto,w_1200/');
