@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    // Clean URL redirect: /page.html -> /page, /index.html -> /
+    (function() {
+      var p = location.pathname;
+      if (p.endsWith('/index.html')) {
+        history.replaceState(null, '', p.replace(/index\.html$/, '') + location.search + location.hash);
+      } else if (p.endsWith('.html')) {
+        history.replaceState(null, '', p.replace(/\.html$/, '') + location.search + location.hash);
+      }
+    })();
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0a0a0a">
@@ -14,7 +26,7 @@
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav__logo">
+  <a href="/" class="nav__logo">
     <img src="logo.png" alt="Torque Motorsports">
   </a>
   <button class="nav__toggle" aria-label="Menu">
@@ -22,17 +34,17 @@
   </button>
   <div class="nav__menu">
     <ul>
-      <li><a href="index.html" data-nav="home">Home</a></li>
-      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
-      <li><a href="blog.html" data-nav="journal">Journal</a></li>
-      <li><a href="contact.html" data-nav="contact">Story</a></li>
+      <li><a href="/" data-nav="home">Home</a></li>
+      <li><a href="/inventory" data-nav="garage">The Garage</a></li>
+      <li><a href="/blog" data-nav="journal">Journal</a></li>
+      <li><a href="/contact" data-nav="contact">Story</a></li>
     </ul>
     <div class="nav__menu-foot">
       <span>Lahore / Pakistan</span>
       <a href="#" data-email data-email-text>hello@torquemotorsexclusive.com</a>
     </div>
   </div>
-  <a href="inventory.html" class="nav__cta">← Back</a>
+  <a href="/inventory" class="nav__cta">← Back</a>
 </nav>
 
 <main class="detail" id="detail-root"></main>
@@ -57,17 +69,25 @@
     const root = document.getElementById('detail-root');
 
     if (!id) {
-      root.innerHTML = `<div class="empty-state"><h3>No bike selected</h3><p><a href="inventory.html" style="color:var(--red);">← Return to The Garage</a></p></div>`;
+      root.innerHTML = `<div class="empty-state"><h3>No bike selected</h3><p><a href="/inventory" style="color:var(--red);">← Return to The Garage</a></p></div>`;
     } else {
       const bike = await getBike(id);
       if (!bike) {
-        root.innerHTML = `<div class="empty-state"><h3>Bike not found</h3><p><a href="inventory.html" style="color:var(--red);">← Return to The Garage</a></p></div>`;
+        root.innerHTML = `<div class="empty-state"><h3>Bike not found</h3><p><a href="/inventory" style="color:var(--red);">← Return to The Garage</a></p></div>`;
       } else {
         // ============ AUTO-GENERATED SEO FOR THIS BIKE ============
         const seoTitle = `${bike.year || ''} ${bike.name} — ${bike.status === 'sold' ? 'Delivered Import' : 'Available Import'} | Torque Motorsports Pakistan`;
-        const seoDesc = `${bike.year || ''} ${bike.name} imported by Torque Motorsports to Pakistan. ${bike.engine || ''} ${bike.power ? '· ' + bike.power : ''}. ${bike.sub || ''}. Specialist superbike imports from Lahore.`;
+        // Build meta description from the bike's own description text (cleaned + truncated to ~300 chars)
+        const cleanDesc = (bike.description || '')
+          .replace(/[\u2705\u{1F525}\u{1F4DE}\u{1F6E0}\u{1F4CD}\u26A1\uFE0F]/gu, '')  // strip emojis
+          .replace(/\s+/g, ' ')
+          .trim();
+        const specLine = `${bike.year || ''} ${bike.name} — ${bike.engine || ''}${bike.power ? ', ' + bike.power : ''}${bike.mileage ? ', ' + bike.mileage : ''}. `;
+        const seoDesc = cleanDesc
+          ? (specLine + cleanDesc).slice(0, 300)
+          : `${bike.year || ''} ${bike.name} imported by Torque Motorsports to Pakistan. ${bike.engine || ''} ${bike.power ? '· ' + bike.power : ''}. ${bike.sub || ''}. Specialist superbike imports from Lahore.`;
         const heroImg = (bike.images && bike.images[0]) ? bike.images[0] : 'https://torquemotorsexclusive.com/hero.jpg';
-        const pageUrl = `https://torquemotorsexclusive.com/bike.html?id=${bike.id}`;
+        const pageUrl = `https://torquemotorsexclusive.com/bike?id=${bike.id}`;
 
         document.title = seoTitle;
 
@@ -82,7 +102,13 @@
           el.setAttribute('content', content);
         }
         setMeta('description', seoDesc);
-        setMeta('keywords', `${bike.brand || ''} Pakistan, ${bike.name} Pakistan, ${bike.year || ''} ${bike.name}, superbike import Pakistan, ${bike.brand || ''} Lahore`);
+        // Keywords: brand/model/year plus distinctive terms pulled from the description
+        const descWords = cleanDesc
+          .split(' ')
+          .filter(w => w.length > 4 && /^[A-Za-z0-9''-]+$/.test(w))
+          .slice(0, 15)
+          .join(', ');
+        setMeta('keywords', `${bike.brand || ''} Pakistan, ${bike.name} Pakistan, ${bike.year || ''} ${bike.name}, ${bike.name} for sale Pakistan, ${bike.name} Lahore, superbike import Pakistan, ${bike.brand || ''} Lahore${descWords ? ', ' + descWords : ''}`);
         setMeta('og:type', 'product', true);
         setMeta('og:title', seoTitle, true);
         setMeta('og:description', seoDesc, true);
@@ -161,7 +187,7 @@
             <span class="detail__status ${statusClass}">${statusLabel}</span>
             <span class="detail__price-label">Import Reference Price</span>
             <div class="detail__price">${formatPrice(bike.price)}</div>
-            <p class="detail__desc">${bike.description || ''}</p>
+            ${bike.showDescription ? `<p class="detail__desc">${bike.description || ''}</p>` : ''}
             <div class="detail__specs">
               <div class="detail__spec"><div class="detail__spec-label">Year</div><div class="detail__spec-value">${bike.year || '—'}</div></div>
               <div class="detail__spec"><div class="detail__spec-label">Brand</div><div class="detail__spec-value">${bike.brand || '—'}</div></div>
@@ -173,7 +199,7 @@
           </div>
           <div class="detail__sticky-cta">
             <a href="#" target="_blank" class="btn btn--primary" data-wa="${waText.replace(/"/g,'&quot;')}">WhatsApp Inquiry</a>
-            <a href="inventory.html" class="btn btn--ghost">The Garage</a>
+            <a href="/inventory" class="btn btn--ghost">The Garage</a>
           </div>
         `;
 

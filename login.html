@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    // Clean URL redirect: /page.html -> /page, /index.html -> /
+    (function() {
+      var p = location.pathname;
+      if (p.endsWith('/index.html')) {
+        history.replaceState(null, '', p.replace(/index\.html$/, '') + location.search + location.hash);
+      } else if (p.endsWith('.html')) {
+        history.replaceState(null, '', p.replace(/\.html$/, '') + location.search + location.hash);
+      }
+    })();
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0a0a0a">
@@ -84,7 +96,7 @@
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav__logo">
+  <a href="/" class="nav__logo">
     <img src="logo.png" alt="Torque Motorsports">
   </a>
   <button class="nav__toggle" aria-label="Menu">
@@ -92,12 +104,12 @@
   </button>
   <div class="nav__menu">
     <ul>
-      <li><a href="index.html" data-nav="home">Home</a></li>
-      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
-      <li><a href="blog.html" data-nav="journal">Journal</a></li>
+      <li><a href="/" data-nav="home">Home</a></li>
+      <li><a href="/inventory" data-nav="garage">The Garage</a></li>
+      <li><a href="/blog" data-nav="journal">Journal</a></li>
     </ul>
   </div>
-  <a href="index.html" class="nav__cta">← Site</a>
+  <a href="/" class="nav__cta">← Site</a>
 </nav>
 
 <main class="login-wrap">
@@ -124,7 +136,7 @@
   (async () => {
     initNav();
     const loggedIn = await isLoggedIn();
-    if (loggedIn) { window.location.href = 'dashboard.html'; return; }
+    if (loggedIn) { window.location.href = '/dashboard'; return; }
 
     const form = document.getElementById('loginForm');
     const pwInput = document.getElementById('pw');
@@ -134,7 +146,7 @@
       e.preventDefault();
       const ok = await login(pwInput.value);
       if (ok) {
-        window.location.href = 'dashboard.html';
+        window.location.href = '/dashboard';
       } else {
         errorBox.classList.remove('show');
         void errorBox.offsetWidth;

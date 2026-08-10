@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    // Clean URL redirect: /page.html -> /page, /index.html -> /
+    (function() {
+      var p = location.pathname;
+      if (p.endsWith('/index.html')) {
+        history.replaceState(null, '', p.replace(/index\.html$/, '') + location.search + location.hash);
+      } else if (p.endsWith('.html')) {
+        history.replaceState(null, '', p.replace(/\.html$/, '') + location.search + location.hash);
+      }
+    })();
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0a0a0a">
@@ -13,14 +25,14 @@
   <link rel="stylesheet" href="styles.css">
   <script>
     if (localStorage.getItem('torque_auth_v1') !== 'true') {
-      window.location.href = 'login.html';
+      window.location.href = '/login';
     }
   </script>
 </head>
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav__logo">
+  <a href="/" class="nav__logo">
     <img src="logo.png" alt="Torque Motorsports">
   </a>
   <button class="nav__toggle" aria-label="Menu">
@@ -28,10 +40,10 @@
   </button>
   <div class="nav__menu">
     <ul>
-      <li><a href="index.html" data-nav="home">Home</a></li>
-      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
-      <li><a href="blog.html" data-nav="journal">Journal</a></li>
-      <li><a href="contact.html" data-nav="contact">Story</a></li>
+      <li><a href="/" data-nav="home">Home</a></li>
+      <li><a href="/inventory" data-nav="garage">The Garage</a></li>
+      <li><a href="/blog" data-nav="journal">Journal</a></li>
+      <li><a href="/contact" data-nav="contact">Story</a></li>
       <li><a href="#" onclick="logout();return false;" style="color:var(--red);">Logout</a></li>
     </ul>
   </div>
@@ -126,6 +138,11 @@
         <div class="form__group">
           <label class="form__label">Description</label>
           <textarea class="form__textarea" id="f_description" placeholder="Short description..."></textarea>
+          <div class="form__check" style="margin-top:0.6rem;">
+            <input type="checkbox" id="f_show_description">
+            <label for="f_show_description">Show description on bike page</label>
+          </div>
+          <div class="form__hint">Off by default — description is always used for SEO meta tags, but only displays on the page when this is on</div>
         </div>
 
         <div class="form__group">
@@ -407,7 +424,7 @@
 
     // ============ AUTH CHECK ============
     const loggedIn = await isLoggedIn();
-    if (!loggedIn) { window.location.href = 'login.html'; return; }
+    if (!loggedIn) { window.location.href = '/login'; return; }
 
     // ============ TAB SWITCHING ============
     document.querySelectorAll('.dash__tab').forEach(tab => {
@@ -484,6 +501,7 @@
       });
       document.getElementById('f_status').value = 'available';
       document.getElementById('f_featured').checked = false;
+      document.getElementById('f_show_description').checked = false;
       document.getElementById('photoPreview').innerHTML = '';
       document.getElementById('cancelBtn').style.display = 'none';
       document.getElementById('saveBtn').textContent = 'Save Bike';
@@ -537,6 +555,7 @@
         transmission: document.getElementById('f_transmission').value.trim(),
         status: document.getElementById('f_status').value,
         featured: document.getElementById('f_featured').checked,
+        showDescription: document.getElementById('f_show_description').checked,
         description: document.getElementById('f_description').value.trim(),
         images: currentPhotos
       };
@@ -584,6 +603,7 @@
       document.getElementById('f_transmission').value = b.transmission || '';
       document.getElementById('f_status').value = b.status || 'available';
       document.getElementById('f_featured').checked = !!b.featured;
+      document.getElementById('f_show_description').checked = !!b.showDescription;
       document.getElementById('f_description').value = b.description || '';
       renderPhotoPreview();
       document.getElementById('cancelBtn').style.display = 'inline-block';
@@ -807,19 +827,19 @@
       let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
       const staticPages = [
         { url: '/', priority: '1.0', freq: 'weekly' },
-        { url: '/inventory.html', priority: '0.9', freq: 'weekly' },
-        { url: '/blog.html', priority: '0.9', freq: 'weekly' },
-        { url: '/contact.html', priority: '0.8', freq: 'monthly' }
+        { url: '/inventory', priority: '0.9', freq: 'weekly' },
+        { url: '/blog', priority: '0.9', freq: 'weekly' },
+        { url: '/contact', priority: '0.8', freq: 'monthly' }
       ];
       staticPages.forEach(p => {
         xml += `  <url>\n    <loc>${base}${p.url}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${p.freq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>\n`;
       });
       bikes.forEach(b => {
-        xml += `  <url>\n    <loc>${base}/bike.html?id=${b.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${base}/bike?id=${b.id}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
       });
       posts.forEach(p => {
         const lastmod = p.date || today;
-        xml += `  <url>\n    <loc>${base}/post.html?id=${p.id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${base}/post?id=${p.id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
       });
       xml += '</urlset>';
       return xml;

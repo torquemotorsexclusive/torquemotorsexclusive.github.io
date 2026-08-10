@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    // Clean URL redirect: /page.html -> /page, /index.html -> /
+    (function() {
+      var p = location.pathname;
+      if (p.endsWith('/index.html')) {
+        history.replaceState(null, '', p.replace(/index\.html$/, '') + location.search + location.hash);
+      } else if (p.endsWith('.html')) {
+        history.replaceState(null, '', p.replace(/\.html$/, '') + location.search + location.hash);
+      }
+    })();
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0a0a0a">
@@ -14,7 +26,7 @@
 <body>
 
 <nav class="nav">
-  <a href="index.html" class="nav__logo">
+  <a href="/" class="nav__logo">
     <img src="logo.png" alt="Torque Motorsports">
   </a>
   <button class="nav__toggle" aria-label="Menu">
@@ -22,17 +34,17 @@
   </button>
   <div class="nav__menu">
     <ul>
-      <li><a href="index.html" data-nav="home">Home</a></li>
-      <li><a href="inventory.html" data-nav="garage">The Garage</a></li>
-      <li><a href="blog.html" data-nav="journal">Journal</a></li>
-      <li><a href="contact.html" data-nav="contact">Story</a></li>
+      <li><a href="/" data-nav="home">Home</a></li>
+      <li><a href="/inventory" data-nav="garage">The Garage</a></li>
+      <li><a href="/blog" data-nav="journal">Journal</a></li>
+      <li><a href="/contact" data-nav="contact">Story</a></li>
     </ul>
     <div class="nav__menu-foot">
       <span>Lahore / Pakistan</span>
       <a href="#" data-email data-email-text>hello@torquemotorsexclusive.com</a>
     </div>
   </div>
-  <a href="blog.html" class="nav__cta">← Journal</a>
+  <a href="/blog" class="nav__cta">← Journal</a>
 </nav>
 
 <main class="post" id="postRoot"></main>
@@ -63,16 +75,16 @@
     const root = document.getElementById('postRoot');
 
     if (!id) {
-      root.innerHTML = `<div class="empty-state"><h3>No post selected</h3><p><a href="blog.html" style="color:var(--red);">← Back to Journal</a></p></div>`;
+      root.innerHTML = `<div class="empty-state"><h3>No post selected</h3><p><a href="/blog" style="color:var(--red);">← Back to Journal</a></p></div>`;
     } else {
       const post = await getPost(id);
       if (!post) {
-        root.innerHTML = `<div class="empty-state"><h3>Post not found</h3><p><a href="blog.html" style="color:var(--red);">← Back to Journal</a></p></div>`;
+        root.innerHTML = `<div class="empty-state"><h3>Post not found</h3><p><a href="/blog" style="color:var(--red);">← Back to Journal</a></p></div>`;
       } else {
         // ============ AUTO SEO ============
         const seoTitle = `${post.title} | Torque Motorsports Journal`;
         const seoDesc = post.excerpt || '';
-        const pageUrl = `https://torquemotorsexclusive.com/post.html?id=${post.id}`;
+        const pageUrl = `https://torquemotorsexclusive.com/post?id=${post.id}`;
         const coverImg = post.cover || 'https://torquemotorsexclusive.com/hero.jpg';
 
         document.title = seoTitle;

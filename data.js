@@ -186,7 +186,7 @@ function bikeCardHTML(bike, index) {
   const featured = bike.featured ? `<span class="bike-card__featured">Featured</span>` : '';
   const placeholderClass = bike.images && bike.images.length ? '' : 'bike-card__img--placeholder';
   return `
-    <a href="bike.html?id=${bike.id}" class="bike-card">
+    <a href="/bike?id=${bike.id}" class="bike-card">
       <div class="bike-card__img ${placeholderClass}">
         ${badge}${featured}
         ${imgHTML}
@@ -214,7 +214,7 @@ function postCardHTML(post) {
     : `<div class="post-card__cover-ph"><span>${post.category}</span></div>`;
   const date = new Date(post.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   return `
-    <a href="post.html?id=${post.id}" class="post-card">
+    <a href="/post?id=${post.id}" class="post-card">
       <div class="post-card__cover">${coverHTML}</div>
       <div class="post-card__body">
         <div class="post-card__meta">
