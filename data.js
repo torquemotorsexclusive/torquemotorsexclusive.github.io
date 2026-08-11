@@ -33,6 +33,7 @@ const DEFAULT_SETTINGS = {
   },
   showroomPhotos: [],
   garagePhotos: [],
+  igReviews: [],
   garageServices: [
     'Full Service & Repair',
     'Oil Change & Tune-Ups',

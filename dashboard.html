@@ -274,6 +274,11 @@
       <div class="form__row">
         <div class="form__group"><label class="form__label">Facebook URL</label><input type="url" class="form__input" id="s_facebook"></div>
         <div class="form__group"><label class="form__label">YouTube URL</label><input type="url" class="form__input" id="s_youtube"></div>
+        <div class="form__group">
+          <label class="form__label">Instagram Client Reviews (one post/reel URL per line)</label>
+          <textarea class="form__textarea" id="s_ig_reviews" style="min-height:120px;" placeholder="https://www.instagram.com/reel/ABC123/&#10;https://www.instagram.com/p/XYZ789/"></textarea>
+          <div class="form__hint">These embed live on the homepage "Client Reviews" section. Posts must be public.</div>
+        </div>
       </div>
 
       <div class="form__actions">
@@ -655,6 +660,7 @@
       document.getElementById('s_tiktok').value = s.tiktok;
       document.getElementById('s_facebook').value = s.facebook;
       document.getElementById('s_youtube').value = s.youtube;
+      document.getElementById('s_ig_reviews').value = (s.igReviews || []).join('\n');
     }
 
     window.saveContactSettings = async function() {
@@ -667,6 +673,7 @@
       s.tiktok = document.getElementById('s_tiktok').value.trim();
       s.facebook = document.getElementById('s_facebook').value.trim();
       s.youtube = document.getElementById('s_youtube').value.trim();
+      s.igReviews = document.getElementById('s_ig_reviews').value.split('\n').map(x => x.trim()).filter(Boolean);
       await saveSettings(s);
       alert('Contact info saved. Will reflect across the site immediately.');
     };

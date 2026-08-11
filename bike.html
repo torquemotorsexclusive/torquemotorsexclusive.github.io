@@ -187,7 +187,7 @@
             <span class="detail__status ${statusClass}">${statusLabel}</span>
             <span class="detail__price-label">Import Reference Price</span>
             <div class="detail__price">${formatPrice(bike.price)}</div>
-            ${bike.showDescription ? `<p class="detail__desc">${bike.description || ''}</p>` : ''}
+            ${bike.showDescription !== false ? `<p class="detail__desc">${bike.description || ''}</p>` : ''}
             <div class="detail__specs">
               <div class="detail__spec"><div class="detail__spec-label">Year</div><div class="detail__spec-value">${bike.year || '—'}</div></div>
               <div class="detail__spec"><div class="detail__spec-label">Brand</div><div class="detail__spec-value">${bike.brand || '—'}</div></div>
