@@ -139,10 +139,10 @@
           <label class="form__label">Description</label>
           <textarea class="form__textarea" id="f_description" placeholder="Short description..."></textarea>
           <div class="form__check" style="margin-top:0.6rem;">
-            <input type="checkbox" id="f_show_description">
+            <input type="checkbox" id="f_show_description" checked>
             <label for="f_show_description">Show description on bike page</label>
           </div>
-          <div class="form__hint">Off by default — description is always used for SEO meta tags, but only displays on the page when this is on</div>
+          <div class="form__hint">On by default — untick to hide the description on the bike page (it still powers SEO meta tags either way)</div>
         </div>
 
         <div class="form__group">
@@ -291,6 +291,7 @@
       <div class="form__group"><label class="form__label">Role</label><input type="text" class="form__input" id="sn_role"></div>
       <div class="form__group"><label class="form__label">Phone</label><input type="text" class="form__input" id="sn_phone"></div>
       <div class="form__group"><label class="form__label">Bio</label><textarea class="form__textarea" id="sn_bio" style="min-height:120px;"></textarea></div>
+      <div class="form__group"><label class="form__label">Rider Story (shown in "The Riders" section on Story page)</label><textarea class="form__textarea" id="sn_story" style="min-height:140px;" placeholder="Sunny's personal story — how he got into bikes, what riding means to him..."></textarea></div>
       <div class="form__group">
         <label class="form__label">Photo</label>
         <label class="form__file-zone">
@@ -309,6 +310,7 @@
       <div class="form__group"><label class="form__label">Role</label><input type="text" class="form__input" id="sa_role"></div>
       <div class="form__group"><label class="form__label">Phone</label><input type="text" class="form__input" id="sa_phone"></div>
       <div class="form__group"><label class="form__label">Bio</label><textarea class="form__textarea" id="sa_bio" style="min-height:120px;"></textarea></div>
+      <div class="form__group"><label class="form__label">Rider Story (shown in "The Riders" section on Story page)</label><textarea class="form__textarea" id="sa_story" style="min-height:140px;" placeholder="Saeed's personal story — his import experience, his craft..."></textarea></div>
       <div class="form__group">
         <label class="form__label">Photo</label>
         <label class="form__file-zone">
@@ -501,7 +503,7 @@
       });
       document.getElementById('f_status').value = 'available';
       document.getElementById('f_featured').checked = false;
-      document.getElementById('f_show_description').checked = false;
+      document.getElementById('f_show_description').checked = true;
       document.getElementById('photoPreview').innerHTML = '';
       document.getElementById('cancelBtn').style.display = 'none';
       document.getElementById('saveBtn').textContent = 'Save Bike';
@@ -603,7 +605,7 @@
       document.getElementById('f_transmission').value = b.transmission || '';
       document.getElementById('f_status').value = b.status || 'available';
       document.getElementById('f_featured').checked = !!b.featured;
-      document.getElementById('f_show_description').checked = !!b.showDescription;
+      document.getElementById('f_show_description').checked = b.showDescription !== false;
       document.getElementById('f_description').value = b.description || '';
       renderPhotoPreview();
       document.getElementById('cancelBtn').style.display = 'inline-block';
@@ -679,6 +681,7 @@
       document.getElementById('sn_role').value = s.founders.sunny.role;
       document.getElementById('sn_phone').value = s.founders.sunny.phone;
       document.getElementById('sn_bio').value = s.founders.sunny.bio;
+      document.getElementById('sn_story').value = s.founders.sunny.story || '';
       sunnyTempPhoto = s.founders.sunny.photo || '';
       renderFounderPhoto('sunny');
 
@@ -686,6 +689,7 @@
       document.getElementById('sa_role').value = s.founders.saeed.role;
       document.getElementById('sa_phone').value = s.founders.saeed.phone;
       document.getElementById('sa_bio').value = s.founders.saeed.bio;
+      document.getElementById('sa_story').value = s.founders.saeed.story || '';
       saeedTempPhoto = s.founders.saeed.photo || '';
       renderFounderPhoto('saeed');
     }
@@ -727,6 +731,7 @@
           role: document.getElementById('sn_role').value.trim(),
           phone: document.getElementById('sn_phone').value.trim(),
           bio: document.getElementById('sn_bio').value.trim(),
+          story: document.getElementById('sn_story').value.trim(),
           photo: sunnyTempPhoto
         };
       } else {
@@ -735,6 +740,7 @@
           role: document.getElementById('sa_role').value.trim(),
           phone: document.getElementById('sa_phone').value.trim(),
           bio: document.getElementById('sa_bio').value.trim(),
+          story: document.getElementById('sa_story').value.trim(),
           photo: saeedTempPhoto
         };
       }

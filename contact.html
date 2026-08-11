@@ -103,6 +103,21 @@
 
 </section>
 
+<!-- THE RIDERS — individual stories -->
+<section class="story-block" id="riderStories">
+  <h2 class="page-header__title" style="font-size:2rem; margin-bottom:2rem;">The <em>Riders.</em></h2>
+
+  <div style="margin-bottom:3rem;">
+    <div class="founder__role">Sunny Chaudary</div>
+    <p class="story-block__body" id="sunnyStory" style="margin-top:0.8rem;"></p>
+  </div>
+
+  <div>
+    <div class="founder__role">Saeed Munwar</div>
+    <p class="story-block__body" id="saeedStory" style="margin-top:0.8rem;"></p>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section class="contact-block">
   <div class="section__head" style="border:none; margin-bottom: 1rem; padding-bottom: 0;">
@@ -217,6 +232,21 @@
   }
 
     document.getElementById('addressText').textContent = settings.address;
+
+    // Individual rider stories (hide section if both empty)
+    const sunnyStoryEl = document.getElementById('sunnyStory');
+    const saeedStoryEl = document.getElementById('saeedStory');
+    const riderSection = document.getElementById('riderStories');
+    const sStory = sunny.story || '';
+    const dStory = saeed.story || '';
+    if (!sStory && !dStory) {
+      riderSection.style.display = 'none';
+    } else {
+      sunnyStoryEl.textContent = sStory;
+      saeedStoryEl.textContent = dStory;
+      if (!sStory) sunnyStoryEl.parentElement.style.display = 'none';
+      if (!dStory) saeedStoryEl.parentElement.style.display = 'none';
+    }
 </script>
 
 </body>
