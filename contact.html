@@ -88,7 +88,10 @@
       <h2 class="founder__name" id="sunnyName">Sunny Chaudary</h2>
       <p class="founder__bio" id="sunnyBio"></p>
       <p class="founder__bio" id="sunnyStory" style="margin-top:0.8rem;"></p>
-      <a href="#" class="founder__phone" id="sunnyPhone">📞 +92 — — —</a>
+      <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+        <a href="#" class="founder__phone" id="sunnyPhone">📞 +92 — — —</a>
+        <a href="#" target="_blank" rel="noopener" class="founder__phone" id="sunnyWhatsapp">💬 WhatsApp</a>
+      </div>
     </div>
   </div>
 
@@ -99,7 +102,10 @@
       <h2 class="founder__name" id="saeedName">Saeed Munwar</h2>
       <p class="founder__bio" id="saeedBio"></p>
       <p class="founder__bio" id="saeedStory" style="margin-top:0.8rem;"></p>
-      <a href="#" class="founder__phone" id="saeedPhone">📞 +92 — — —</a>
+      <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+        <a href="#" class="founder__phone" id="saeedPhone">📞 +92 — — —</a>
+        <a href="#" target="_blank" rel="noopener" class="founder__phone" id="saeedWhatsapp">💬 WhatsApp</a>
+      </div>
     </div>
   </div>
 
@@ -129,8 +135,20 @@
     </div>
     <div class="contact-item">
       <h4>Location</h4>
-      <span id="addressText">Lahore, Pakistan</span>
+      <a href="https://share.google/yAkx8maK8F5xwUITj" target="_blank" rel="noopener" id="addressText" style="color:inherit;">Lahore, Pakistan</a>
     </div>
+  </div>
+
+  <div style="margin:2.5rem 0; border:1px solid var(--grey-2, #2a2a2a);">
+    <iframe
+      src="https://www.google.com/maps?q=26-T,+Lalik+Jan+Chowk,+Phase+2,+DHA,+Lahore,+Pakistan&output=embed"
+      width="100%" height="380" style="border:0; display:block; filter: grayscale(1) invert(0.9) contrast(0.9);"
+      allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+      title="Torque Motorsports location — DHA Phase 2, Lahore"></iframe>
+    <a href="https://share.google/yAkx8maK8F5xwUITj" target="_blank" rel="noopener"
+       style="display:block; padding:0.9rem; text-align:center; font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.12em; color:var(--red, #e10600); border-top:1px solid var(--grey-2, #2a2a2a);">
+      OPEN IN GOOGLE MAPS →
+    </a>
   </div>
 
   <div class="social-row">
@@ -203,6 +221,11 @@
   document.getElementById('saeedBio').textContent = saeed.bio;
   document.getElementById('saeedPhone').textContent = '📞 ' + saeed.phone;
   document.getElementById('saeedPhone').href = 'tel:' + saeed.phone.replace(/\s/g,'');
+
+  // WhatsApp buttons for each founder (uses their own number)
+  const waMsg = encodeURIComponent("Hi, I'm reaching out from the Torque Motorsports website.");
+  document.getElementById('sunnyWhatsapp').href = 'https://wa.me/' + sunny.phone.replace(/\D/g,'') + '?text=' + waMsg;
+  document.getElementById('saeedWhatsapp').href = 'https://wa.me/' + saeed.phone.replace(/\D/g,'') + '?text=' + waMsg;
 
   const sunnyPhoto = document.getElementById('sunnyPhoto');
   if (sunny.photo) {
