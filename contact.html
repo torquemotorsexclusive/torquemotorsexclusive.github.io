@@ -87,6 +87,7 @@
       <div class="founder__role" id="sunnyRole">Founder · Lifelong Biker</div>
       <h2 class="founder__name" id="sunnyName">Sunny Chaudary</h2>
       <p class="founder__bio" id="sunnyBio"></p>
+      <p class="founder__bio" id="sunnyStory" style="margin-top:0.8rem;"></p>
       <a href="#" class="founder__phone" id="sunnyPhone">📞 +92 — — —</a>
     </div>
   </div>
@@ -97,26 +98,13 @@
       <div class="founder__role" id="saeedRole">Co-Founder · Imports & Restoration</div>
       <h2 class="founder__name" id="saeedName">Saeed Munwar</h2>
       <p class="founder__bio" id="saeedBio"></p>
+      <p class="founder__bio" id="saeedStory" style="margin-top:0.8rem;"></p>
       <a href="#" class="founder__phone" id="saeedPhone">📞 +92 — — —</a>
     </div>
   </div>
 
 </section>
 
-<!-- THE RIDERS — individual stories -->
-<section class="story-block" id="riderStories">
-  <h2 class="page-header__title" style="font-size:2rem; margin-bottom:2rem;">The <em>Riders.</em></h2>
-
-  <div style="margin-bottom:3rem;">
-    <div class="founder__role">Sunny Chaudary</div>
-    <p class="story-block__body" id="sunnyStory" style="margin-top:0.8rem;"></p>
-  </div>
-
-  <div>
-    <div class="founder__role">Saeed Munwar</div>
-    <p class="story-block__body" id="saeedStory" style="margin-top:0.8rem;"></p>
-  </div>
-</section>
 
 <!-- CONTACT -->
 <section class="contact-block">
@@ -233,20 +221,13 @@
 
     document.getElementById('addressText').textContent = settings.address;
 
-    // Individual rider stories (hide section if both empty)
+    // Individual rider stories inside the cards (hidden when empty)
     const sunnyStoryEl = document.getElementById('sunnyStory');
     const saeedStoryEl = document.getElementById('saeedStory');
-    const riderSection = document.getElementById('riderStories');
-    const sStory = sunny.story || '';
-    const dStory = saeed.story || '';
-    if (!sStory && !dStory) {
-      riderSection.style.display = 'none';
-    } else {
-      sunnyStoryEl.textContent = sStory;
-      saeedStoryEl.textContent = dStory;
-      if (!sStory) sunnyStoryEl.parentElement.style.display = 'none';
-      if (!dStory) saeedStoryEl.parentElement.style.display = 'none';
-    }
+    sunnyStoryEl.textContent = sunny.story || '';
+    saeedStoryEl.textContent = saeed.story || '';
+    if (!sunny.story) sunnyStoryEl.style.display = 'none';
+    if (!saeed.story) saeedStoryEl.style.display = 'none';
 </script>
 
 </body>
