@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dr. Zeeshan Shabbir — ZS MotoVlogs</title>
+<meta name="description" content="Dr. Zeeshan Shabbir — MBBS doctor from Bahawalpur and Pakistan's premier superbike vlogger. From Medicine to Motorsports.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2304090b'/%3E%3Cpath d='M2 18h6l3-10 5 16 4-12 2 6h8' stroke='%232bff8f' stroke-width='2.5' fill='none'/%3E%3C/svg%3E">
+<style>
+@font-face{font-family:'Anton';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/Anton-400.woff2) format('woff2')}
+@font-face{font-family:'Chivo Mono';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/ChivoMono-400.woff2) format('woff2')}
+@font-face{font-family:'Chivo Mono';font-style:normal;font-weight:500;font-display:swap;src:url(assets/fonts/ChivoMono-500.woff2) format('woff2')}
+@font-face{font-family:'Saira';font-style:normal;font-weight:300;font-display:swap;src:url(assets/fonts/Saira-300.woff2) format('woff2')}
+@font-face{font-family:'Saira';font-style:normal;font-weight:500;font-display:swap;src:url(assets/fonts/Saira-500.woff2) format('woff2')}
+@font-face{font-family:'Saira Condensed';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/SairaCondensed-400.woff2) format('woff2')}
+@font-face{font-family:'Saira Condensed';font-style:normal;font-weight:500;font-display:swap;src:url(assets/fonts/SairaCondensed-500.woff2) format('woff2')}
+@font-face{font-family:'Saira Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(assets/fonts/SairaCondensed-600.woff2) format('woff2')}
+:root{
+  --glass:#04090b;
+  --glass-2:#071114;
+  --glass-3:#0a181c;
+  --phos:#2bff8f;
+  --phos-bright:#eafff4;
+  --phos-mid:#8fd8b4;
+  --phos-dim:#5c8a74;
+  --grat:rgba(43,255,143,.055);
+  --grat-major:rgba(43,255,143,.11);
+  --amber:#ffb020;
+  --amber-dim:#b8892f;
+  --ink:#c9e2d5;
+  --rule:rgba(43,255,143,.22);
+  --display:'Anton','Haettenschweiler','Arial Narrow Bold',sans-serif;
+  --label:'Saira Condensed','Arial Narrow',sans-serif;
+  --body:'Saira',system-ui,sans-serif;
+  --mono:'Chivo Mono',ui-monospace,'SF Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  background:
+    repeating-linear-gradient(to right, var(--grat-major) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(to bottom, var(--grat-major) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(to right, var(--grat) 0 1px, transparent 1px 24px),
+    repeating-linear-gradient(to bottom, var(--grat) 0 1px, transparent 1px 24px),
+    var(--glass);
+  color:var(--ink);
+  font-family:var(--body);
+  font-weight:300;
+  line-height:1.6;
+  caret-color:var(--phos);
+  overflow-x:hidden;
+}
+::selection{background:var(--phos);color:var(--glass)}
+::-webkit-scrollbar{width:10px;background:var(--glass-2)}
+::-webkit-scrollbar-thumb{background:#1c4634;border-radius:0}
+::-webkit-scrollbar-thumb:hover{background:#2a6b4e}
+html{scrollbar-color:#1c4634 var(--glass-2);scrollbar-width:thin}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+a{color:var(--phos);text-decoration-color:rgba(43,255,143,.4);text-underline-offset:4px}
+img{max-width:100%;display:block}
+
+/* ── chart header bar ── */
+.chartbar{
+  display:flex;flex-wrap:wrap;gap:.35rem 2rem;align-items:baseline;
+  padding:.7rem 2rem;
+  border-bottom:1px solid var(--rule);
+  background:rgba(4,9,11,.82);
+  font-family:var(--mono);font-weight:400;font-size:.68rem;letter-spacing:.08em;
+  color:var(--phos-dim);
+  position:sticky;top:0;z-index:50;backdrop-filter:blur(6px);
+}
+.chartbar b{color:var(--phos-mid);font-weight:500}
+.chartbar .dua{margin-left:auto;color:var(--phos-mid);font-size:.8rem;letter-spacing:0}
+.chartbar .live{color:var(--amber)}
+.chartbar .live::before{content:"";display:inline-block;width:.5em;height:.5em;background:var(--amber);border-radius:50%;margin-right:.5em;animation:blink 2s steps(1) infinite}
+@keyframes blink{50%{opacity:.15}}
+@media (prefers-reduced-motion:reduce){.chartbar .live::before{animation:none}}
+
+.strip{max-width:1180px;margin:0 auto;padding:0 2rem}
+
+/* ── hero ── */
+.hero-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:3rem;align-items:end}
+.hero-grid > *{min-width:0}
+.hero-grid .exhibit img{height:320px;object-fit:cover;object-position:50% 28%}
+.hero h1{
+  font-family:var(--display);
+  font-size:clamp(3rem,7.2vw,6rem);
+  line-height:.95;
+  letter-spacing:.005em;
+  color:var(--phos-bright);
+  text-transform:uppercase;
+  font-weight:400;
+  text-wrap:balance;
+}
+.hero h1 .dim{color:var(--phos);text-shadow:0 0 22px rgba(43,255,143,.45)}
+.hero .subline{
+  margin-top:1.1rem;
+  font-family:var(--label);font-size:1.05rem;font-weight:500;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--phos-mid);
+}
+.hero .subline em{color:var(--amber);font-style:normal}
+.hero .lede{margin-top:1.2rem;max-width:54ch;font-size:1.02rem;color:var(--ink)}
+.hero .lede strong{color:var(--phos-bright);font-weight:500}
+
+/* management + WhatsApp lines */
+.mgmt{margin-top:1.1rem}
+.mgmt-label{display:flex;align-items:center;gap:.9em;font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--phos-dim)}
+.mgmt-logo{height:21px;width:auto}
+.mgmt-lines{display:flex;gap:.9rem;margin-top:.7rem;flex-wrap:wrap}
+.wa{display:flex;align-items:center;gap:.75rem;border:1px solid var(--rule);background:rgba(12,32,24,.7);padding:.55rem 1rem .55rem .85rem;text-decoration:none;transition:transform .22s cubic-bezier(.2,.9,.3,1), border-color .22s ease-out, box-shadow .22s ease-out}
+.wa:hover{transform:translateY(-2px);border-color:var(--phos);box-shadow:0 12px 28px -14px rgba(43,255,143,.35)}
+.wa svg{width:21px;height:21px;stroke:var(--phos);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wa .who{display:block;font-family:var(--label);font-weight:600;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--phos-bright);line-height:1.25}
+.wa .tel{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--phos-mid);font-variant-numeric:tabular-nums}
+
+.exhibit{position:relative;border:1px solid var(--rule);background:var(--glass-2)}
+.exhibit img{width:100%;height:auto}
+.exhibit figcaption{
+  display:flex;gap:.8em;align-items:baseline;
+  padding:.55rem .8rem;
+  border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--phos-dim);
+  text-transform:uppercase;
+}
+.exhibit figcaption b{color:var(--amber);font-weight:500;white-space:nowrap}
+.exhibit::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  border:1px solid transparent;transition:border-color .25s ease-out, box-shadow .25s ease-out;
+}
+.exhibit:hover::after{border-color:var(--amber);box-shadow:inset 0 0 0 1px rgba(255,176,32,.25), 0 8px 32px -12px rgba(0,0,0,.8)}
+
+/* ── trace monitor ── */
+.monitor{position:relative;margin-top:1.1rem;border:1px solid var(--rule);background:linear-gradient(180deg,#050d10, #03080a);overflow:hidden}
+.monitor canvas{display:block;width:100%;height:190px}
+.monitor .trig{
+  position:absolute;top:0;bottom:0;left:46%;width:0;
+  border-left:1px dashed rgba(255,176,32,.55);
+}
+.monitor .trig span{
+  position:absolute;top:.6rem;left:.6rem;white-space:nowrap;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;color:var(--amber);
+}
+.monitor .scale{
+  position:absolute;bottom:.5rem;right:.8rem;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;color:var(--phos-dim);
+}
+
+/* ── vitals readouts ── */
+.vitals{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--rule);border-top:none;background:rgba(7,17,20,.75);
+}
+.vitals a{
+  display:block;padding:1.1rem 1.2rem .95rem;text-decoration:none;
+  border-left:1px solid var(--rule);
+  transition:background .2s ease-out;
+}
+.vitals a:first-child{border-left:none}
+.vitals a:hover{background:rgba(43,255,143,.06)}
+.vitals .num{
+  font-family:var(--mono);font-weight:500;font-size:clamp(1.5rem,2.6vw,2.1rem);
+  color:var(--phos);font-variant-numeric:tabular-nums;line-height:1;
+  text-shadow:0 0 18px rgba(43,255,143,.35);
+}
+.vitals a:hover .num{color:var(--phos-bright)}
+.vitals .of{display:flex;align-items:center;gap:.5em;margin-top:.5rem;
+  font-family:var(--label);font-size:.78rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--phos-dim)}
+.vitals .of svg{width:1.05em;height:1.05em;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ── sections ── */
+section.strip{padding-top:5.5rem}
+section.hero{padding-top:2.5rem}
+.sechead{
+  display:flex;align-items:baseline;gap:1.2rem;flex-wrap:wrap;
+  border-bottom:1px solid var(--rule);padding-bottom:.7rem;margin-bottom:2.4rem;
+}
+.sechead h2{
+  font-family:var(--display);font-weight:400;font-size:clamp(1.6rem,3vw,2.4rem);
+  letter-spacing:.02em;text-transform:uppercase;color:var(--phos-bright);
+}
+.sechead .meta{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;color:var(--phos-dim);text-transform:uppercase}
+.sechead .flag{
+  margin-left:auto;font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;color:var(--amber-dim);
+  transition:color .4s ease-out, text-shadow .4s ease-out;
+}
+.trigd .flag{color:var(--amber);text-shadow:0 0 14px rgba(255,176,32,.5)}
+
+/* channels */
+.channels{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule)}
+.ch{padding:2rem 2.2rem 2.4rem;background:rgba(7,17,20,.6)}
+.ch + .ch{border-left:1px solid var(--rule)}
+.ch h3{
+  font-family:var(--mono);font-weight:500;font-size:.78rem;letter-spacing:.18em;
+  color:var(--amber);text-transform:uppercase;margin-bottom:1rem;
+}
+.ch h3 small{color:var(--phos-dim);letter-spacing:.12em;font-weight:400}
+.ch p{max-width:58ch;font-size:.98rem}
+.ch p + p{margin-top:.9rem}
+.ch strong{color:var(--phos-bright);font-weight:500}
+.ch svg.wave{width:100%;height:44px;margin-bottom:1.2rem;stroke:var(--phos);fill:none;stroke-width:1.6;opacity:.85}
+.pullquote{
+  border:1px solid var(--rule);border-top:none;background:rgba(10,24,28,.6);
+  padding:1.2rem 2.2rem;display:flex;gap:1.5rem;align-items:baseline;flex-wrap:wrap;
+  font-family:var(--label);font-size:1.15rem;font-weight:400;letter-spacing:.06em;color:var(--phos-mid);
+}
+.pullquote cite{font-family:var(--mono);font-style:normal;font-size:.64rem;letter-spacing:.12em;color:var(--phos-dim);text-transform:uppercase}
+
+/* event log */
+.log{position:relative;padding-left:2.6rem}
+.log::before{
+  content:"";position:absolute;left:.55rem;top:.4rem;bottom:.4rem;width:1px;
+  background:linear-gradient(var(--phos) 0%, rgba(43,255,143,.25) 100%);
+  box-shadow:0 0 12px rgba(43,255,143,.35);
+}
+.event{position:relative;padding:0 0 2.3rem}
+.event:last-child{padding-bottom:.5rem}
+.event::before{
+  content:"";position:absolute;left:-2.31rem;top:.42rem;width:9px;height:9px;
+  background:var(--glass);border:1.5px solid var(--phos);
+  transform:rotate(45deg);
+  transition:background .4s ease-out, border-color .4s ease-out, box-shadow .4s ease-out;
+}
+.event.trigd::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 12px rgba(255,176,32,.6)}
+.event h3{
+  font-family:var(--label);font-weight:600;font-size:1.12rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--phos-bright);
+}
+.event h3 .t{font-family:var(--mono);font-weight:400;font-size:.66rem;letter-spacing:.1em;color:var(--amber);margin-right:1em;vertical-align:.12em}
+.event p{max-width:62ch;margin-top:.35rem;font-size:.96rem}
+.event p strong{color:var(--phos-bright);font-weight:500}
+
+/* exhibits gallery */
+.banner-exhibit{margin-bottom:1.4rem}
+.banner-exhibit img{aspect-ratio:12/5;object-fit:cover;object-position:50% 58%;width:100%}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.gallery .exhibit img{aspect-ratio:3/4;object-fit:cover}
+
+/* recordings */
+.recs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.rec{position:relative;border:1px solid var(--rule);background:var(--glass-2);text-decoration:none;display:block}
+.rec img{aspect-ratio:16/9;object-fit:cover;filter:saturate(.92)}
+.rec:hover img{filter:saturate(1.05)}
+.rec .bar{
+  display:flex;gap:.8em;align-items:baseline;padding:.55rem .8rem;border-top:1px solid var(--rule);
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--phos-dim);
+}
+.rec .bar b{color:#ff4d4d;font-weight:500}
+.rec .bar b::before{content:"";display:inline-block;width:.55em;height:.55em;border-radius:50%;background:#ff4d4d;margin-right:.45em}
+.rec .bar span{color:var(--phos-mid)}
+.rec:hover{border-color:var(--amber)}
+.allrecs{margin-top:1.6rem;font-family:var(--mono);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase}
+
+/* signals / CTA */
+.jacks{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem}
+.jack{
+  border:1px solid var(--rule);background:rgba(7,17,20,.7);
+  padding:1.5rem 1.5rem 1.4rem;text-decoration:none;display:block;
+  transition:transform .22s cubic-bezier(.2,.9,.3,1), border-color .22s ease-out, box-shadow .22s ease-out;
+}
+.jack:hover{transform:translateY(-4px);border-color:var(--phos);box-shadow:0 18px 40px -18px rgba(43,255,143,.35)}
+.jack svg{width:26px;height:26px;stroke:var(--phos);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;margin-bottom:1rem}
+.jack .name{font-family:var(--label);font-weight:600;font-size:.95rem;letter-spacing:.2em;text-transform:uppercase;color:var(--phos-bright)}
+.jack .stat{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;color:var(--phos-mid);margin-top:.35rem}
+.jack .go{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;color:var(--amber);margin-top:1.1rem;text-transform:uppercase}
+.jack.prime{border-color:rgba(43,255,143,.5);background:rgba(12,32,24,.75)}
+
+/* footer */
+footer{margin-top:6rem;border-top:1px solid var(--rule);background:rgba(4,9,11,.9)}
+footer .strip{display:flex;flex-wrap:wrap;gap:.6rem 2.5rem;align-items:baseline;padding-top:1.4rem;padding-bottom:2.2rem}
+footer p{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;color:var(--phos-dim);text-transform:uppercase}
+footer .end{color:var(--phos-mid)}
+
+/* responsive */
+@media (max-width:920px){
+  .strip{padding:0 1.2rem}
+  .chartbar{padding:.6rem 1.2rem}
+  section.strip{padding-top:4rem}
+  section.hero{padding-top:2.2rem}
+  .hero-grid{grid-template-columns:1fr;gap:2rem}
+  .hero-grid .exhibit{max-width:420px}
+  .vitals{grid-template-columns:1fr 1fr}
+  .vitals a:nth-child(3){border-left:none}
+  .vitals a{border-top:1px solid var(--rule)}
+  .vitals a:nth-child(-n+2){border-top:none}
+  .channels{grid-template-columns:1fr}
+  .ch + .ch{border-left:none;border-top:1px solid var(--rule)}
+  .gallery{grid-template-columns:1fr 1fr}
+  .banner-exhibit img{aspect-ratio:4/5;object-position:50% 50%}
+  .recs{grid-template-columns:1fr}
+  .jacks{grid-template-columns:1fr 1fr}
+  .monitor canvas{height:170px}
+}
+@media (max-width:540px){
+  .gallery{grid-template-columns:1fr}
+  .gallery .wide{grid-column:auto}
+  .jacks{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<!--
+THESIS: A doctor's monitor reading a rider's life; refuses the dark hero-photo creator landing page.
+OWN-WORLD: Near-black monitor glass on a measured graticule; phosphor green trace as the only pure light; amber alarm accents; condensed instrument caps (Saira Condensed), Anton display, Chivo Mono readouts; photos as numbered full-color exhibits.
+STORY: Visitor grasps MBBS-doctor-turned-superbike-vlogger in seconds, reads his record as chart events, ends at platform output jacks.
+FIRST VIEWPORT: Chart header bar; giant name left with lede, EXHIBIT 01 portrait right; full-width live trace morphing heartbeat into terrain at the amber trigger; four platform readouts beneath.
+FORM: The Rider's Chart, own-list candidate 5 of 7, seed key a0fd7958. Raises: graticule discipline, single-roll strip, brightest-bloom, named-and-numbered, honest chrome.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+
+<header class="chartbar">
+  <span><b>CONTINUOUS RECORD</b> · STRIP 01</span>
+  <span>PT/RIDER: <b>SHABBIR, ZEESHAN</b> · MBBS</span>
+  <span>ORIGIN: BAHAWALPUR, PK</span>
+  <span class="live">REC · AUG 2026</span>
+  <span class="dua" lang="ar" dir="rtl">حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَكِيْلُ</span>
+</header>
+
+<main>
+  <section class="hero strip" aria-label="Introduction">
+    <div class="hero-grid">
+      <div>
+        <h1>Dr. Zeeshan<br><span class="dim">Shabbir</span></h1>
+        <p class="subline">From Medicine <em>→</em> Motorsports</p>
+        <p class="lede">An <strong>MBBS doctor</strong> who has served his hometown of Bahawalpur for over a decade, and the rider who brought the <strong>Kawasaki H2R</strong> into Pakistan's bike culture. Known to millions as <strong>ZS MotoVlogs</strong>.</p>
+        <div class="mgmt">
+          <p class="mgmt-label">Managed by <img class="mgmt-logo" src="assets/torque-logo.png" alt="Torque Motorsports" width="480" height="91"></p>
+          <div class="mgmt-lines">
+            <a class="wa" href="https://wa.me/923211111119" aria-label="WhatsApp Saeed, +92 321 1111119">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6a8.4 8.4 0 0 0-7.2 12.7l-1.2 4.1 4.2-1.1A8.4 8.4 0 1 0 12 3.6z"/><path d="M9 8.6c.15-.4.45-.45.75-.45h.5c.2 0 .38.02.52.36l.72 1.72c.09.2.05.38-.09.55l-.45.55c-.13.17-.14.32-.02.53.55.93 1.36 1.62 2.36 2.07.22.1.4.06.54-.12l.5-.63c.14-.18.32-.22.54-.13l1.7.8c.26.13.36.28.32.5-.14.73-.83 1.29-1.57 1.29-2.7 0-5.8-2.62-6.32-5.61-.09-.47-.16-.97 0-1.43z"/></svg>
+              <span><span class="who">Saeed</span><span class="tel">+92 321 1111119</span></span>
+            </a>
+            <a class="wa" href="https://wa.me/923222254444" aria-label="WhatsApp Sunny, +92 322 2254444">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.6a8.4 8.4 0 0 0-7.2 12.7l-1.2 4.1 4.2-1.1A8.4 8.4 0 1 0 12 3.6z"/><path d="M9 8.6c.15-.4.45-.45.75-.45h.5c.2 0 .38.02.52.36l.72 1.72c.09.2.05.38-.09.55l-.45.55c-.13.17-.14.32-.02.53.55.93 1.36 1.62 2.36 2.07.22.1.4.06.54-.12l.5-.63c.14-.18.32-.22.54-.13l1.7.8c.26.13.36.28.32.5-.14.73-.83 1.29-1.57 1.29-2.7 0-5.8-2.62-6.32-5.61-.09-.47-.16-.97 0-1.43z"/></svg>
+              <span><span class="who">Sunny</span><span class="tel">+92 322 2254444</span></span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <figure class="exhibit">
+        <img src="assets/yt-avatar.jpg" width="800" height="800" alt="Dr. Zeeshan Shabbir crouching beside his black Kawasaki Ninja H2R" fetchpriority="high">
+        <figcaption><b>EXHIBIT 01</b> SHABBIR, Z. · KAWASAKI NINJA H2R</figcaption>
+      </figure>
+    </div>
+
+    <div class="monitor" role="img" aria-label="Animated chart trace: a heartbeat rhythm that becomes a mountain road profile">
+      <canvas id="trace"></canvas>
+      <div class="trig"><span>TRIG ▸ MEDICINE → MOTORSPORTS</span></div>
+      <p class="scale">25 mm/s · 10 mm/mV</p>
+    </div>
+
+    <nav class="vitals" aria-label="Platforms">
+      <a href="https://www.youtube.com/channel/UCXmiPGIvBMH-DkZ7lhIY_KQ">
+        <p class="num" data-num="597" data-suffix="K">597K</p>
+        <p class="of"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="3.5"/><path d="M10 9.3v5.4l4.8-2.7z"/></svg>YouTube subs</p>
+      </a>
+      <a href="https://www.instagram.com/doctor_zeeshan/">
+        <p class="num" data-num="414" data-suffix="K">414K</p>
+        <p class="of"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></svg>Instagram</p>
+      </a>
+      <a href="https://www.tiktok.com/@doctor_zeeshan">
+        <p class="num" data-num="1.5" data-suffix="M+" data-dec="1">1.5M+</p>
+        <p class="of"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4v10.6a3.9 3.9 0 1 1-3.4-3.9"/><path d="M14.5 5.5c.7 2.2 2.3 3.6 4.7 3.9"/></svg>TikTok</p>
+      </a>
+      <a href="https://www.facebook.com/DoctorZeeshanShabbir/">
+        <p class="num" data-num="500" data-suffix="K" data-prefix="≈">≈500K</p>
+        <p class="of"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.8 8.2h3V4.6h-3a4.4 4.4 0 0 0-4.4 4.4v2.4H8v3.6h2.4v6.4h3.7V15h2.9l.5-3.6h-3.4V9.3c0-.7.5-1.1 1.2-1.1z" transform="scale(.92) translate(1,1)"/></svg>Facebook</p>
+      </a>
+    </nav>
+  </section>
+
+  <section class="strip" id="notes" data-trig aria-label="Clinical notes">
+    <div class="sechead">
+      <h2>Clinical Notes</h2>
+      <span class="meta">Two channels · one record</span>
+      <span class="flag">TRIG'D</span>
+    </div>
+    <div class="channels">
+      <div class="ch">
+        <svg class="wave" viewBox="0 0 600 44" preserveAspectRatio="none" aria-hidden="true"><path d="M0 26h70l8-7 8 7h30l6-16 8 30 8-22 5 8h60l8-7 8 7h30l6-16 8 30 8-22 5 8h60l8-7 8 7h30l6-16 8 30 8-22 5 8h70l8-7 8 7h30"/></svg>
+        <h3>CH1 · Medicine <small>· the day job that never stopped</small></h3>
+        <p>After completing his <strong>MBBS</strong>, Dr. Zeeshan has practised in his hometown of <strong>Bahawalpur for over a decade</strong>. The discipline of medicine (precision, calm under pressure, respect for risk) is the same discipline he takes to the road.</p>
+      </div>
+      <div class="ch">
+        <svg class="wave" viewBox="0 0 600 44" preserveAspectRatio="none" aria-hidden="true"><path d="M0 32 L18 26 L34 30 L50 20 L66 28 L82 14 L98 24 L114 10 L130 22 L146 8 L162 18 L178 12 L194 26 L210 16 L226 30 L242 18 L258 34 L274 22 L290 12 L306 24 L322 8 L338 20 L354 14 L370 28 L386 18 L402 32 L418 22 L434 10 L450 24 L466 16 L482 28 L498 12 L514 22 L530 16 L546 30 L562 20 L578 26 L600 22"/></svg>
+        <h3>CH2 · Motorsports <small>· the record his fans follow</small></h3>
+        <p>He has explored Pakistan <strong>from Gwadar to Khunjerab</strong> on superbikes, introduced rare machines like the <strong>Kawasaki H2R</strong> to the local scene, and built one of the country's largest motovlogging audiences across <strong>585 recordings</strong>.</p>
+      </div>
+    </div>
+    <div class="pullquote">
+      <span>“Healing lives, exploring Pakistan on wheels.”</span>
+      <cite>— Pakistani Hero, feature profile</cite>
+    </div>
+  </section>
+
+  <section class="strip" id="log" data-trig aria-label="Event log">
+    <div class="sechead">
+      <h2>Event Log</h2>
+      <span class="meta">Marked on the running trace</span>
+      <span class="flag">TRIG'D</span>
+    </div>
+    <div class="log">
+      <div class="event" data-trig>
+        <h3><span class="t">EV-01</span>MBBS, Bahawalpur</h3>
+        <p>Qualifies as a doctor and begins clinical practice at home: <strong>over a decade serving his hometown</strong>, in parallel with everything that follows.</p>
+      </div>
+      <div class="event" data-trig>
+        <h3><span class="t">EV-02</span>ZS MotoVlogs begins</h3>
+        <p>The helmet camera goes on. The channel grows to <strong>597K subscribers and 585 videos</strong>, with a combined audience in the millions across four platforms.</p>
+      </div>
+      <div class="event" data-trig>
+        <h3><span class="t">EV-03</span>The H2R lands in Pakistan</h3>
+        <p>He introduces the <strong>Kawasaki Ninja H2R</strong>, the world's fastest production superbike, to Pakistan's bike culture, logging a <strong>351 km/h</strong> run on camera.</p>
+      </div>
+      <div class="event" data-trig>
+        <h3><span class="t">EV-04</span>Gwadar → Khunjerab</h3>
+        <p>Corner to corner of Pakistan on superbikes, culminating in the H2R at <strong>Khunjerab Pass, 15,397 ft</strong>, the world's highest paved international border crossing.</p>
+      </div>
+      <div class="event" data-trig>
+        <h3><span class="t">EV-05</span>International recognition</h3>
+        <p><strong>Featured on the BBC</strong>, toured Southeast Asia and the Gulf, and invited <strong>twice to the Dakar Rally as a State Guest</strong>, representing Pakistan globally.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="strip" id="exhibits" data-trig aria-label="Photo exhibits">
+    <div class="sechead">
+      <h2>Exhibits</h2>
+      <span class="meta">Filed from the ride · full frame</span>
+      <span class="flag">TRIG'D</span>
+    </div>
+    <figure class="exhibit banner-exhibit">
+      <img src="assets/ig-aug02.jpg" loading="lazy" alt="Dr. Zeeshan in riding leathers giving a peace sign beside his black H2R at Khunjerab Pass, snow-capped mountains behind">
+      <figcaption><b>EXHIBIT 02</b> KHUNJERAB PASS · H2R AT 15,397 FT</figcaption>
+    </figure>
+    <div class="gallery">
+      <figure class="exhibit">
+        <img src="assets/ig-aug11.jpg" loading="lazy" alt="Dr. Zeeshan seated on a blue and white Yamaha R1 superbike">
+        <figcaption><b>EXHIBIT 03</b> YAMAHA R1 · CITY LIGHT</figcaption>
+      </figure>
+      <figure class="exhibit">
+        <img src="assets/ig-aug14.jpg" loading="lazy" alt="Two superbikes riding in formation down a green tree-lined road">
+        <figcaption><b>EXHIBIT 04</b> TWIN FORMATION · BACKROADS</figcaption>
+      </figure>
+      <figure class="exhibit">
+        <img src="assets/ig-aug10a.jpg" loading="lazy" alt="Front view of Dr. Zeeshan on his blue Yamaha R1 at golden hour, helmet on">
+        <figcaption><b>EXHIBIT 05</b> GOLDEN HOUR · R1 FRONT</figcaption>
+      </figure>
+      <figure class="exhibit">
+        <img src="assets/ig-aug16.jpg" loading="lazy" alt="Overhead view of Dr. Zeeshan in full gear on a blue Yamaha superbike">
+        <figcaption><b>EXHIBIT 06</b> R1 FROM ABOVE · GEAR CHECK</figcaption>
+      </figure>
+      <figure class="exhibit">
+        <img src="assets/ig-aug10b.jpg" loading="lazy" alt="Dr. Zeeshan standing behind his blue Yamaha R1 in the paddock">
+        <figcaption><b>EXHIBIT 07</b> PADDOCK PORTRAIT · R1</figcaption>
+      </figure>
+      <figure class="exhibit">
+        <img src="assets/ig-aug01.jpg" loading="lazy" alt="Dr. Zeeshan standing beside a black Kawasaki Ninja with dry mountains behind">
+        <figcaption><b>EXHIBIT 08</b> NINJA AT ALTITUDE · NORTH PAKISTAN</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="strip" id="recordings" data-trig aria-label="Recordings">
+    <div class="sechead">
+      <h2>Recordings</h2>
+      <span class="meta">From the channel archive</span>
+      <span class="flag">TRIG'D</span>
+    </div>
+    <div class="recs">
+      <a class="rec" href="https://www.youtube.com/watch?v=-3KMTgSfKfA">
+        <img src="assets/yt-border.jpg" loading="lazy" alt="Video thumbnail: H2R at Khunjerab Pass, elevation 15,397 feet">
+        <div class="bar"><b>REC</b><span>H2R AT KHUNJERAB PASS</span></div>
+      </a>
+      <a class="rec" href="https://www.youtube.com/watch?v=FopL7rdN92k">
+        <img src="assets/yt-baboon.jpg" loading="lazy" alt="Video thumbnail: Baboon Top, Pakistan's most dangerous track">
+        <div class="bar"><b>REC</b><span>BABOON TOP · MOST DANGEROUS TRACK</span></div>
+      </a>
+      <a class="rec" href="https://www.youtube.com/watch?v=Gu3OENrLa3M">
+        <img src="assets/yt-newbike.jpg" loading="lazy" alt="Video thumbnail: my new superbike is here">
+        <div class="bar"><b>REC</b><span>MY NEW SUPERBIKE IS HERE</span></div>
+      </a>
+    </div>
+    <p class="allrecs"><a href="https://www.youtube.com/channel/UCXmiPGIvBMH-DkZ7lhIY_KQ">ALL 585 RECORDINGS → YOUTUBE / ZSMOTOVLOGS</a></p>
+  </section>
+
+  <section class="strip" id="signals" data-trig aria-label="Follow Dr. Zeeshan">
+    <div class="sechead">
+      <h2>Output Signals</h2>
+      <span class="meta">Patch into the live feed</span>
+      <span class="flag">TRIG'D</span>
+    </div>
+    <div class="jacks">
+      <a class="jack prime" href="https://www.youtube.com/channel/UCXmiPGIvBMH-DkZ7lhIY_KQ">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="3.5"/><path d="M10 9.3v5.4l4.8-2.7z"/></svg>
+        <p class="name">YouTube</p>
+        <p class="stat">597K SUBS · 585 VIDEOS</p>
+        <p class="go">CONNECT ▸</p>
+      </a>
+      <a class="jack" href="https://www.instagram.com/doctor_zeeshan/">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></svg>
+        <p class="name">Instagram</p>
+        <p class="stat">414K FOLLOWERS</p>
+        <p class="go">CONNECT ▸</p>
+      </a>
+      <a class="jack" href="https://www.tiktok.com/@doctor_zeeshan">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4v10.6a3.9 3.9 0 1 1-3.4-3.9"/><path d="M14.5 5.5c.7 2.2 2.3 3.6 4.7 3.9"/></svg>
+        <p class="name">TikTok</p>
+        <p class="stat">1.5M+ FOLLOWERS</p>
+        <p class="go">CONNECT ▸</p>
+      </a>
+      <a class="jack" href="https://www.facebook.com/DoctorZeeshanShabbir/">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 8h3V4.5h-3A4.5 4.5 0 0 0 11 9v2.5H8.5V15H11v5.5h3.5V15h3l.5-3.5h-3.5V9.5c0-.9.5-1.5 1-1.5z"/></svg>
+        <p class="name">Facebook</p>
+        <p class="stat">≈500K FOLLOWERS</p>
+        <p class="go">CONNECT ▸</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="strip">
+    <p class="end">END OF STRIP · RECORD CONTINUES</p>
+    <p>CHART PREPARED BY DIGITALFLIX · CONCEPT DEMO</p>
+    <p>PLATFORM FIGURES AS RECORDED AUG 2026</p>
+    <p>FOOTAGE &amp; PHOTOGRAPHY © DR. ZEESHAN SHABBIR / ZS MOTOVLOGS</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── the trace: heartbeat that becomes a mountain road ── */
+  const cv = document.getElementById('trace');
+  const ctx = cv.getContext('2d');
+  let W = 0, H = 0, dpr = 1;
+
+  const size = () => {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+
+  const ecg = x => {
+    const p = ((x % 240) + 240) % 240;
+    let y = 0;
+    y += 6 * Math.exp(-((p - 48) ** 2) / 90);            /* P */
+    y += -9 * Math.exp(-((p - 98) ** 2) / 8);            /* Q */
+    y += 62 * Math.exp(-((p - 108) ** 2) / 14);          /* R */
+    y += -14 * Math.exp(-((p - 120) ** 2) / 10);         /* S */
+    y += 11 * Math.exp(-((p - 170) ** 2) / 260);         /* T */
+    return y;
+  };
+  const road = x => {
+    let y = 20 * Math.sin(x * 0.012) + 11 * Math.sin(x * 0.027 + 1.7) + 6 * Math.sin(x * 0.055 + .6) + 3 * Math.sin(x * 0.13 + 2.1);
+    const s = ((x % 150) + 150) % 150;                    /* rev spikes */
+    if (s < 24) y += 40 * (1 - Math.abs(s - 12) / 12);
+    return y * 1.15;
+  };
+  const yAt = x => {
+    const b = W * 0.46, f = Math.min(1, Math.max(0, (x - (b - W * 0.07)) / (W * 0.14)));
+    const base = H * 0.62;
+    return base - ((1 - f) * ecg(x) + f * road(x));
+  };
+
+  const drawSpan = (from, to, alpha, width, blur) => {
+    ctx.beginPath();
+    ctx.globalAlpha = alpha; ctx.lineWidth = width;
+    ctx.shadowColor = 'rgba(43,255,143,.9)'; ctx.shadowBlur = blur;
+    for (let x = from; x <= to; x++) (x === from) ? ctx.moveTo(x, yAt(x)) : ctx.lineTo(x, yAt(x));
+    ctx.stroke();
+  };
+
+  let head = 0;
+  const GAP = 90;
+  const frame = () => {
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = '#2bff8f'; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    const tail = head - GAP;
+    /* old sweep (dim, ahead of the erase gap) */
+    if (head + GAP < W) drawSpan(head + GAP, W, .32, 1.4, 0);
+    /* current sweep behind the head, brighter toward it */
+    if (tail > 0) drawSpan(0, Math.max(0, tail - 220), .5, 1.6, 0);
+    drawSpan(Math.max(0, tail - 220), Math.min(head, W), .95, 2, 12);
+    /* head dot — the one pure light */
+    ctx.globalAlpha = 1; ctx.shadowBlur = 18; ctx.shadowColor = '#eafff4';
+    ctx.fillStyle = '#eafff4';
+    ctx.beginPath(); ctx.arc(Math.min(head, W - 1), yAt(Math.min(head, W - 1)), 3, 0, 7); ctx.fill();
+    ctx.shadowBlur = 0;
+    head += Math.max(2.2, W / 480);
+    if (head > W + GAP) head = 0;
+    requestAnimationFrame(frame);
+  };
+
+  const staticDraw = () => {
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = '#2bff8f'; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    drawSpan(0, W, .85, 1.8, 8);
+  };
+
+  size();
+  addEventListener('resize', () => { size(); if (reduce) staticDraw(); });
+  reduce ? staticDraw() : requestAnimationFrame(frame);
+
+  /* ── readout count-up (honest chrome: lands on the real value) ── */
+  if (!reduce) {
+    document.querySelectorAll('.vitals .num').forEach(el => {
+      const target = parseFloat(el.dataset.num), dec = +(el.dataset.dec || 0);
+      const pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
+      const t0 = performance.now(), dur = 1400;
+      const tick = now => {
+        const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        el.textContent = pre + (target * e).toFixed(dec) + suf;
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* ── section + event triggers ── */
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('trigd'); io.unobserve(e.target); }
+  }), { rootMargin: '0px 0px -18% 0px' });
+  document.querySelectorAll('[data-trig]').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>
