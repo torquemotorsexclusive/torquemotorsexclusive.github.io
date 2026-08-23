@@ -91,6 +91,16 @@
 
         document.title = seoTitle;
 
+        // Add a readable model+year slug to the URL (SEO-friendly; page still loads via ?id=)
+        const slug = `${bike.year || ''} ${bike.name}`.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        if (slug) {
+          const prettyUrl = `/bike/${slug}?id=${bike.id}`;
+          if (location.pathname + location.search !== prettyUrl) {
+            history.replaceState(null, '', prettyUrl);
+          }
+        }
+
         function setMeta(name, content, isProperty = false) {
           const attr = isProperty ? 'property' : 'name';
           let el = document.querySelector(`meta[${attr}="${name}"]`);
@@ -182,7 +192,7 @@
           </div>
           <div class="detail__info">
             <div class="detail__num">№ ${bike.id.slice(-3)} / ${bike.year || ''}</div>
-            <h1 class="detail__title">${bike.name}</h1>
+            <h1 class="detail__title">${bike.year ? bike.year + ' ' : ''}${bike.name}</h1>
             <p class="detail__sub">${bike.sub || ''}</p>
             <span class="detail__status ${statusClass}">${statusLabel}</span>
             <span class="detail__price-label">Import Reference Price</span>
