@@ -1289,7 +1289,7 @@ input, select, textarea { font: inherit; }
 .social-pill:hover { background: var(--red); border-color: var(--red); color: var(--white); }
 
 /* ============== DASHBOARD ============== */
-.dash { padding: 2rem var(--gutter) 4rem; }
+.dash { padding: calc(var(--nav-h) + 2rem) var(--gutter) 4rem; }
 
 .dash__head {
   margin-bottom: 1.5rem;
@@ -1379,7 +1379,7 @@ input, select, textarea { font: inherit; }
 .dash__layout { display: flex; flex-direction: column; gap: 1.5rem; }
 
 @media (min-width: 1100px) {
-  .dash { padding: 3rem var(--gutter) 5rem; }
+  .dash { padding: calc(var(--nav-h) + 3rem) var(--gutter) 5rem; }
   .dash__layout--bikes { display: grid; grid-template-columns: 380px 1fr; gap: 2rem; align-items: start; }
 }
 
