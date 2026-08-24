@@ -135,6 +135,46 @@ async function deletePost(id) {
   CACHE.posts = null;
 }
 
+// ===== REVIEWS =====
+async function loadAllReviews() {
+  try {
+    const reviews = await fsQuery('reviews', 'created_at', 'DESCENDING');
+    return reviews.map(r => ({ ...r, id: r._id }));
+  } catch (e) { console.error(e); return []; }
+}
+
+async function loadApprovedReviews() {
+  const all = await loadAllReviews();
+  return all.filter(r => r.status === 'approved');
+}
+
+async function addReview(review) {
+  const id = 'review-' + Date.now();
+  review.created_at = new Date().toISOString();
+  review.status = 'pending';
+  await fsSet('reviews', id, review);
+  return { ...review, id };
+}
+
+async function approveReview(id) {
+  const all = await loadAllReviews();
+  const existing = all.find(r => r.id === id);
+  if (!existing) throw new Error('Review not found');
+  const merged = { ...existing, status: 'approved' };
+  delete merged._id;
+  delete merged.id;
+  await fsSet('reviews', id, merged);
+}
+
+async function deleteReview(id) {
+  await fsDelete('reviews', id);
+}
+
+function reviewStarsHTML(rating) {
+  return '<span class="review-card__stars" aria-label="' + rating + ' out of 5">' +
+    '★'.repeat(rating) + '<span style="opacity:0.25;">' + '★'.repeat(5 - rating) + '</span></span>';
+}
+
 // ===== SETTINGS =====
 async function loadSettings() {
   if (CACHE.settings) return CACHE.settings;

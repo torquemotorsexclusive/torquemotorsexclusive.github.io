@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Clean URL redirect: /page.html -> /page
+    (function() {
+      var p = location.pathname;
+      if (p.endsWith('/index.html')) {
+        history.replaceState(null, '', p.replace(/index\.html$/, '') + location.search + location.hash);
+      } else if (p.endsWith('.html')) {
+        history.replaceState(null, '', p.replace(/\.html$/, '') + location.search + location.hash);
+      }
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Customer Reviews — Torque Motorsports Exclusive</title>
+  <meta name="description" content="Real reviews from Torque Motorsports Exclusive customers — superbike imports, restorations and service across Pakistan.">
+  <link rel="canonical" href="https://torquemotorsexclusive.com/reviews">
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Customer Reviews — Torque Motorsports Exclusive">
+  <meta property="og:description" content="Real reviews from Torque Motorsports Exclusive customers.">
+  <meta property="og:image" content="https://torquemotorsexclusive.com/hero.jpg">
+  <meta property="og:url" content="https://torquemotorsexclusive.com/reviews">
+
+  <meta name="geo.region" content="PK-PB">
+  <meta name="geo.placename" content="Lahore">
+
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .reviews-page { padding: calc(var(--nav-h) + 2rem) var(--gutter) 5rem; max-width: 900px; margin: 0 auto; }
+    .reviews-page__title { font-family: var(--font-display, inherit); text-transform: uppercase; font-size: clamp(2rem, 6vw, 3.5rem); line-height: 1; margin-bottom: 0.75rem; }
+    .reviews-page__sub { color: var(--grey); margin-bottom: 2rem; }
+    .reviews-summary { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 2.5rem; }
+    .reviews-summary__avg { font-size: 2.5rem; font-weight: 700; }
+    .reviews-summary__stars { color: var(--red); font-size: 1.4rem; letter-spacing: 2px; }
+    .reviews-summary__count { color: var(--grey); }
+    .review-card { border: 1px solid var(--grey-2); background: var(--black-2); padding: 1.25rem; margin-bottom: 1rem; }
+    .review-card__head { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .review-card__avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid var(--grey-2); }
+    .review-card__name { font-weight: 600; }
+    .review-card__date { color: var(--grey); font-size: 0.8rem; }
+    .review-card__stars { color: var(--red); letter-spacing: 2px; }
+    .review-card__text { color: var(--grey); line-height: 1.7; margin-top: 0.5rem; white-space: pre-line; }
+    .review-card__img { margin-top: 1rem; max-width: 280px; border: 1px solid var(--grey-2); }
+    .review-card__img img { width: 100%; display: block; }
+    .review-form { border: 1px solid var(--grey-2); background: var(--black-2); padding: 1.5rem; margin: 2.5rem 0; }
+    .review-form h2 { text-transform: uppercase; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 1rem; }
+    .star-input { display: flex; gap: 0.35rem; font-size: 2rem; cursor: pointer; margin-bottom: 1rem; user-select: none; }
+    .star-input span { color: var(--grey-2); transition: color 0.15s; }
+    .star-input span.on { color: var(--red); }
+    .review-form__user { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1rem; color: var(--grey); }
+    .review-form__user img { width: 34px; height: 34px; border-radius: 50%; }
+    .review-form__msg { margin-top: 1rem; color: var(--red); }
+    .review-form__msg--ok { color: #4caf50; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav__logo">
+    <img src="logo.png" alt="Torque Motorsports">
+  </a>
+  <button class="nav__toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__menu">
+    <ul>
+      <li><a href="/" data-nav="home">Home</a></li>
+      <li><a href="/inventory" data-nav="garage">The Garage</a></li>
+      <li><a href="/blog" data-nav="journal">Journal</a></li>
+      <li><a href="/contact" data-nav="contact">Story</a></li>
+      <li><a href="/reviews" data-nav="reviews">Reviews</a></li>
+    </ul>
+    <div class="nav__menu-foot">
+      <span>Lahore / Pakistan</span>
+      <a href="#" data-email data-email-text>hello@torquemotorsexclusive.com</a>
+    </div>
+  </div>
+  <a href="#" class="nav__cta" data-wa="Hi, I'd like to request a bike import.">Request a Bike</a>
+</nav>
+
+<main class="reviews-page">
+  <h1 class="reviews-page__title">Customer Reviews</h1>
+  <p class="reviews-page__sub">Real words from real riders — imports, restorations and service by Torque Motorsports Exclusive.</p>
+
+  <div class="reviews-summary" id="reviewsSummary" style="display:none;">
+    <span class="reviews-summary__avg" id="avgValue"></span>
+    <span class="reviews-summary__stars" id="avgStars"></span>
+    <span class="reviews-summary__count" id="avgCount"></span>
+  </div>
+
+  <div class="review-form" id="reviewForm">
+    <h2>Write a Review</h2>
+    <div id="authArea">
+      <p style="color:var(--grey); margin-bottom:1rem;">Sign in with Google to leave a review — takes 5 seconds.</p>
+      <button class="btn btn--primary" id="googleSignIn">Sign in with Google</button>
+    </div>
+    <div id="formArea" style="display:none;">
+      <div class="review-form__user">
+        <img id="userAvatar" alt="" referrerpolicy="no-referrer">
+        <span>Reviewing as <strong id="userName" style="color:var(--white);"></strong></span>
+        <a href="#" id="signOut" style="color:var(--red); margin-left:auto; font-size:0.8rem;">Sign out</a>
+      </div>
+      <div class="star-input" id="starInput" aria-label="Choose a rating">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <div class="form__group">
+        <label class="form__label">Your review</label>
+        <textarea class="form__textarea" id="reviewText" style="min-height:120px;" placeholder="Tell others about your experience with Torque — the bike, the import, the service..."></textarea>
+      </div>
+      <div class="form__group">
+        <label class="form__label">Add a photo (optional)</label>
+        <input type="file" id="reviewPhoto" accept="image/*" class="form__input">
+      </div>
+      <button class="btn btn--primary" id="submitReview">Submit Review</button>
+      <div class="review-form__msg" id="formMsg"></div>
+    </div>
+  </div>
+
+  <div id="reviewsList">
+    <div class="empty-state"><h3>Loading reviews…</h3></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__main">
+    <div class="footer__brand">
+      <img src="logo.png" alt="Torque Motorsports" class="footer__logo">
+      <p class="footer__tagline">Specialist superbike imports to Pakistan. Curated. Sourced. Delivered.</p>
+    </div>
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/inventory">The Garage</a></li>
+          <li><a href="/blog">Journal</a></li>
+          <li><a href="/contact">Story</a></li>
+          <li><a href="/reviews">Reviews</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#" data-wa>WhatsApp</a></li>
+          <li><a href="#" data-email>Email</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#" data-instagram target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="#" data-tiktok target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <span>© 2026 Torque Motorsports Exclusive</span>
+    <span>Lahore / Pakistan</span>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase.js"></script>
+<script src="data.js"></script>
+<script>
+  (async () => {
+    setActiveNav('reviews');
+    initNav();
+    applySiteSettings();
+
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const auth = firebase.auth();
+
+    const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+    // ===== Render approved reviews =====
+    async function renderReviews() {
+      const reviews = await loadApprovedReviews();
+      const list = document.getElementById('reviewsList');
+      if (!reviews.length) {
+        list.innerHTML = `<div class="empty-state"><h3>No reviews yet</h3><p>Be the first to share your Torque experience.</p></div>`;
+        return;
+      }
+      const avg = reviews.reduce((s, r) => s + (r.rating || 5), 0) / reviews.length;
+      document.getElementById('reviewsSummary').style.display = 'flex';
+      document.getElementById('avgValue').textContent = avg.toFixed(1);
+      document.getElementById('avgStars').textContent = '★'.repeat(Math.round(avg));
+      document.getElementById('avgCount').textContent = `from ${reviews.length} review${reviews.length > 1 ? 's' : ''}`;
+
+      list.innerHTML = reviews.map(r => {
+        const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+        return `
+        <div class="review-card">
+          <div class="review-card__head">
+            ${r.avatar ? `<img class="review-card__avatar" src="${esc(r.avatar)}" alt="" referrerpolicy="no-referrer">` : ''}
+            <div>
+              <div class="review-card__name">${esc(r.name)}</div>
+              <div class="review-card__date">${date}</div>
+            </div>
+          </div>
+          ${reviewStarsHTML(r.rating || 5)}
+          <p class="review-card__text">${esc(r.text)}</p>
+          ${r.image ? `<div class="review-card__img"><img src="${esc(r.image)}" alt="Photo by ${esc(r.name)}" loading="lazy"></div>` : ''}
+        </div>`;
+      }).join('');
+
+      // Real structured data from real reviews — shows star ratings in Google
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": "AutoDealer",
+        "name": "Torque Motorsports Exclusive",
+        "url": "https://torquemotorsexclusive.com",
+        "image": "https://torquemotorsexclusive.com/logo.png",
+        "address": { "@type": "PostalAddress", "addressLocality": "Lahore", "addressCountry": "PK" },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": avg.toFixed(1),
+          "reviewCount": reviews.length,
+          "bestRating": 5, "worstRating": 1
+        },
+        "review": reviews.slice(0, 10).map(r => ({
+          "@type": "Review",
+          "author": { "@type": "Person", "name": r.name },
+          "datePublished": (r.created_at || '').split('T')[0],
+          "reviewBody": r.text,
+          "reviewRating": { "@type": "Rating", "ratingValue": r.rating || 5, "bestRating": 5, "worstRating": 1 }
+        }))
+      };
+      const tag = document.createElement('script');
+      tag.type = 'application/ld+json';
+      tag.textContent = JSON.stringify(schema);
+      document.head.appendChild(tag);
+    }
+    renderReviews();
+
+    // ===== Auth =====
+    const authArea = document.getElementById('authArea');
+    const formArea = document.getElementById('formArea');
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        authArea.style.display = 'none';
+        formArea.style.display = 'block';
+        document.getElementById('userName').textContent = user.displayName || 'Google user';
+        const av = document.getElementById('userAvatar');
+        if (user.photoURL) { av.src = user.photoURL; av.style.display = ''; } else { av.style.display = 'none'; }
+      } else {
+        authArea.style.display = 'block';
+        formArea.style.display = 'none';
+      }
+    });
+
+    document.getElementById('googleSignIn').addEventListener('click', async () => {
+      try {
+        await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+      } catch (e) {
+        alert('Sign-in failed: ' + (e.message || e));
+      }
+    });
+    document.getElementById('signOut').addEventListener('click', (e) => { e.preventDefault(); auth.signOut(); });
+
+    // ===== Star picker =====
+    let rating = 5;
+    const stars = document.querySelectorAll('#starInput span');
+    function paintStars() { stars.forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= rating)); }
+    stars.forEach(s => s.addEventListener('click', () => { rating = Number(s.dataset.v); paintStars(); }));
+    paintStars();
+
+    // ===== Submit =====
+    document.getElementById('submitReview').addEventListener('click', async () => {
+      const msg = document.getElementById('formMsg');
+      const btn = document.getElementById('submitReview');
+      const user = auth.currentUser;
+      const text = document.getElementById('reviewText').value.trim();
+      msg.className = 'review-form__msg';
+      if (!user) { msg.textContent = 'Please sign in first.'; return; }
+      if (text.length < 10) { msg.textContent = 'Please write at least a sentence or two.'; return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+      try {
+        let image = '';
+        const file = document.getElementById('reviewPhoto').files[0];
+        if (file) {
+          msg.textContent = 'Uploading photo…';
+          image = await uploadToCloudinary(file);
+        }
+        await addReview({
+          name: user.displayName || 'Google user',
+          email: user.email || '',
+          avatar: user.photoURL || '',
+          rating, text, image
+        });
+        msg.className = 'review-form__msg review-form__msg--ok';
+        msg.textContent = 'Thank you! Your review was submitted and will appear once approved.';
+        document.getElementById('reviewText').value = '';
+        document.getElementById('reviewPhoto').value = '';
+      } catch (e) {
+        msg.textContent = 'Something went wrong: ' + (e.message || e);
+      }
+      btn.disabled = false;
+      btn.textContent = 'Submit Review';
+    });
+  })();
+</script>
+
+</body>
+</html>

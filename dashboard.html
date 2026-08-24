@@ -66,6 +66,7 @@
     <button class="dash__tab" data-tab="showroom">Showroom</button>
     <button class="dash__tab" data-tab="garage">Garage</button>
     <button class="dash__tab" data-tab="seo">SEO / Sitemap</button>
+    <button class="dash__tab" data-tab="reviews">Reviews</button>
   </div>
 
   <!-- ============ TAB: BIKES ============ -->
@@ -409,6 +410,17 @@
         ✓ Mobile-first, fast-loading, lighthouse-optimized<br>
         ✓ Dashboard + Login marked noindex (won't appear in Google)
       </p>
+    </div>
+  </div>
+
+  <div class="dash__panel-container" id="tab-reviews" style="display:none;">
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Pending Reviews<small>Approve to publish on the Reviews page</small></h2>
+      <div id="pendingReviews"></div>
+    </div>
+    <div class="dash__panel">
+      <h2 class="dash__panel-title">Published Reviews<small>Live on torquemotorsexclusive.com/reviews</small></h2>
+      <div id="approvedReviews"></div>
     </div>
   </div>
 
@@ -1026,7 +1038,52 @@
       }
     };
 
+    // ============ REVIEWS TAB ============
+    function reviewRowHTML(r, actions) {
+      const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      const escR = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `
+        <div style="border:1px solid var(--grey-2); padding:1rem; margin-bottom:0.75rem;">
+          <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.5rem;">
+            ${r.avatar ? `<img src="${escR(r.avatar)}" style="width:32px;height:32px;border-radius:50%;" referrerpolicy="no-referrer">` : ''}
+            <strong>${escR(r.name)}</strong>
+            <span style="color:var(--grey); font-size:0.8rem;">${escR(r.email)} · ${date}</span>
+            <span style="color:var(--red); margin-left:auto;">${'★'.repeat(r.rating || 5)}</span>
+          </div>
+          <p style="color:var(--grey); line-height:1.6; white-space:pre-line;">${escR(r.text)}</p>
+          ${r.image ? `<img src="${escR(r.image)}" style="max-width:200px; margin-top:0.6rem; border:1px solid var(--grey-2);">` : ''}
+          <div class="form__actions" style="margin-top:0.75rem;">${actions}</div>
+        </div>`;
+    }
+
+    async function renderReviewsTab() {
+      const all = await loadAllReviews();
+      const pending = all.filter(r => r.status === 'pending');
+      const approved = all.filter(r => r.status === 'approved');
+      document.getElementById('pendingReviews').innerHTML = pending.length
+        ? pending.map(r => reviewRowHTML(r,
+            `<button class="btn btn--primary" onclick="approveReviewAction('${r.id}')">Approve</button>
+             <button class="btn btn--ghost" onclick="deleteReviewAction('${r.id}')">Delete</button>`)).join('')
+        : `<div class="empty-state"><h3>No pending reviews</h3></div>`;
+      document.getElementById('approvedReviews').innerHTML = approved.length
+        ? approved.map(r => reviewRowHTML(r,
+            `<button class="btn btn--ghost" onclick="deleteReviewAction('${r.id}')">Remove</button>`)).join('')
+        : `<div class="empty-state"><h3>No published reviews yet</h3></div>`;
+    }
+
+    window.approveReviewAction = async function(id) {
+      await approveReview(id);
+      await renderReviewsTab();
+    };
+    window.deleteReviewAction = async function(id) {
+      if (confirm('Delete this review permanently?')) {
+        await deleteReview(id);
+        await renderReviewsTab();
+      }
+    };
+
     // ============ INITIAL LOAD ============
+    await renderReviewsTab();
     await renderStats();
     await renderList();
     await renderPostsList();
