@@ -108,8 +108,14 @@
     applySiteSettings();
 
     const el = document.getElementById('detail');
-    const id = new URLSearchParams(location.search).get('id');
-    const bike = id ? await getBike(id) : null;
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    // Slug can arrive via ?slug= (404.html redirect) or directly in the path: /bike/<slug>
+    const pathMatch = location.pathname.match(/^\/bike\/([^\/]+)\/?$/);
+    const slug = params.get('slug') || (pathMatch ? decodeURIComponent(pathMatch[1]) : null);
+    let bike = null;
+    if (slug) bike = await getBikeBySlug(slug);
+    if (!bike && id) bike = await getBike(id);
 
     if (!bike) {
       el.innerHTML = `
@@ -122,6 +128,15 @@
     }
 
     document.title = `${bike.year ? bike.year + ' ' : ''}${bike.name} — Torque Motorsports Exclusive`;
+
+    // Show the pretty slug URL in the address bar
+    const prettyPath = `/bike/${bikeSlug(bike)}`;
+    if (location.pathname + location.search !== prettyPath) {
+      history.replaceState(null, '', prettyPath);
+    }
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
+    canonical.href = `https://torquemotorsexclusive.com${prettyPath}`;
 
     const imgs = bike.images && bike.images.length ? bike.images : [];
     const mainImgHTML = imgs.length

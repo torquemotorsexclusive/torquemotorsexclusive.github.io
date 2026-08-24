@@ -72,19 +72,26 @@
 
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
+    // Slug can arrive via ?slug= (404.html redirect) or directly in the path: /post/<slug>
+    const pathMatch = window.location.pathname.match(/^\/post\/([^\/]+)\/?$/);
+    const slug = params.get('slug') || (pathMatch ? decodeURIComponent(pathMatch[1]) : null);
     const root = document.getElementById('postRoot');
 
-    if (!id) {
+    if (!id && !slug) {
       root.innerHTML = `<div class="empty-state"><h3>No post selected</h3><p><a href="/blog" style="color:var(--red);">← Back to Journal</a></p></div>`;
     } else {
-      const post = await getPost(id);
+      const post = slug ? await getPostBySlug(slug) : await getPost(id);
       if (!post) {
         root.innerHTML = `<div class="empty-state"><h3>Post not found</h3><p><a href="/blog" style="color:var(--red);">← Back to Journal</a></p></div>`;
       } else {
         // ============ AUTO SEO ============
         const seoTitle = `${post.title} | Torque Motorsports Journal`;
         const seoDesc = post.excerpt || '';
-        const pageUrl = `https://torquemotorsexclusive.com/post?id=${post.id}`;
+        const prettyPath = `/post/${postSlug(post)}`;
+        if (window.location.pathname + window.location.search !== prettyPath) {
+          history.replaceState(null, '', prettyPath);
+        }
+        const pageUrl = `https://torquemotorsexclusive.com${prettyPath}`;
         const coverImg = post.cover || 'https://torquemotorsexclusive.com/hero.jpg';
 
         document.title = seoTitle;

@@ -160,6 +160,29 @@ async function saveSettings(settings) {
   CACHE.settings = settings;
 }
 
+// ===== SLUGS (pretty URLs) =====
+function slugify(text) {
+  return (text || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function bikeSlug(bike) {
+  return slugify((bike.year ? bike.year + ' ' : '') + (bike.name || '')) || bike.id;
+}
+
+function postSlug(post) {
+  return post.slug || slugify(post.title) || post.id;
+}
+
+async function getBikeBySlug(slug) {
+  const bikes = await loadBikes();
+  return bikes.find(b => bikeSlug(b) === slug) || null;
+}
+
+async function getPostBySlug(slug) {
+  const posts = await loadPosts();
+  return posts.find(p => postSlug(p) === slug) || null;
+}
+
 // ===== FORMATTERS / RENDERERS =====
 function formatPrice(p) {
   if (!p) return '—';
@@ -187,7 +210,7 @@ function bikeCardHTML(bike, index) {
   const featured = bike.featured ? `<span class="bike-card__featured">Featured</span>` : '';
   const placeholderClass = bike.images && bike.images.length ? '' : 'bike-card__img--placeholder';
   return `
-    <a href="/bike?id=${bike.id}" class="bike-card">
+    <a href="/bike/${bikeSlug(bike)}" class="bike-card">
       <div class="bike-card__img ${placeholderClass}">
         ${badge}${featured}
         ${imgHTML}
@@ -215,7 +238,7 @@ function postCardHTML(post) {
     : `<div class="post-card__cover-ph"><span>${post.category}</span></div>`;
   const date = new Date(post.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   return `
-    <a href="/post?id=${post.id}" class="post-card">
+    <a href="/post/${postSlug(post)}" class="post-card">
       <div class="post-card__cover">${coverHTML}</div>
       <div class="post-card__body">
         <div class="post-card__meta">

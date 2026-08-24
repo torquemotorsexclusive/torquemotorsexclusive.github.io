@@ -149,7 +149,7 @@
           ? `<img src="${featured.cover}" alt="${featured.title}">`
           : `<div class="post-card__cover-ph"><span>${featured.category}</span></div>`;
         featuredArea.innerHTML = `
-          <a href="/post?id=${featured.id}" class="post-featured">
+          <a href="/post/${postSlug(featured)}" class="post-featured">
             <div class="post-featured__cover">${coverHTML}</div>
             <div class="post-featured__body">
               <div class="post-featured__meta">
