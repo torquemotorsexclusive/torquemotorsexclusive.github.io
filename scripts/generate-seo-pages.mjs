@@ -326,7 +326,7 @@ ${PAGE_SCRIPTS}
 // ── Sitemap ────────────────────────────────────────────────
 function sitemap(bikes, posts) {
   const today = new Date().toISOString().split('T')[0];
-  const staticUrls = ['/', '/inventory', '/blog', '/contact'];
+  const staticUrls = ['/', '/inventory', '/blog', '/contact', '/reviews'];
   const urls = [
     ...staticUrls.map(u => ({ loc: `${SITE}${u}`, lastmod: today })),
     ...bikes.map(b => ({ loc: `${SITE}/bike/${bikeSlug(b)}`, lastmod: (b.created_at || today).split('T')[0] })),
