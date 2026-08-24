@@ -183,7 +183,22 @@ function bikePage(bike) {
       priceCurrency: 'PKR',
       price: bike.price || undefined,
       availability: bike.status === 'sold' ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
-      url
+      url,
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'PK',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+      },
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: { '@type': 'MonetaryAmount', value: 0, currency: 'PKR' },
+        shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'PK' },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 7, unitCode: 'DAY' },
+          transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 14, unitCode: 'DAY' }
+        }
+      }
     }
   };
 
