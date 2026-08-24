@@ -1005,7 +1005,7 @@ input, select, textarea { font: inherit; }
 }
 
 /* ============== BIKE DETAIL ============== */
-.detail { padding: 1.5rem var(--gutter) 5rem; }
+.detail { padding: calc(var(--nav-h) + 2rem) var(--gutter) 5rem; }
 
 .detail__images { margin-bottom: 1.5rem; }
 
@@ -1135,7 +1135,7 @@ input, select, textarea { font: inherit; }
 
 @media (min-width: 900px) {
   .detail {
-    padding: 3rem var(--gutter) 5rem;
+    padding: calc(var(--nav-h) + 3rem) var(--gutter) 5rem;
     display: grid;
     grid-template-columns: 1.3fr 1fr;
     gap: 4rem;
@@ -1820,7 +1820,7 @@ body.nav-open { overflow: hidden; }
 
 /* Post detail (single post page) */
 .post {
-  padding: 2rem var(--gutter) 5rem;
+  padding: calc(var(--nav-h) + 2rem) var(--gutter) 5rem;
   max-width: 760px;
   margin: 0 auto;
 }
@@ -1906,5 +1906,5 @@ body.nav-open { overflow: hidden; }
 }
 
 @media (min-width: 900px) {
-  .post { padding: 3rem var(--gutter) 6rem; }
+  .post { padding: calc(var(--nav-h) + 3rem) var(--gutter) 6rem; }
 }
