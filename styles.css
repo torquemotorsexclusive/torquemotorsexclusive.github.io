@@ -833,8 +833,11 @@ input, select, textarea { font: inherit; }
 .footer__logo { height: 36px; margin-bottom: 1rem; }
 .footer__tagline {
   color: var(--grey);
-  font-size: 0.9rem;
-  line-height: 1.55;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1.8;
   max-width: 360px;
 }
 
