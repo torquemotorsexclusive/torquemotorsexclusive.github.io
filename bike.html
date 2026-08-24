@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Clean URL redirect: /page.html -> /page
+    (function() {
+      var p = location.pathname;
+      if (p.endsWith('/index.html')) {
+        history.replaceState(null, '', p.replace(/index\.html$/, '') + location.search + location.hash);
+      } else if (p.endsWith('.html')) {
+        history.replaceState(null, '', p.replace(/\.html$/, '') + location.search + location.hash);
+      }
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Bike Details — Torque Motorsports Exclusive</title>
+  <meta name="description" content="Full specs, photos and price for this superbike — imported and delivered by Torque Motorsports Exclusive, Pakistan.">
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Bike Details — Torque Motorsports Exclusive">
+  <meta property="og:description" content="Premium superbikes imported and delivered across Pakistan.">
+  <meta property="og:image" content="https://torquemotorsexclusive.com/hero.jpg">
+
+  <meta name="geo.region" content="PK-PB">
+  <meta name="geo.placename" content="Lahore">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav__logo">
+    <img src="logo.png" alt="Torque Motorsports">
+  </a>
+  <button class="nav__toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__menu">
+    <ul>
+      <li><a href="/" data-nav="home">Home</a></li>
+      <li><a href="/inventory" data-nav="garage">The Garage</a></li>
+      <li><a href="/blog" data-nav="journal">Journal</a></li>
+      <li><a href="/contact" data-nav="contact">Story</a></li>
+    </ul>
+    <div class="nav__menu-foot">
+      <span>Lahore / Pakistan</span>
+      <a href="#" data-email data-email-text>hello@torquemotorsexclusive.com</a>
+    </div>
+  </div>
+  <a href="#" class="nav__cta" data-wa="Hi, I'd like to request a bike import.">Request a Bike</a>
+</nav>
+
+<main class="detail" id="detail">
+  <div class="empty-state" style="grid-column:1/-1;">
+    <h3>Loading bike…</h3>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer__main">
+    <div class="footer__brand">
+      <img src="logo.png" alt="Torque Motorsports" class="footer__logo">
+      <p class="footer__tagline">Specialist superbike imports to Pakistan. Curated. Sourced. Delivered.</p>
+    </div>
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/inventory">The Garage</a></li>
+          <li><a href="/blog">Journal</a></li>
+          <li><a href="/contact">Story</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#" data-wa>WhatsApp</a></li>
+          <li><a href="#" data-email>Email</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#" data-instagram target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="#" data-tiktok target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <span>© 2026 Torque Motorsports Exclusive</span>
+    <span>Lahore / Pakistan</span>
+  </div>
+</footer>
+
+<script src="firebase.js"></script>
+<script src="data.js"></script>
+<script>
+  (async () => {
+    setActiveNav('garage');
+    initNav();
+    applySiteSettings();
+
+    const el = document.getElementById('detail');
+    const id = new URLSearchParams(location.search).get('id');
+    const bike = id ? await getBike(id) : null;
+
+    if (!bike) {
+      el.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <h3>Bike not found</h3>
+          <p>This machine may have been removed.</p>
+          <a href="/inventory" class="btn btn--primary" style="margin-top:1rem;">Back to the Garage</a>
+        </div>`;
+      return;
+    }
+
+    document.title = `${bike.year ? bike.year + ' ' : ''}${bike.name} — Torque Motorsports Exclusive`;
+
+    const imgs = bike.images && bike.images.length ? bike.images : [];
+    const mainImgHTML = imgs.length
+      ? `<img src="${imgs[0]}" alt="${bike.name}" id="main-img">`
+      : bikePlaceholderSVG();
+    const thumbsHTML = imgs.length > 1
+      ? `<div class="detail__thumbs">${imgs.map((src, i) =>
+          `<div class="detail__thumb ${i === 0 ? 'active' : ''}" data-src="${src}"><img src="${src}" alt="${bike.name} photo ${i + 1}" loading="lazy"></div>`
+        ).join('')}</div>`
+      : '';
+
+    const statusClass = bike.status === 'sold' ? 'detail__status--sold' : 'detail__status--available';
+    const statusText = bike.status === 'sold' ? 'Delivered' : 'Available';
+
+    const specs = [
+      ['Engine', bike.engine], ['Power', bike.power], ['Mileage', bike.mileage],
+      ['Year', bike.year], ['Color', bike.color], ['Condition', bike.condition]
+    ].filter(([, v]) => v);
+
+    const waMsg = `Hi, I'm interested in the ${bike.year ? bike.year + ' ' : ''}${bike.name}. Is it ${bike.status === 'sold' ? 'possible to import a similar one' : 'still available'}?`;
+
+    el.innerHTML = `
+      <div class="detail__images">
+        <div class="detail__main-img">${mainImgHTML}</div>
+        ${thumbsHTML}
+      </div>
+      <div class="detail__body">
+        <div class="detail__num">The Garage — ${bike.year || ''}</div>
+        <span class="detail__status ${statusClass}">${statusText}</span>
+        <h1 class="detail__title">${bike.name}</h1>
+        <p class="detail__sub">${bike.sub || ''}</p>
+
+        <div class="detail__specs">
+          ${specs.map(([label, value]) => `
+            <div class="detail__spec">
+              <span class="detail__spec-label">${label}</span>
+              <span class="detail__spec-value">${value}</span>
+            </div>`).join('')}
+        </div>
+
+        ${bike.description ? `<p class="detail__desc">${bike.description}</p>` : ''}
+
+        <div class="detail__price-label">Price</div>
+        <div class="detail__price">${formatPrice(bike.price)}</div>
+
+        <div class="detail__sticky-cta">
+          <a href="#" class="btn btn--primary" data-wa="${waMsg.replace(/"/g, '&quot;')}">Enquire on WhatsApp</a>
+          <a href="/inventory" class="btn btn--ghost">Back to Garage</a>
+        </div>
+      </div>`;
+
+    // Re-bind WhatsApp links added after applySiteSettings ran
+    applySiteSettings();
+
+    // Thumbnail switching
+    document.querySelectorAll('.detail__thumb').forEach(t => {
+      t.addEventListener('click', () => {
+        document.querySelectorAll('.detail__thumb').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        const main = document.getElementById('main-img');
+        if (main) main.src = t.dataset.src;
+      });
+    });
+  })();
+</script>
+
+</body>
+</html>

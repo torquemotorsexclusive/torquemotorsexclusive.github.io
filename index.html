@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Clean URL redirect: /page.html -> /page, /index.html -> /
+    (function() {
+      var p = location.pathname;
+      if (p.endsWith('/index.html')) {
+        history.replaceState(null, '', p.replace(/index\.html$/, '') + location.search + location.hash);
+      } else if (p.endsWith('.html')) {
+        history.replaceState(null, '', p.replace(/\.html$/, '') + location.search + location.hash);
+      }
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Torque Motorsports Exclusive — Premium Superbike Imports to Pakistan</title>
+  <meta name="description" content="Pakistan's specialist superbike importers. Ducati, BMW, Yamaha, Kawasaki, Harley-Davidson — sourced worldwide, imported and delivered to your door in Pakistan.">
+  <meta name="keywords" content="superbike import Pakistan, Ducati Pakistan, BMW S1000RR Pakistan, heavy bike importer Lahore, sports bike Pakistan">
+  <link rel="canonical" href="https://torquemotorsexclusive.com/">
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://torquemotorsexclusive.com/">
+  <meta property="og:title" content="Torque Motorsports Exclusive — Premium Superbike Imports">
+  <meta property="og:description" content="Specialist superbike imports to Pakistan. Curated. Sourced. Delivered.">
+  <meta property="og:image" content="https://torquemotorsexclusive.com/hero.jpg">
+
+  <meta name="geo.region" content="PK-PB">
+  <meta name="geo.placename" content="Lahore">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "AutoDealer",
+    "name": "Torque Motorsports Exclusive",
+    "url": "https://torquemotorsexclusive.com",
+    "image": "https://torquemotorsexclusive.com/hero.jpg",
+    "logo": "https://torquemotorsexclusive.com/logo.png",
+    "description": "Specialist superbike imports to Pakistan.",
+    "address": { "@type": "PostalAddress", "addressLocality": "Lahore", "addressCountry": "PK" }
+  }
+  </script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav nav--hero">
+  <a href="/" class="nav__logo">
+    <img src="logo.png" alt="Torque Motorsports">
+  </a>
+  <button class="nav__toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav__menu">
+    <ul>
+      <li><a href="/" data-nav="home">Home</a></li>
+      <li><a href="/inventory" data-nav="garage">The Garage</a></li>
+      <li><a href="/blog" data-nav="journal">Journal</a></li>
+      <li><a href="/contact" data-nav="contact">Story</a></li>
+    </ul>
+    <div class="nav__menu-foot">
+      <span>Lahore / Pakistan</span>
+      <a href="#" data-email data-email-text>hello@torquemotorsexclusive.com</a>
+    </div>
+  </div>
+  <a href="#" class="nav__cta" data-wa="Hi, I'd like to request a bike import.">Request a Bike</a>
+</nav>
+
+<header class="hero">
+  <img src="hero.jpg" alt="Torque Motorsports Exclusive — premium superbikes" class="hero__img" fetchpriority="high">
+  <div class="hero__overlay">
+    <div class="hero__eyebrow-top">Est. Lahore — Pakistan</div>
+    <div class="hero__bottom">
+      <div class="hero__tag">Curated / Sourced / Delivered</div>
+      <a href="#" class="hero__cta" data-wa="Hi, I'd like to request a bike import.">
+        Start Your Import
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="marquee">
+  <div class="marquee__track">
+    <span class="marquee__brand">Ducati</span><span class="marquee__sep"></span>
+    <span class="marquee__brand marquee__brand--accent">BMW</span><span class="marquee__sep"></span>
+    <span class="marquee__brand">Yamaha</span><span class="marquee__sep"></span>
+    <span class="marquee__brand marquee__brand--accent">Kawasaki</span><span class="marquee__sep"></span>
+    <span class="marquee__brand">Harley-Davidson</span><span class="marquee__sep"></span>
+    <span class="marquee__brand marquee__brand--accent">Honda</span><span class="marquee__sep"></span>
+    <span class="marquee__brand">Ducati</span><span class="marquee__sep"></span>
+    <span class="marquee__brand marquee__brand--accent">BMW</span><span class="marquee__sep"></span>
+    <span class="marquee__brand">Yamaha</span><span class="marquee__sep"></span>
+    <span class="marquee__brand marquee__brand--accent">Kawasaki</span><span class="marquee__sep"></span>
+    <span class="marquee__brand">Harley-Davidson</span><span class="marquee__sep"></span>
+    <span class="marquee__brand marquee__brand--accent">Honda</span><span class="marquee__sep"></span>
+  </div>
+</div>
+
+<div class="import-strip">
+  <div class="import-strip__eyebrow">On-Demand Imports</div>
+  <h2 class="import-strip__title">Any Bike. <em>Any Country.</em> Delivered to Pakistan.</h2>
+  <p class="import-strip__sub">Don't see your dream machine in our garage? Tell us what you want — we source it from anywhere in the world and handle everything to your doorstep.</p>
+  <a href="#" class="import-strip__cta" data-wa="Hi, I want to import a specific bike. Can we discuss?">Request an Import</a>
+</div>
+
+<section class="section">
+  <div class="section__head">
+    <div>
+      <div class="section__eyebrow">№ 01 — The Collection</div>
+      <h2 class="section__title">Featured <em>Machines.</em></h2>
+    </div>
+    <a href="/inventory" class="section__link">View Full Garage →</a>
+  </div>
+  <div class="bikes" id="featured-grid"></div>
+</section>
+
+<section class="section section--alt">
+  <div class="section__head">
+    <div>
+      <div class="section__eyebrow">№ 02 — The Process</div>
+      <h2 class="section__title">How It <em>Works.</em></h2>
+    </div>
+  </div>
+  <div class="how">
+    <div class="how__step">
+      <div class="how__num">01</div>
+      <h3 class="how__title">Tell Us the Bike</h3>
+      <p class="how__text">Share the make, model, year and spec you're after — or pick one already in our garage. We confirm sourcing options and a transparent quote.</p>
+    </div>
+    <div class="how__step">
+      <div class="how__num">02</div>
+      <h3 class="how__title">We Source &amp; Import</h3>
+      <p class="how__text">We locate the cleanest example worldwide, verify its condition and history, then manage shipping, customs and every document in between.</p>
+    </div>
+    <div class="how__step">
+      <div class="how__num">03</div>
+      <h3 class="how__title">Delivered to You</h3>
+      <p class="how__text">Your bike arrives inspected, serviced and ready to ride — handed over anywhere in Pakistan.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section__head">
+    <div>
+      <div class="section__eyebrow">№ 03 — The Journal</div>
+      <h2 class="section__title">Latest <em>Stories.</em></h2>
+    </div>
+    <a href="/blog" class="section__link">All Posts →</a>
+  </div>
+  <div class="posts" id="home-posts"></div>
+</section>
+
+<div class="import-strip">
+  <div class="import-strip__eyebrow">Ready When You Are</div>
+  <h2 class="import-strip__title">Your Dream Bike Is <em>One Message Away.</em></h2>
+  <p class="import-strip__sub">Talk directly with the Torque team on WhatsApp — no forms, no waiting.</p>
+  <a href="#" class="import-strip__cta" data-wa="Hi, I'm interested in starting an import with Torque Motorsports.">Message Us on WhatsApp</a>
+</div>
+
+<footer class="footer">
+  <div class="footer__main">
+    <div class="footer__brand">
+      <img src="logo.png" alt="Torque Motorsports" class="footer__logo">
+      <p class="footer__tagline">Specialist superbike imports to Pakistan. Curated. Sourced. Delivered.</p>
+    </div>
+    <div class="footer__grid">
+      <div class="footer__col">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/inventory">The Garage</a></li>
+          <li><a href="/blog">Journal</a></li>
+          <li><a href="/contact">Story</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#" data-wa>WhatsApp</a></li>
+          <li><a href="#" data-email>Email</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#" data-instagram target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="#" data-tiktok target="_blank" rel="noopener">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <span>© 2026 Torque Motorsports Exclusive</span>
+    <span>Lahore / Pakistan</span>
+  </div>
+</footer>
+
+<script src="firebase.js"></script>
+<script src="data.js"></script>
+<script>
+  (async () => {
+    setActiveNav('home');
+    initNav();
+    applySiteSettings();
+
+    // Featured bikes (fall back to latest 3 if none marked featured)
+    const grid = document.getElementById('featured-grid');
+    const bikes = await loadBikes();
+    let featured = bikes.filter(b => b.featured);
+    if (featured.length === 0) featured = bikes.slice(0, 3);
+    featured = featured.slice(0, 3);
+    if (featured.length === 0) {
+      grid.innerHTML = `<div class="empty-state"><h3>Garage loading soon</h3><p>New machines are on their way.</p></div>`;
+    } else {
+      grid.innerHTML = featured.map((b, i) => bikeCardHTML(b, i)).join('');
+    }
+
+    // Latest journal posts
+    const postsEl = document.getElementById('home-posts');
+    const posts = await loadPosts();
+    if (posts.length === 0) {
+      postsEl.closest('.section').style.display = 'none';
+    } else {
+      postsEl.innerHTML = posts.slice(0, 3).map(postCardHTML).join('');
+    }
+  })();
+</script>
+
+</body>
+</html>
