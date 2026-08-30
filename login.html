@@ -117,18 +117,14 @@
     <div class="login__logo"><img src="logo.png" alt="Torque"></div>
     <div class="login__eyebrow">№ 00 — Admin Access</div>
     <h1 class="login__title">Restricted.</h1>
-    <div class="login__error" id="loginError">Wrong password. Try again.</div>
-    <form id="loginForm">
-      <div class="form__group">
-        <label class="form__label" for="pw">Password</label>
-        <input type="password" class="form__input" id="pw" placeholder="••••••••" autocomplete="current-password" autofocus>
-      </div>
-      <button type="submit" class="btn btn--primary btn--block">Enter Dashboard</button>
-    </form>
+    <div class="login__error" id="loginError">This Google account is not authorized.</div>
+    <button type="button" class="btn btn--primary btn--block" id="googleLogin">Sign in with Google</button>
     <p class="login__hint">Authorized personnel only</p>
   </div>
 </main>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="firebase.js"></script>
 <script src="data.js"></script>
 <script src="auth.js"></script>
@@ -138,21 +134,15 @@
     const loggedIn = await isLoggedIn();
     if (loggedIn) { window.location.href = '/dashboard'; return; }
 
-    const form = document.getElementById('loginForm');
-    const pwInput = document.getElementById('pw');
     const errorBox = document.getElementById('loginError');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const ok = await login(pwInput.value);
-      if (ok) {
+    document.getElementById('googleLogin').addEventListener('click', async () => {
+      try {
+        await loginWithGoogle();
         window.location.href = '/dashboard';
-      } else {
+      } catch (e) {
         errorBox.classList.remove('show');
         void errorBox.offsetWidth;
         errorBox.classList.add('show');
-        pwInput.value = '';
-        pwInput.focus();
       }
     });
   })();
