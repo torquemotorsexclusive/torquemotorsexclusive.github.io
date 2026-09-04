@@ -143,9 +143,13 @@ async function loadAllReviews() {
   } catch (e) { console.error(e); return []; }
 }
 
+// Public pages can only read approved reviews (security rules), so the
+// filter must be part of the query — not applied after fetching.
 async function loadApprovedReviews() {
-  const all = await loadAllReviews();
-  return all.filter(r => r.status === 'approved');
+  try {
+    const reviews = await fsQueryWhere('reviews', 'status', 'approved', 'created_at', 'DESCENDING');
+    return reviews.map(r => ({ ...r, id: r._id }));
+  } catch (e) { console.error(e); return []; }
 }
 
 async function addReview(review) {

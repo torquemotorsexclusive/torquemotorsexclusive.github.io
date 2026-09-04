@@ -1,0 +1,52 @@
+rules_version = '2';
+
+// Torque Motorsports Exclusive — website database (torque-morosports)
+// Public site reads bikes/posts/settings and approved reviews.
+// Only the admin Google accounts (same list as auth.js) can write content.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+             'torquemotorsportspk@gmail.com',
+             'hasnshah85@gmail.com'
+           ];
+    }
+
+    // Inventory, journal posts and site settings: world-readable, admin-writable
+    match /bikes/{bikeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Customer reviews: anyone can read APPROVED ones; any signed-in Google
+    // user may submit one as 'pending'; only admins approve or delete.
+    match /reviews/{reviewId} {
+      allow read: if resource.data.status == 'approved' || isAdmin();
+      allow create: if request.auth != null
+        && request.resource.data.status == 'pending'
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 2000;
+      allow update, delete: if isAdmin();
+    }
+
+    // Everything else is denied
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

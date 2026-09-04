@@ -94,11 +94,24 @@ async function fsList(collection, orderBy = null) {
   return data.documents.map(docToObj);
 }
 
+// Writes must be authenticated (see Firestore security rules): attach the
+// signed-in user's ID token when the Firebase Auth SDK is present.
+async function fsAuthHeaders() {
+  const headers = { 'Content-Type': 'application/json' };
+  try {
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      const user = firebase.auth().currentUser;
+      if (user) headers.Authorization = 'Bearer ' + (await user.getIdToken());
+    }
+  } catch (e) { /* unauthenticated write — rules will decide */ }
+  return headers;
+}
+
 async function fsSet(collection, id, data) {
   const fields = toFS(data);
   const res = await fetch(`${FS_BASE}/${collection}/${id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await fsAuthHeaders(),
     body: JSON.stringify({ fields })
   });
   if (!res.ok) throw new Error(await res.text());
@@ -107,14 +120,42 @@ async function fsSet(collection, id, data) {
 }
 
 async function fsDelete(collection, id) {
-  const res = await fetch(`${FS_BASE}/${collection}/${id}`, { method: 'DELETE' });
+  const res = await fetch(`${FS_BASE}/${collection}/${id}`, {
+    method: 'DELETE',
+    headers: await fsAuthHeaders()
+  });
   if (!res.ok) throw new Error(await res.text());
+}
+
+// Query constrained by a field value — required for collections whose
+// security rules only expose matching documents (e.g. approved reviews).
+async function fsQueryWhere(collection, field, value, orderField = null, direction = 'DESCENDING') {
+  const res = await fetch(`${FS_BASE}:runQuery`, {
+    method: 'POST',
+    headers: await fsAuthHeaders(),
+    body: JSON.stringify({
+      structuredQuery: {
+        from: [{ collectionId: collection }],
+        where: {
+          fieldFilter: {
+            field: { fieldPath: field },
+            op: 'EQUAL',
+            value: { stringValue: value }
+          }
+        },
+        orderBy: orderField ? [{ field: { fieldPath: orderField }, direction }] : undefined
+      }
+    })
+  });
+  if (!res.ok) return [];
+  const rows = await res.json();
+  return rows.filter(r => r.document).map(r => docToObj(r.document));
 }
 
 async function fsQuery(collection, orderField, direction = 'DESCENDING') {
   const res = await fetch(`${FS_BASE}:runQuery`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await fsAuthHeaders(),
     body: JSON.stringify({
       structuredQuery: {
         from: [{ collectionId: collection }],
