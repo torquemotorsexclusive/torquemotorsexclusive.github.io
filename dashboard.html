@@ -55,6 +55,36 @@
   <div class="dash__head">
     <div class="dash__subtitle">№ 00 — Admin Panel</div>
     <h1 class="dash__title">Manage <em>Site.</em></h1>
+    <button type="button" id="pwToggle"
+      style="background:transparent;border:none;color:var(--grey);font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;padding:0.4rem 0;">
+      Set / change my password
+    </button>
+    <div id="pwWrap" hidden style="gap:0.6rem;align-items:center;flex-wrap:wrap;margin-top:0.5rem;">
+      <input type="password" id="pwNew" class="form__input" placeholder="New password (min 8 chars)"
+        autocomplete="new-password" style="max-width:260px;">
+      <button type="button" class="btn btn--primary" id="pwSave">Save</button>
+      <span id="pwMsg" style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);"></span>
+    </div>
+    <script>
+      document.getElementById('pwToggle').addEventListener('click', () => {
+        const w = document.getElementById('pwWrap');
+        w.hidden = !w.hidden;
+        if (!w.hidden) w.style.display = 'flex';
+      });
+      document.getElementById('pwSave').addEventListener('click', async () => {
+        const msg = document.getElementById('pwMsg');
+        const input = document.getElementById('pwNew');
+        try {
+          await setAdminPassword(input.value);
+          input.value = '';
+          msg.style.color = 'var(--grey)';
+          msg.textContent = 'Password set — you can now log in with email + password.';
+        } catch (e) {
+          msg.style.color = 'var(--red)';
+          msg.textContent = e.message || 'Could not set password.';
+        }
+      });
+    </script>
   </div>
 
   <!-- TABS -->

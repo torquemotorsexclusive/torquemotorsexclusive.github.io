@@ -91,6 +91,23 @@
       text-align: center; margin-top: 1.5rem;
       text-transform: uppercase;
     }
+    .login__field { margin-bottom: 0.9rem; }
+    .login__divider {
+      display: flex; align-items: center; gap: 0.9rem;
+      margin: 1.4rem 0;
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.2em; color: var(--grey);
+      text-transform: uppercase;
+    }
+    .login__divider::before, .login__divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--grey-2);
+    }
+    .login__google {
+      background: transparent;
+      border: 1px solid var(--grey-2);
+      color: var(--white, #fff);
+    }
+    .login__google:hover { border-color: var(--red); }
   </style>
 </head>
 <body>
@@ -118,7 +135,17 @@
     <div class="login__eyebrow">№ 00 — Admin Access</div>
     <h1 class="login__title">Restricted.</h1>
     <div class="login__error" id="loginError">This Google account is not authorized.</div>
-    <button type="button" class="btn btn--primary btn--block" id="googleLogin">Sign in with Google</button>
+    <form id="passwordForm" autocomplete="on">
+      <div class="login__field">
+        <input type="email" class="form__input" id="loginEmail" placeholder="Email" autocomplete="username" required>
+      </div>
+      <div class="login__field">
+        <input type="password" class="form__input" id="loginPassword" placeholder="Password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn--primary btn--block" id="passwordLogin">Sign In</button>
+    </form>
+    <div class="login__divider"><span>or</span></div>
+    <button type="button" class="btn btn--block login__google" id="googleLogin">Sign in with Google</button>
     <p class="login__hint">Authorized personnel only</p>
   </div>
 </main>
@@ -135,14 +162,31 @@
     if (loggedIn) { window.location.href = '/dashboard'; return; }
 
     const errorBox = document.getElementById('loginError');
+    const showError = (msg) => {
+      errorBox.textContent = msg;
+      errorBox.classList.remove('show');
+      void errorBox.offsetWidth;
+      errorBox.classList.add('show');
+    };
+
     document.getElementById('googleLogin').addEventListener('click', async () => {
       try {
         await loginWithGoogle();
         window.location.href = '/dashboard';
       } catch (e) {
-        errorBox.classList.remove('show');
-        void errorBox.offsetWidth;
-        errorBox.classList.add('show');
+        showError('This Google account is not authorized.');
+      }
+    });
+
+    document.getElementById('passwordForm').addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      try {
+        await loginWithPassword(email, password);
+        window.location.href = '/dashboard';
+      } catch (e) {
+        showError('Wrong email or password.');
       }
     });
   })();

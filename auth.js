@@ -40,6 +40,38 @@ async function loginWithGoogle() {
   return result.user;
 }
 
+/* Email + password sign-in. Same allowlist as Google — a password only
+   works for an admin account that set one via the dashboard. */
+async function loginWithPassword(email, password) {
+  const result = await adminAuth().signInWithEmailAndPassword(email.trim(), password);
+  const em = (result.user?.email || '').toLowerCase();
+  if (!ALLOWED_ADMINS.includes(em)) {
+    await adminAuth().signOut();
+    throw new Error('This account is not authorized for the dashboard.');
+  }
+  return result.user;
+}
+
+/* Called from the dashboard while signed in (with Google or password):
+   sets/changes this admin's password. Firebase links a password credential
+   to the same account, so the email allowlist and Firestore rules are
+   untouched. */
+async function setAdminPassword(newPassword) {
+  const user = adminAuth().currentUser;
+  if (!user) throw new Error('Sign in first.');
+  if (!newPassword || newPassword.length < 8) {
+    throw new Error('Password must be at least 8 characters.');
+  }
+  try {
+    await user.updatePassword(newPassword);
+  } catch (e) {
+    if (e && e.code === 'auth/requires-recent-login') {
+      throw new Error('For security, log out, sign in again, then set the password.');
+    }
+    throw e;
+  }
+}
+
 function logout() {
   adminAuth().signOut().then(() => { window.location.href = 'login.html'; });
 }
