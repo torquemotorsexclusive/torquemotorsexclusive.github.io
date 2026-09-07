@@ -218,9 +218,9 @@
     // Featured bikes (fall back to latest 3 if none marked featured)
     const grid = document.getElementById('featured-grid');
     const bikes = await loadBikes();
+    // Show every featured bike; the grid fills whatever width the screen has
     let featured = bikes.filter(b => b.featured);
-    if (featured.length === 0) featured = bikes.slice(0, 3);
-    featured = featured.slice(0, 3);
+    if (featured.length === 0) featured = bikes.slice(0, 6);
     if (featured.length === 0) {
       grid.innerHTML = `<div class="empty-state"><h3>Garage loading soon</h3><p>New machines are on their way.</p></div>`;
     } else {

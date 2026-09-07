@@ -721,7 +721,9 @@ input, select, textarea { font: inherit; }
 @media (min-width: 700px) {
   .bikes {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    /* auto-fit, not auto-fill: cards stretch to fill the row instead of
+       leaving empty grey tracks on wide screens */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1px;
     background: var(--grey-2);
     border: 1px solid var(--grey-2);
