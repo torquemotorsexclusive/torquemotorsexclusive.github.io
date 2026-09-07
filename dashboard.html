@@ -772,8 +772,17 @@
     window.saveIntegrations = async function() {
       const s = await loadSettings();
       s.metaPixelId = document.getElementById('i_meta_pixel').value.replace(/\D/g, '');
-      // Accept the whole tag, content="…", or the bare value
-      s.metaDomainVerification = (document.getElementById('i_meta_domain').value.match(/content="([^"]+)"/) || [null, document.getElementById('i_meta_domain').value])[1].trim();
+      // Accept the whole <meta> tag, content="…", or the bare token. A real
+      // token is ~30 letters/digits — anything else (e.g. the Pixel base code
+      // pasted in the wrong box) is refused so it never reaches the site.
+      const rawDomain = document.getElementById('i_meta_domain').value;
+      const domainToken = ((rawDomain.match(/content="([^"]+)"/) || [null, rawDomain])[1] || '').trim();
+      if (domainToken && !/^[A-Za-z0-9_-]{10,80}$/.test(domainToken)) {
+        alert('That is not a domain verification token.\n\nThe pixel code does not go here — the Pixel ID box above is enough. The token comes from Business Settings → Brand safety → Domains → Meta-tag verification, and looks like: 1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o');
+        document.getElementById('i_meta_domain').value = '';
+        return;
+      }
+      s.metaDomainVerification = domainToken;
       await saveSettings(s);
       alert('Integrations saved. The pixel is live now. Domain verification goes into the HTML on the next publish (up to 6 hours).');
     };

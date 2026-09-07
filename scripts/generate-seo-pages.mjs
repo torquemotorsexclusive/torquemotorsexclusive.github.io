@@ -440,6 +440,10 @@ const [bikes, posts, settings] = await Promise.all([
 ]);
 console.log(`Fetched ${bikes.length} bikes, ${posts.length} posts`);
 metaDomainVerification = String(settings.metaDomainVerification || '').trim();
+if (metaDomainVerification && !/^[A-Za-z0-9_-]{10,80}$/.test(metaDomainVerification)) {
+  console.log('Ignoring metaDomainVerification: not a token (looks like pasted code). Clear it in the dashboard.');
+  metaDomainVerification = '';
+}
 
 // Meta's domain checker reads raw HTML from the home page, so the value saved
 // in the dashboard is stamped into index.html here rather than injected by JS.
