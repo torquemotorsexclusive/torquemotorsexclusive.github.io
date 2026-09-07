@@ -331,6 +331,11 @@ async function applySiteSettings() {
   document.querySelectorAll('[data-wa]').forEach(el => {
     const msg = el.dataset.wa || `Hi, I'm interested in starting an import with Torque Motorsports.`;
     el.href = `https://wa.me/${(s.whatsapp || '').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;
+    // Meta Pixel: a WhatsApp tap is the site's conversion (see pixel.js)
+    if (!el.dataset.waTracked && typeof torqueTrackLead === 'function') {
+      el.dataset.waTracked = '1';
+      el.addEventListener('click', () => torqueTrackLead(msg));
+    }
   });
   document.querySelectorAll('[data-email]').forEach(el => {
     el.href = `mailto:${s.email}`;

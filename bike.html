@@ -30,6 +30,7 @@
   <meta name="geo.placename" content="Lahore">
 
   <link rel="stylesheet" href="styles.css">
+  <script src="/pixel.js"></script>
 </head>
 <body>
 
@@ -130,6 +131,7 @@
     }
 
     document.title = `${bike.year ? bike.year + ' ' : ''}${bike.name} — Torque Motorsports Exclusive`;
+    if (typeof torqueTrackViewContent === 'function') torqueTrackViewContent(bike);
 
     // Show the pretty slug URL in the address bar
     const prettyPath = `/bike/${bikeSlug(bike)}`;

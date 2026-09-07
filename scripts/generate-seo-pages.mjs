@@ -145,6 +145,7 @@ function head({ title, description, url, image, jsonld, ogType = 'website' }) {
   <meta name="geo.region" content="PK-PB">
   <meta name="geo.placename" content="Lahore">
   <link rel="stylesheet" href="/styles.css">
+  <script src="/pixel.js"></script>
   <script type="application/ld+json">${JSON.stringify(jsonld)}</script>`;
 }
 
@@ -256,6 +257,7 @@ ${NAV}
 </main>
 ${FOOTER}
 ${PAGE_SCRIPTS}
+<script>torqueTrackViewContent(${JSON.stringify({ id: bike.id, name: bike.name, year: bike.year, brand: bike.brand, price: bike.price })});</script>
 </body>
 </html>
 `;
