@@ -1,8 +1,9 @@
 /* ============================================================
    TORQUE — Static SEO page generator
    Reads bikes & posts from Firestore (public REST) and writes
-   real HTML pages at /bike/<slug>/ and /post/<slug>/ plus an
-   updated sitemap.xml. Run by GitHub Actions (see
+   real HTML pages at /bike/<slug>/ and /post/<slug>/, an
+   updated sitemap.xml, and the Facebook/Instagram catalog feed
+   at /feeds/facebook-catalog.csv. Run by GitHub Actions (see
    .github/workflows/seo-pages.yml) or locally:
      node scripts/generate-seo-pages.mjs
    ============================================================ */
@@ -339,6 +340,85 @@ ${urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod></url>
 `;
 }
 
+
+// ── Facebook / Instagram catalog feed ──────────────────────
+// Meta product-feed CSV. Commerce Manager fetches it on a schedule from
+// https://torquemotorsexclusive.com/feeds/facebook-catalog.csv, so the
+// catalog tracks Firestore with no manual uploads. Column names are Meta's
+// (https://www.facebook.com/business/help/120325381656392).
+const FEED_COLUMNS = [
+  'id', 'title', 'description', 'availability', 'condition', 'price',
+  'link', 'image_link', 'additional_image_link', 'brand',
+  'google_product_category', 'product_type',
+  'custom_label_0', 'custom_label_1', 'custom_label_2', 'custom_label_3', 'custom_label_4'
+];
+const csvCell = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+const oneLine = s => String(s ?? '').replace(/\s*\n\s*/g, ' ').replace(/\s{2,}/g, ' ').trim();
+
+function feedTitle(bike) {
+  const year = bike.year ? String(bike.year) : '';
+  const brand = (bike.brand || '').trim();
+  // Strip the year if it was typed into the name as well ("Rocket 3R 2020")
+  let name = (bike.name || '').replace(new RegExp(`(^|\\s)${year}(\\s|$)`), ' ').trim();
+  // Put the make in front if the name leaves it out ("Rocket 3R" → "Triumph Rocket 3R")
+  if (brand && name && !name.toLowerCase().includes(brand.toLowerCase().split('-')[0])) {
+    name = `${brand} ${name}`;
+  }
+  return [year, name].filter(Boolean).join(' ').slice(0, 150);
+}
+
+function engineClass(cc) {
+  const n = parseInt(cc, 10);
+  if (!n) return '';
+  if (n <= 400) return 'Entry 250-400cc';
+  if (n <= 700) return 'Mid 600-700cc';
+  if (n <= 1000) return 'Litre class';
+  return 'Big bore 1000cc+';
+}
+
+function facebookFeed(bikes) {
+  const warnings = [];
+  // Identical titles (two Hayabusas, two S1000RRs) get told apart by mileage
+  const titleCount = {};
+  const titles = bikes.map(b => { const t = feedTitle(b); titleCount[t] = (titleCount[t] || 0) + 1; return t; });
+
+  const rows = bikes.map((b, i) => {
+    const imgs = Array.isArray(b.images) ? b.images : [];
+    let title = titles[i];
+    if (titleCount[title] > 1 && b.mileage) title = `${title} · ${Number(b.mileage).toLocaleString('en-PK')} km`;
+    const importYear = (String(b.sub || '').match(/\d{4}/) || [''])[0];
+    const specs = [b.engine && `${b.engine}cc`, b.power && `${b.power}hp`, b.mileage && `${Number(b.mileage).toLocaleString('en-PK')} km`, importYear && `imported ${importYear}`].filter(Boolean).join(' · ');
+    const description = oneLine(b.description) || `${title}. ${specs}. Custom-cleared and duty-paid, available at Torque Motorsports Exclusive, DHA Phase 2, Lahore.`;
+
+    if (!b.price) warnings.push(`${b.id}  ${title}: no price — Meta will reject this item until one is set`);
+    if (!imgs.length) warnings.push(`${b.id}  ${title}: no images`);
+    if (!b.brand) warnings.push(`${b.id}  ${title}: no brand`);
+
+    return {
+      id: b.id,
+      title,
+      description: description.slice(0, 5000),
+      availability: b.status === 'sold' ? 'out of stock' : 'in stock',
+      condition: 'used',
+      price: b.price ? `${Number(b.price).toFixed(2)} PKR` : '',
+      link: `${SITE}/bike/${bikeSlug(b)}`,
+      image_link: imgs[0] || '',
+      additional_image_link: imgs.slice(1, 21).join(','),
+      brand: b.brand || '',
+      google_product_category: 'Vehicles & Parts > Vehicles > Motor Vehicles > Motorcycles & Scooters',
+      product_type: b.brand ? `Motorcycles > ${b.brand}` : 'Motorcycles',
+      custom_label_0: b.year || '',
+      custom_label_1: b.brand || '',
+      custom_label_2: importYear,
+      custom_label_3: engineClass(b.engine),
+      custom_label_4: b.featured ? 'featured' : ''
+    };
+  });
+
+  const csv = [FEED_COLUMNS.join(','), ...rows.map(r => FEED_COLUMNS.map(c => csvCell(r[c])).join(','))].join('\n') + '\n';
+  return { csv, warnings };
+}
+
 // ── Main ───────────────────────────────────────────────────
 const [bikes, posts] = await Promise.all([
   fsQuery('bikes', 'created_at'),
@@ -361,4 +441,12 @@ for (const post of posts) {
 }
 await writeFile(path.join(ROOT, 'sitemap.xml'), sitemap(bikes, posts));
 
-console.log(`Wrote ${bikes.length} bike pages, ${posts.length} post pages, sitemap.xml`);
+const feed = facebookFeed(bikes);
+await mkdir(path.join(ROOT, 'feeds'), { recursive: true });
+await writeFile(path.join(ROOT, 'feeds', 'facebook-catalog.csv'), feed.csv);
+
+console.log(`Wrote ${bikes.length} bike pages, ${posts.length} post pages, sitemap.xml, feeds/facebook-catalog.csv`);
+if (feed.warnings.length) {
+  console.log(`\nCatalog feed: ${feed.warnings.length} item(s) need attention in the admin dashboard:`);
+  for (const w of feed.warnings) console.log('  - ' + w);
+}
