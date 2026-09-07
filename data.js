@@ -7,6 +7,9 @@
 const CACHE = { bikes: null, posts: null, settings: null };
 
 const DEFAULT_SETTINGS = {
+  // Integrations (dashboard -> Integrations tab)
+  metaPixelId: '',
+  metaDomainVerification: '',
   whatsapp: '923000000000',
   email: 'hello@torquemotorsexclusive.com',
   phone: '+92 300 000 0000',
@@ -328,6 +331,8 @@ function initNav() {
 
 async function applySiteSettings() {
   const s = await loadSettings();
+  // Meta Pixel switches on the moment an ID is saved in the dashboard
+  if (typeof torqueInitPixel === 'function') torqueInitPixel(s.metaPixelId);
   document.querySelectorAll('[data-wa]').forEach(el => {
     const msg = el.dataset.wa || `Hi, I'm interested in starting an import with Torque Motorsports.`;
     el.href = `https://wa.me/${(s.whatsapp || '').replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`;

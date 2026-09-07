@@ -8,7 +8,7 @@
      node scripts/generate-seo-pages.mjs
    ============================================================ */
 
-import { mkdir, writeFile, rm } from 'node:fs/promises';
+import { mkdir, writeFile, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -55,6 +55,16 @@ async function fsQuery(collection, orderField, direction = 'DESCENDING') {
     return obj;
   });
 }
+
+async function fsGetDoc(collection, id) {
+  const res = await fetch(`${FS_BASE}/${collection}/${id}`);
+  if (res.status === 404) return {};
+  if (!res.ok) throw new Error(`Firestore get ${collection}/${id} failed: ${res.status}`);
+  return fromFS((await res.json()).fields || {});
+}
+
+// Set from settings/main in Main before any page is rendered
+let metaDomainVerification = '';
 
 // ── Shared helpers (mirror data.js) ────────────────────────
 const slugify = t => (t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -145,6 +155,7 @@ function head({ title, description, url, image, jsonld, ogType = 'website' }) {
   <meta name="geo.region" content="PK-PB">
   <meta name="geo.placename" content="Lahore">
   <link rel="stylesheet" href="/styles.css">
+  ${metaDomainVerification ? `<meta name="facebook-domain-verification" content="${esc(metaDomainVerification)}">` : ''}
   <script src="/pixel.js"></script>
   <script type="application/ld+json">${JSON.stringify(jsonld)}</script>`;
 }
@@ -422,11 +433,22 @@ function facebookFeed(bikes) {
 }
 
 // ── Main ───────────────────────────────────────────────────
-const [bikes, posts] = await Promise.all([
+const [bikes, posts, settings] = await Promise.all([
   fsQuery('bikes', 'created_at'),
-  fsQuery('posts', 'date')
+  fsQuery('posts', 'date'),
+  fsGetDoc('settings', 'main')
 ]);
 console.log(`Fetched ${bikes.length} bikes, ${posts.length} posts`);
+metaDomainVerification = String(settings.metaDomainVerification || '').trim();
+
+// Meta's domain checker reads raw HTML from the home page, so the value saved
+// in the dashboard is stamped into index.html here rather than injected by JS.
+{
+  const indexPath = path.join(ROOT, 'index.html');
+  const html = await readFile(indexPath, 'utf8');
+  const stamped = html.replace(/<meta name="facebook-domain-verification" content="[^"]*">/, `<meta name="facebook-domain-verification" content="${esc(metaDomainVerification)}">`);
+  if (stamped !== html) { await writeFile(indexPath, stamped); console.log('Stamped facebook-domain-verification into index.html'); }
+}
 
 // Rebuild bike/ and post/ dirs from scratch so removed items disappear
 for (const dir of ['bike', 'post']) {
