@@ -8,17 +8,18 @@ const ALLOWED_ADMINS = [
   'hasnshah85@gmail.com'
 ];
 
-/* Short usernames for the password login. Each maps to one of the
-   allowlisted accounts above; the password is the one that account set
-   from the dashboard ("Set / change my password"). */
+/* Short usernames for the password login. A username can stand for several
+   allowlisted accounts: sign-in is tried against each in turn, so every
+   admin uses the same username with their own password (set from the
+   dashboard, "Set / change my password"). */
 const ADMIN_USERNAMES = {
-  torque: 'torquemotorsportspk@gmail.com'
+  torque: ['torquemotorsportspk@gmail.com', 'hasnshah85@gmail.com']
 };
 
-function resolveAdminEmail(identifier) {
+function resolveAdminEmails(identifier) {
   const id = (identifier || '').trim();
-  if (id.includes('@')) return id;
-  return ADMIN_USERNAMES[id.toLowerCase()] || id;
+  if (id.includes('@')) return [id];
+  return ADMIN_USERNAMES[id.toLowerCase()] || [id];
 }
 
 function adminAuth() {
@@ -56,14 +57,25 @@ async function loginWithGoogle() {
 /* Email + password sign-in. Same allowlist as Google — a password only
    works for an admin account that set one via the dashboard. */
 async function loginWithPassword(emailOrUsername, password) {
-  const email = resolveAdminEmail(emailOrUsername);
-  const result = await adminAuth().signInWithEmailAndPassword(email, password);
-  const em = (result.user?.email || '').toLowerCase();
-  if (!ALLOWED_ADMINS.includes(em)) {
-    await adminAuth().signOut();
-    throw new Error('This account is not authorized for the dashboard.');
+  let lastError = null;
+  for (const email of resolveAdminEmails(emailOrUsername)) {
+    try {
+      const result = await adminAuth().signInWithEmailAndPassword(email, password);
+      const em = (result.user?.email || '').toLowerCase();
+      if (!ALLOWED_ADMINS.includes(em)) {
+        await adminAuth().signOut();
+        throw new Error('This account is not authorized for the dashboard.');
+      }
+      return result.user;
+    } catch (e) {
+      lastError = e;
+      // Wrong password / no password on this account: try the next one.
+      // Anything else (rate limit, network) stops here.
+      const retryable = ['auth/wrong-password', 'auth/user-not-found', 'auth/invalid-credential', 'auth/invalid-login-credentials'];
+      if (!(e && retryable.includes(e.code))) throw e;
+    }
   }
-  return result.user;
+  throw lastError || new Error('Wrong username or password.');
 }
 
 /* Called from the dashboard while signed in (with Google or password):
