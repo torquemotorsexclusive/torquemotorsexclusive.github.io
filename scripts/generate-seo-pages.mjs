@@ -110,6 +110,8 @@ const FOOTER = `
           <li><a href="/blog">Journal</a></li>
           <li><a href="/contact">Story</a></li>
           <li><a href="/reviews">Reviews</a></li>
+          <li><a href="/terms">Terms</a></li>
+          <li><a href="/privacy">Privacy</a></li>
         </ul>
       </div>
       <div class="footer__col">
@@ -340,7 +342,7 @@ ${PAGE_SCRIPTS}
 // ── Sitemap ────────────────────────────────────────────────
 function sitemap(bikes, posts) {
   const today = new Date().toISOString().split('T')[0];
-  const staticUrls = ['/', '/inventory', '/blog', '/contact', '/reviews'];
+  const staticUrls = ['/', '/inventory', '/blog', '/contact', '/reviews', '/terms', '/privacy'];
   const urls = [
     ...staticUrls.map(u => ({ loc: `${SITE}${u}`, lastmod: today })),
     ...bikes.map(b => ({ loc: `${SITE}/bike/${bikeSlug(b)}`, lastmod: (b.created_at || today).split('T')[0] })),
