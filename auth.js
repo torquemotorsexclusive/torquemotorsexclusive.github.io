@@ -8,6 +8,19 @@ const ALLOWED_ADMINS = [
   'hasnshah85@gmail.com'
 ];
 
+/* Short usernames for the password login. Each maps to one of the
+   allowlisted accounts above; the password is the one that account set
+   from the dashboard ("Set / change my password"). */
+const ADMIN_USERNAMES = {
+  torque: 'torquemotorsportspk@gmail.com'
+};
+
+function resolveAdminEmail(identifier) {
+  const id = (identifier || '').trim();
+  if (id.includes('@')) return id;
+  return ADMIN_USERNAMES[id.toLowerCase()] || id;
+}
+
 function adminAuth() {
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   return firebase.auth();
@@ -42,8 +55,9 @@ async function loginWithGoogle() {
 
 /* Email + password sign-in. Same allowlist as Google — a password only
    works for an admin account that set one via the dashboard. */
-async function loginWithPassword(email, password) {
-  const result = await adminAuth().signInWithEmailAndPassword(email.trim(), password);
+async function loginWithPassword(emailOrUsername, password) {
+  const email = resolveAdminEmail(emailOrUsername);
+  const result = await adminAuth().signInWithEmailAndPassword(email, password);
   const em = (result.user?.email || '').toLowerCase();
   if (!ALLOWED_ADMINS.includes(em)) {
     await adminAuth().signOut();

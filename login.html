@@ -137,7 +137,7 @@
     <div class="login__error" id="loginError">This Google account is not authorized.</div>
     <form id="passwordForm" autocomplete="on">
       <div class="login__field">
-        <input type="email" class="form__input" id="loginEmail" placeholder="Email" autocomplete="username" required>
+        <input type="text" class="form__input" id="loginEmail" placeholder="Username or email" autocomplete="username" autocapitalize="none" required>
       </div>
       <div class="login__field">
         <input type="password" class="form__input" id="loginPassword" placeholder="Password" autocomplete="current-password" required>
@@ -186,7 +186,7 @@
         await loginWithPassword(email, password);
         window.location.href = '/dashboard';
       } catch (e) {
-        showError('Wrong email or password.');
+        showError('Wrong username or password.');
       }
     });
   })();
