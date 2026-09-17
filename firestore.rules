@@ -11,7 +11,9 @@ service cloud.firestore {
         && request.auth.token.email_verified == true
         && request.auth.token.email in [
              'torquemotorsportspk@gmail.com',
-             'hasnshah85@gmail.com'
+             'hasnshah85@gmail.com',
+             'rimshasocial1@gmail.com',
+             'rimshamushtaq924@gmail.com'
            ];
     }
 

@@ -5,7 +5,9 @@
 
 const ALLOWED_ADMINS = [
   'torquemotorsportspk@gmail.com',
-  'hasnshah85@gmail.com'
+  'hasnshah85@gmail.com',
+  'rimshasocial1@gmail.com',
+  'rimshamushtaq924@gmail.com'
 ];
 
 /* Short usernames for the password login. A username can stand for several
